@@ -19,6 +19,7 @@ parts/
 sdist/
 var/
 wheels/
+src/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -75,5 +76,5 @@ ENV/
 #Jetbrains dirs
 .idea
 
-#maxOS
+# maxOS
 DS_STORE
