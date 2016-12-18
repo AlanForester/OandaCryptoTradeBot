@@ -1,1 +1,4 @@
--e git+https://github.com/oanda/oandapy.git#egg=oandapy
+pylint
+requests
+websocket-client
+git+https://github.com/oanda/oandapy.git#egg=oandapy
