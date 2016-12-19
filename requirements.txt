@@ -1,4 +1,4 @@
 pylint
 requests
-websocket-client
+psycopg2
 git+https://github.com/oanda/oandapy.git#egg=oandapy
