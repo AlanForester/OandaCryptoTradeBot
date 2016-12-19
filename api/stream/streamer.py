@@ -2,7 +2,7 @@ import oandapy
 
 
 class Streamer(oandapy.Streamer):
-    def __init__(self, count=10, *args, **kwargs):
+    def __init__(self, count=0, *args, **kwargs):
         super(Streamer, self).__init__(*args, **kwargs)
         self.count = count
         self.reccnt = 0
@@ -14,5 +14,5 @@ class Streamer(oandapy.Streamer):
             self.disconnect()
 
     def on_error(self, data):
-        print("Stream disconnect")
+        print("Stream disconnect", data)
         self.disconnect()
