@@ -8,11 +8,11 @@ class Streamer(oandapy.Streamer):
         self.reccnt = 0
 
     def on_success(self, data):
-        print(data, "\n")
+        print(data)
         self.reccnt += 1
         if self.reccnt == self.count:
             self.disconnect()
 
     def on_error(self, data):
-        print("Stream disconnect", data)
+        print("Stream error:", data)
         self.disconnect()
