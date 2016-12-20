@@ -89,7 +89,7 @@ class Params(object):
     def get_db_redis_port(self):
         return self._redis_settings["port"]
 
-    """Загрузка файла"""
+    """Загрузка конфигурации из файла"""
     def load_config(self, config_path):
         with open(config_path, "rb") as config_file:
             self.__config_data = json.load(config_file)
