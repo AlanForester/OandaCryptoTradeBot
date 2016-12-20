@@ -1,10 +1,11 @@
-import oandapy
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
 from api.stream.streamer import Streamer
 
 
 def main():
+    args = _parse_args()
+    config = parse_config(args.config_path)
     conn = psycopg2.connect(
         database="yogamerchant",
         user="postgres",
