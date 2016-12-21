@@ -83,8 +83,8 @@ class Params(object):
     def get_redis_db(self):
         return self._redis_settings["db"]
 
-    def set_redis_hostname(self, db_redis_hostname):
-        self._redis_settings["hostname"] = db_redis_hostname
+    def get_redis_hostname(self):
+        return self._redis_settings["hostname"]
 
     def get_redis_port(self):
         return self._redis_settings["port"]
