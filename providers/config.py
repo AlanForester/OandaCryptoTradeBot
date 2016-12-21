@@ -60,19 +60,19 @@ class Params(object):
     def _postgres_settings(self):
         return self.__config_data.setdefault("postgres", {})
 
-    def get_db_postgres_username(self):
+    def get_postgres_username(self):
         return self._postgres_settings["username"]
 
-    def get_db_postgres_password(self):
+    def get_postgres_password(self):
         return self._postgres_settings["password"]
 
-    def get_db_postgres_hostname(self):
+    def get_postgres_hostname(self):
         return self._postgres_settings["hostname"]
 
-    def get_db_postgres_port(self):
+    def get_postgres_port(self):
         return self._postgres_settings["port"]
 
-    def get_db_postgres_database(self):
+    def get_postgres_database(self):
         return self._postgres_settings["database"]
 
     """Редис конфиг"""
@@ -80,13 +80,13 @@ class Params(object):
     def _redis_settings(self):
         return self.__config_data.setdefault("redis", {})
 
-    def get_db_redis_db(self):
+    def get_redis_db(self):
         return self._redis_settings["db"]
 
-    def set_db_redis_hostname(self, db_redis_hostname):
+    def set_redis_hostname(self, db_redis_hostname):
         self._redis_settings["hostname"] = db_redis_hostname
 
-    def get_db_redis_port(self):
+    def get_redis_port(self):
         return self._redis_settings["port"]
 
     """Загрузка конфигурации из файла"""
