@@ -13,6 +13,11 @@
   },
   "broker": {
     "account_id": 60,
-    "access_token": 2
+    "access_token": 2,
+    "environment": "practice",
+    "instruments": [
+      "EUR_USD",
+      "USD_CAD"
+    ]
   }
 }

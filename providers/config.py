@@ -2,18 +2,19 @@ import argparse
 import json
 
 
+def get_config():
+    return Config().params
+
+
 class Config:
-    config_path = ""
+    params = None
+    _config_path = ""
 
     def __init__(self):
         self._parse_args()
+        self.params = self._parse_config()
 
     def _parse_args(self):
-        """
-        Parse commandline arguments.
-
-        :returns: Instance of :class:`argparse.Namespace`.
-        """
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "-c", "--config_path", dest="config_path", type=str, required=True,
@@ -21,18 +22,11 @@ class Config:
         )
 
         args = parser.parse_args()
-        self.config_path = args.config_path
+        self._config_path = args.config_path
 
-    def parse_config(self):
-        """
-        Obtain config from configuration file.
-
-        :param self.config_path: Path of the configuation file.
-
-        :returns: The config object.
-        """
+    def _parse_config(self):
         config_params = Params()
-        config_params.load_config(self.config_path)
+        config_params.load_config(self._config_path)
         return config_params
 
 
@@ -54,6 +48,12 @@ class Params(object):
 
     def get_broker_access_token(self):
         return self._broker_settings["access_token"]
+
+    def get_broker_environment(self):
+        return self._broker_settings["environment"]
+
+    def get_broker_instruments(self):
+        return self._broker_settings["instruments"]
 
     """Постгрес конфиг"""
     @property
