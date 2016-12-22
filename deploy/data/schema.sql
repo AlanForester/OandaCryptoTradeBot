@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 12/21/2016 16:49:20 PM
+ Date: 12/22/2016 17:41:18 PM
 */
 
 -- ----------------------------
@@ -55,7 +55,7 @@ ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."candles";
 CREATE TABLE "public"."candles" (
-	"active_id" int2 NOT NULL,
+	"instrument_id" int2 NOT NULL,
 	"from_ts" int4 NOT NULL,
 	"till_ts" int4 NOT NULL,
 	"duration" int4,
@@ -75,7 +75,7 @@ CREATE TABLE "public"."candles" (
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."candles" OWNER TO "postgres";
 
-COMMENT ON COLUMN "public"."candles"."active_id" IS 'ИД актива';
+COMMENT ON COLUMN "public"."candles"."instrument_id" IS 'ИД актива';
 COMMENT ON COLUMN "public"."candles"."from_ts" IS 'От';
 COMMENT ON COLUMN "public"."candles"."till_ts" IS 'До';
 COMMENT ON COLUMN "public"."candles"."duration" IS 'Длительность';
@@ -110,7 +110,7 @@ COMMENT ON COLUMN "public"."patterns"."duration" IS 'Длительность с
 DROP TABLE IF EXISTS "public"."quotations";
 CREATE TABLE "public"."quotations" (
 	"ts" int4 NOT NULL,
-	"active_id" int2 NOT NULL,
+	"instrument_id" int2 NOT NULL,
 	"sell" float4,
 	"buy" float4,
 	"value" float4
@@ -119,7 +119,7 @@ WITH (OIDS=FALSE);
 ALTER TABLE "public"."quotations" OWNER TO "postgres";
 
 COMMENT ON COLUMN "public"."quotations"."ts" IS 'Временная метка';
-COMMENT ON COLUMN "public"."quotations"."active_id" IS 'ИД актива';
+COMMENT ON COLUMN "public"."quotations"."instrument_id" IS 'ИД актива';
 
 -- ----------------------------
 --  Table structure for predictions
@@ -128,7 +128,7 @@ DROP TABLE IF EXISTS "public"."predictions";
 CREATE TABLE "public"."predictions" (
 	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
 	"pattern_id" int8,
-	"active_id" int4,
+	"instrument_id" int4,
 	"time_bid" int4,
 	"time_left" int4,
 	"used_count" int4,
@@ -149,7 +149,7 @@ ALTER TABLE "public"."predictions" OWNER TO "postgres";
 DROP TABLE IF EXISTS "public"."orders";
 CREATE TABLE "public"."orders" (
 	"id" int8 NOT NULL DEFAULT nextval('orders_id_seq'::regclass),
-	"active_id" int4,
+	"instrument_id" int4,
 	"prediction_id" int8,
 	"created_at" int4,
 	"expiration_at" int4,
@@ -173,7 +173,7 @@ CREATE TABLE "public"."settings" (
 	"is_default" bool,
 	"created_at" int4,
 	"updated_at" int4,
-	"active_id" int4,
+	"instrument_id" int4,
 	"analyzer_bid_times" json,
 	"analyzer_deep" int4,
 	"analyzer_min_deep" int4,
@@ -190,23 +190,25 @@ WITH (OIDS=FALSE);
 ALTER TABLE "public"."settings" OWNER TO "postgres";
 
 -- ----------------------------
---  Table structure for actives
+--  Table structure for instruments
 -- ----------------------------
-DROP TABLE IF EXISTS "public"."actives";
-CREATE TABLE "public"."actives" (
+DROP TABLE IF EXISTS "public"."instruments";
+CREATE TABLE "public"."instruments" (
 	"id" int4 NOT NULL DEFAULT nextval('actives_id_seq'::regclass),
-	"name" varchar NOT NULL COLLATE "default"
+	"instrument" varchar NOT NULL COLLATE "default",
+	"pip" float4,
+	"name" varchar COLLATE "default"
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."actives" OWNER TO "postgres";
+ALTER TABLE "public"."instruments" OWNER TO "postgres";
 
-COMMENT ON COLUMN "public"."actives"."name" IS 'Название актива';
+COMMENT ON COLUMN "public"."instruments"."instrument" IS 'Название актива';
 
 
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 315 OWNED BY "actives"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 315 OWNED BY "instruments"."id";
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 890 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."patterns_id_seq" RESTART 2033591 OWNED BY "patterns"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219652 OWNED BY "predictions"."id";
@@ -214,7 +216,7 @@ ALTER SEQUENCE "public"."settings_id_seq" RESTART 25 OWNED BY "settings"."id";
 -- ----------------------------
 --  Primary key structure for table candles
 -- ----------------------------
-ALTER TABLE "public"."candles" ADD PRIMARY KEY ("active_id", "from_ts", "till_ts") NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "public"."candles" ADD PRIMARY KEY ("instrument_id", "from_ts", "till_ts") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table patterns
@@ -229,7 +231,7 @@ ALTER TABLE "public"."patterns" ADD CONSTRAINT "patterns_uniq_key" UNIQUE ("pare
 -- ----------------------------
 --  Primary key structure for table quotations
 -- ----------------------------
-ALTER TABLE "public"."quotations" ADD PRIMARY KEY ("ts", "active_id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "public"."quotations" ADD PRIMARY KEY ("ts", "instrument_id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table predictions
@@ -239,7 +241,7 @@ ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIAL
 -- ----------------------------
 --  Uniques structure for table predictions
 -- ----------------------------
-ALTER TABLE "public"."predictions" ADD CONSTRAINT "predictions_uniq_key" UNIQUE ("pattern_id","active_id","time_bid","time_left","expires","is_test") NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "public"."predictions" ADD CONSTRAINT "predictions_uniq_key" UNIQUE ("pattern_id","instrument_id","time_bid","time_left","expires","is_test") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table orders
@@ -252,7 +254,12 @@ ALTER TABLE "public"."orders" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IM
 ALTER TABLE "public"."settings" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
---  Primary key structure for table actives
+--  Primary key structure for table instruments
 -- ----------------------------
-ALTER TABLE "public"."actives" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "public"."instruments" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Uniques structure for table instruments
+-- ----------------------------
+ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("instrument") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
