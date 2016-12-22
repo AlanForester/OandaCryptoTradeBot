@@ -1,7 +1,7 @@
 import redis
-import globals as gvars
+import providers.globals as gvars
 
-from config import get_config
+from providers.config import get_config
 
 
 def get_cache():
@@ -11,7 +11,10 @@ def get_cache():
 
 
 class Cache:
-    db, hostname, port = None
+    db = None
+    hostname = None
+    port = None
+
     _connection = None
 
     def __init__(self):

@@ -1,7 +1,7 @@
 import psycopg2
-import globals as gvars
+import providers.globals as gvars
 
-from config import get_config
+from providers.config import get_config
 from psycopg2.extras import NamedTupleCursor
 
 
@@ -12,7 +12,12 @@ def get_database():
 
 
 class Database:
-    username, password, hostname, port, database = None
+    username = None
+    password = None
+    hostname = None
+    port = None
+    database = None
+
     _connection = None
 
     def __init__(self):

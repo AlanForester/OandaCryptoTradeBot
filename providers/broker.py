@@ -1,6 +1,6 @@
-import globals as gvars
+import providers.globals as gvars
 
-from config import get_config
+from providers.config import get_config
 
 
 def get_broker():
@@ -10,7 +10,10 @@ def get_broker():
 
 
 class Broker:
-    account_id, access_token, environment, instruments = None
+    account_id = None
+    access_token = None
+    environment = None
+    instruments = None
 
     def __init__(self):
         config = get_config()
