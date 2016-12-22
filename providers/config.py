@@ -15,7 +15,7 @@ class Config:
 
     def __init__(self):
         self._parse_args()
-        gvars.APP_CONFIG_PARAMS = self._parse_config()
+        self.params = self._parse_config()
 
     def _parse_args(self):
         parser = argparse.ArgumentParser()
@@ -94,5 +94,5 @@ class Params(object):
 
     """Загрузка конфигурации из файла"""
     def load_config(self, config_path):
-        with open(config_path, "rb") as config_file:
+        with open(config_path) as config_file:
             self.__config_data = json.load(config_file)
