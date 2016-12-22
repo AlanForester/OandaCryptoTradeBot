@@ -1,18 +1,22 @@
 import psycopg2
+import globals as gvars
 
-from config import Params as ConfigParams
+from config import get_config
 from psycopg2.extras import NamedTupleCursor
 
 
-def get_database(config):
-    return Database(config)
+def get_database():
+    if not gvars.APP_DB:
+        gvars.APP_DB = Database()
+    return gvars.APP_DB
 
 
 class Database:
     username, password, hostname, port, database = None
     _connection = None
 
-    def __init__(self, config: ConfigParams):
+    def __init__(self):
+        config = get_config()
         self.username = config.get_postgres_username()
         self.password = config.get_postgres_password()
         self.hostname = config.get_postgres_hostname()

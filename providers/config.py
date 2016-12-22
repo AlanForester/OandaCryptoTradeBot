@@ -1,9 +1,12 @@
 import argparse
 import json
+import providers.globals as gvars
 
 
 def get_config():
-    return Config().params
+    if not gvars.APP_CONFIG:
+        gvars.APP_CONFIG = Config().params
+    return gvars.APP_CONFIG
 
 
 class Config:
@@ -12,7 +15,7 @@ class Config:
 
     def __init__(self):
         self._parse_args()
-        self.params = self._parse_config()
+        gvars.APP_CONFIG_PARAMS = self._parse_config()
 
     def _parse_args(self):
         parser = argparse.ArgumentParser()

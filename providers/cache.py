@@ -1,17 +1,21 @@
 import redis
+import globals as gvars
 
-from config import Params as ConfigParams
+from config import get_config
 
 
-def get_cache(config):
-    return Cache(config)
+def get_cache():
+    if not gvars.APP_CACHE:
+        gvars.APP_CACHE = Cache()
+    return gvars.APP_CACHE
 
 
 class Cache:
     db, hostname, port = None
     _connection = None
 
-    def __init__(self, config: ConfigParams):
+    def __init__(self):
+        config = get_config()
         self.db = config.get_redis_db()
         self.hostname = config.get_redis_hostname()
         self.port = config.get_redis_port()
