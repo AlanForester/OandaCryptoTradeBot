@@ -13,8 +13,7 @@ def main():
     )
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM actives", ())
-    data = cursor.fetchall()
-    # print(data)
+    data = cursor.fetchone()
     # oanda = oandapy.API(environment="practice",
     #                     access_token="45f9a222c095b8b7ca572e3bcb9bbc7c-41bff74ca04f0e6fb6ee42aa149682c3")
     #
