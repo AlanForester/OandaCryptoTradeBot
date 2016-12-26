@@ -1,7 +1,8 @@
 from models.coremodel import CoreModel
+from mixins.providers import ProvidersMixin
 
 
-class Instrument(CoreModel):
+class Instrument(ProvidersMixin):
     @staticmethod
     def model(raw=None):
         return _InstrumentModel(raw)
@@ -26,19 +27,27 @@ class Instrument(CoreModel):
         cursor.execute("SELECT * FROM instruments WHERE instrument=%s", [name])
         row = cursor.fetchone()
         if row:
-            return Instrument.model(row)
+            return _InstrumentModel(row)
 
-    def save_many(self, instruments):
+    def save_many(self, instruments: list):
         cursor = self.db.get_cursor()
         query = "INSERT INTO instruments (instrument, pip, name) VALUES " + \
                 ",".join(str(v) for v in instruments) + \
                 " ON CONFLICT (instrument) DO NOTHING"
-
         cursor.execute(query)
         self.db.commit()
 
+    def save(self, instrument: str, pip: float, name: str):
+        cursor = self.db.get_cursor()
+        query = "INSERT INTO instruments (instrument, pip, name) VALUES " + \
+                "(%s,%s,%s)" \
+                " ON CONFLICT (instrument) DO NOTHING RETURNING id;"
+        cursor.execute(query, (instrument, pip, name))
+        self.db.commit()
+        return cursor.fetchone()
 
-class _InstrumentModel(object):
+
+class _InstrumentModel(CoreModel):
     id = None
     instrument = None
     pip = None
@@ -46,8 +55,4 @@ class _InstrumentModel(object):
 
     def __init__(self, raw=None):
         if raw:
-            self.id = raw.id
-            self.instrument = raw.instrument
-            self.pip = raw.pip
-            self.name = raw.name
-
+            self.__dict__.update(raw._asdict())
