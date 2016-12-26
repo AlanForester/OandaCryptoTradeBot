@@ -7,7 +7,7 @@ class Instruments:
         self.api = Api()
 
     def up(self):
-        if Instrument().get_actives_count() == 0:
+        if Instrument().get_instruments_count() == 0:
             instruments = self.api.get_instruments()
             out = []
             for instrument in instruments:

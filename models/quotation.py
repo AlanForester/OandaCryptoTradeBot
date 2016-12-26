@@ -6,3 +6,4 @@ class Quotation(object):
     ts = None
 
     __raw_data = {}
+

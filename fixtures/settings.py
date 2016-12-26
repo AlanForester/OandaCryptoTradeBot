@@ -1,18 +1,14 @@
+from models.setting import Setting
 from models.instrument import Instrument
-from api.api import Api
+from fixtures.instruments import Instruments as InstrumentsFixture
 
 
 class Settings:
 
     def up(self):
-        if Instrument().get_actives_count() == 0:
-            instruments = self.api.get_instruments()
-            out = []
-            for instrument in instruments:
-                out.append((
-                    str(instrument["instrument"]),
-                    instrument["pip"],
-                    str(instrument["displayName"])
-                ))
-            if len(out) > 0:
-                Instrument().save_many(out)
+        setting = Setting()
+        if setting.get_settings_count() == 0:
+            instrument = Instrument().get_instrument_by_name("EUR_USD")
+            if not instrument:
+                InstrumentsFixture().up()
+                setting.save(0)

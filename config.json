@@ -1,6 +1,6 @@
 {
   "postgres": {
-    "database": "yogamerchant",
+    "database": "iqfx",
     "hostname": "localhost",
     "password": "",
     "port": "5432",
