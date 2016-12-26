@@ -8,7 +8,7 @@ class App(object):
 
     @staticmethod
     def execute_fixtures():
-        Instruments().up()
+        Instruments.up()
 
     @staticmethod
     def start():

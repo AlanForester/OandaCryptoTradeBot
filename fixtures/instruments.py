@@ -3,12 +3,12 @@ from api.api import Api
 
 
 class Instruments:
-    def __init__(self):
-        self.api = Api()
 
-    def up(self):
+    @staticmethod
+    def up():
         if Instrument().get_instruments_count() == 0:
-            instruments = self.api.get_instruments()
+            api = Api()
+            instruments = api.get_instruments()
             out = []
             for instrument in instruments:
                 out.append((
