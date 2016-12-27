@@ -26,15 +26,6 @@ class Setting:
         if raw:
             self.__dict__.update(raw._asdict())
 
-    def __tuple_str__(self):
-        return str((self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
-                    self.analyzer_bid_times, self.analyzer_deep,
-                    self.analyzer_min_deep, self.analyzer_prediction_expire,
-                    self.analyzer_save_prediction_if_exists,
-                    self.collector_candles_durations, self.collector_working_interval_sec, self.trader_min_chance,
-                    self.trader_min_repeats, self.trader_delay_on_trend,
-                    self.trader_max_count_orders_for_expiration_time))
-
     def save(self):
         cursor = Providers.db().get_cursor()
         query = "INSERT INTO settings (name, is_default, created_at, updated_at, instrument_id, analyzer_bid_times, " \
@@ -66,5 +57,11 @@ class Setting:
         cursor.execute("SELECT COUNT(*) FROM settings", [])
         return cursor.fetchone()[0]
 
-    def __to_tuple_str(self):
-        return str((self.instrument, self.pip, self.name))
+    def __tuple_str(self):
+        return str((self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
+                    self.analyzer_bid_times, self.analyzer_deep,
+                    self.analyzer_min_deep, self.analyzer_prediction_expire,
+                    self.analyzer_save_prediction_if_exists,
+                    self.collector_candles_durations, self.collector_working_interval_sec, self.trader_min_chance,
+                    self.trader_min_repeats, self.trader_delay_on_trend,
+                    self.trader_max_count_orders_for_expiration_time))
