@@ -22,6 +22,9 @@ class Instrument:
             self.id = row[0]
             return self
 
+    def __tuple_str(self):
+        return str((self.instrument, self.pip, self.name))
+
     @staticmethod
     def model(raw=None):
         return Instrument(raw)
@@ -59,6 +62,3 @@ class Instrument:
                 " ON CONFLICT (instrument) DO NOTHING"
         cursor.execute(query)
         Providers.db().commit()
-
-    def __tuple_str(self):
-        return str((self.instrument, self.pip, self.name))

@@ -47,6 +47,15 @@ class Setting:
             self.id = row[0]
             return self
 
+    def __tuple_str(self):
+        return str((self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
+                    self.analyzer_bid_times, self.analyzer_deep,
+                    self.analyzer_min_deep, self.analyzer_prediction_expire,
+                    self.analyzer_save_prediction_if_exists,
+                    self.collector_candles_durations, self.collector_working_interval_sec, self.trader_min_chance,
+                    self.trader_min_repeats, self.trader_delay_on_trend,
+                    self.trader_max_count_orders_for_expiration_time))
+
     @staticmethod
     def model(raw=None):
         return Setting(raw)
@@ -56,12 +65,3 @@ class Setting:
         cursor = Providers.db().get_cursor()
         cursor.execute("SELECT COUNT(*) FROM settings", [])
         return cursor.fetchone()[0]
-
-    def __tuple_str(self):
-        return str((self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
-                    self.analyzer_bid_times, self.analyzer_deep,
-                    self.analyzer_min_deep, self.analyzer_prediction_expire,
-                    self.analyzer_save_prediction_if_exists,
-                    self.collector_candles_durations, self.collector_working_interval_sec, self.trader_min_chance,
-                    self.trader_min_repeats, self.trader_delay_on_trend,
-                    self.trader_max_count_orders_for_expiration_time))
