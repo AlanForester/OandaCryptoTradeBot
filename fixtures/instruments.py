@@ -6,7 +6,7 @@ class Instruments:
 
     @staticmethod
     def up():
-        if Instrument().get_instruments_count() == 0:
+        if Instrument.get_instruments_count() == 0:
             api = Api()
             instruments = api.get_instruments()
             out = []
@@ -17,4 +17,4 @@ class Instruments:
                     str(instrument["displayName"])
                 ))
             if len(out) > 0:
-                Instrument().save_many(out)
+                Instrument.save_many(out)

@@ -9,12 +9,11 @@ from fixtures.instruments import Instruments as InstrumentsFixture
 class Settings:
     @staticmethod
     def up():
-        setting = Setting()
-        if setting.get_settings_count() == 0:
-            instrument = Instrument().get_instrument_by_name("EUR_USD")
+        if Setting.get_settings_count() == 0:
+            instrument = Instrument.get_instrument_by_name("EUR_USD")
             if not instrument:
-                InstrumentsFixture().up()
-            setting.save(
+                InstrumentsFixture.up()
+            Setting.save(
                 name="Default",
                 is_default=True,
                 created_at=time.time(),

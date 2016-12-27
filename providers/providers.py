@@ -3,16 +3,16 @@ import providers.cache
 import providers.config
 
 
-class ProvidersMixin(object):
+class Providers(object):
 
-    @property
-    def db(self):
+    @staticmethod
+    def db():
         return providers.database.get_database()
 
-    @property
-    def cache(self):
+    @staticmethod
+    def cache():
         return providers.cache.get_cache()
 
-    @property
-    def config(self):
+    @staticmethod
+    def config():
         return providers.config.get_config()
