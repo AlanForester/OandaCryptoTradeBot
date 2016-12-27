@@ -7,9 +7,23 @@ class Instrument:
     pip = None
     name = None
 
+    def __tuple_str__(self):
+        return str((self.instrument, self.pip, self.name))
+
     def __init__(self, raw=None):
         if raw:
             self.__dict__.update(raw._asdict())
+
+    def save(self):
+        cursor = Providers.db().get_cursor()
+        query = "INSERT INTO instruments (instrument, pip, name) VALUES " + \
+                "(%s,%s,%s) ON CONFLICT (instrument) DO NOTHING RETURNING id;"
+        cursor.execute(query, (self.instrument, self.pip, self.name))
+        Providers.db().commit()
+        row = cursor.fetchone()
+        if row:
+            self.id = row[0]
+            return self
 
     @staticmethod
     def model(raw=None):
@@ -44,17 +58,7 @@ class Instrument:
     def save_many(instruments: list):
         cursor = Providers.db().get_cursor()
         query = "INSERT INTO instruments (instrument, pip, name) VALUES " + \
-                ",".join(str(v) for v in instruments) + \
+                ",".join(v.__tuple_str__() for v in instruments) + \
                 " ON CONFLICT (instrument) DO NOTHING"
         cursor.execute(query)
         Providers.db().commit()
-
-    @staticmethod
-    def save(instrument: str, pip: float, name: str):
-        cursor = Providers.db().get_cursor()
-        query = "INSERT INTO instruments (instrument, pip, name) VALUES " + \
-                "(%s,%s,%s)" \
-                " ON CONFLICT (instrument) DO NOTHING RETURNING id;"
-        cursor.execute(query, (instrument, pip, name))
-        Providers.db().commit()
-        return cursor.fetchone()

@@ -11,10 +11,10 @@ class Instruments:
             instruments = api.get_instruments()
             out = []
             for instrument in instruments:
-                out.append((
-                    str(instrument["instrument"]),
-                    instrument["pip"],
-                    str(instrument["displayName"])
-                ))
+                model = Instrument()
+                model.instrument = str(instrument["instrument"])
+                model.pip = instrument["pip"]
+                model.name = str(instrument["displayName"])
+                out.append(model)
             if len(out) > 0:
                 Instrument.save_many(out)

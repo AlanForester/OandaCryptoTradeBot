@@ -13,21 +13,21 @@ class Settings:
             instrument = Instrument.get_instrument_by_name("EUR_USD")
             if not instrument:
                 InstrumentsFixture.up()
-            Setting.save(
-                name="Default",
-                is_default=True,
-                created_at=time.time(),
-                updated_at=time.time(),
-                instrument_id=instrument.id,
-                analyzer_bid_times=json.dumps([{"purchase": 0, "time": 180}]),
-                analyzer_deep=2,
-                analyzer_min_deep=2,
-                analyzer_prediction_expire=json.dumps([{"expire": 0, "history_duration": 0}]),
-                analyzer_save_prediction_if_exists=False,
-                collector_candles_durations=json.dumps([30, 60]),
-                collector_working_interval_sec=1,
-                trader_min_chance=60,
-                trader_min_repeats=2,
-                trader_delay_on_trend=0,
-                trader_max_count_orders_for_expiration_time=1
-            )
+            model = Setting()
+            model.name = "Default",
+            model.is_default = True,
+            model.created_at = time.time(),
+            model.updated_at = time.time(),
+            model.instrument_id = instrument.id,
+            model.analyzer_bid_times = json.dumps([{"purchase": 0, "time": 180}]),
+            model.analyzer_deep = 2,
+            model.analyzer_min_deep = 2,
+            model.analyzer_prediction_expire = json.dumps([{"expire": 0, "history_duration": 0}]),
+            model.analyzer_save_prediction_if_exists = False,
+            model.collector_candles_durations = json.dumps([30, 60]),
+            model.collector_working_interval_sec = 1,
+            model.trader_min_chance = 60,
+            model.trader_min_repeats = 2,
+            model.trader_delay_on_trend = 0,
+            model.trader_max_count_orders_for_expiration_time = 1
+            model.save()
