@@ -5,50 +5,64 @@
  Source Server Type    : PostgreSQL
  Source Server Version : 90504
  Source Host           : localhost
- Source Database       : yogamerchant
+ Source Database       : iqfx
  Source Schema         : public
 
  Target Server Type    : PostgreSQL
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 12/22/2016 17:41:18 PM
+ Date: 12/28/2016 17:22:51 PM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 314 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 436 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."orders_id_seq";
-CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 889 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 890 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 2033590 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 2033591 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 219651 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 219652 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 24 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 25 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
+
+-- ----------------------------
+--  Sequence structure for tasks_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
+
+-- ----------------------------
+--  Sequence structure for workers_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for candles
@@ -204,15 +218,55 @@ ALTER TABLE "public"."instruments" OWNER TO "postgres";
 
 COMMENT ON COLUMN "public"."instruments"."instrument" IS 'Название актива';
 
+-- ----------------------------
+--  Table structure for tasks
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."tasks";
+CREATE TABLE "public"."tasks" (
+	"id" int4 NOT NULL DEFAULT nextval('tasks_id_seq'::regclass),
+	"user_id" int4,
+	"setting_id" int4,
+	"worker_id" int4,
+	"is_enabled" bool,
+	"service_name" varchar COLLATE "default",
+	"thread" varchar COLLATE "default",
+	"start_at" int4,
+	"launched_at" int4,
+	"stop_at" int4,
+	"terminated_at" int4,
+	"terminated_message" text COLLATE "default",
+	"terminated_code" varchar COLLATE "default"
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."tasks" OWNER TO "postgres";
+
+-- ----------------------------
+--  Table structure for workers
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."workers";
+CREATE TABLE "public"."workers" (
+	"id" int4 NOT NULL DEFAULT nextval('workers_id_seq'::regclass),
+	"host_name" varchar COLLATE "default",
+	"pid" int4,
+	"launched_at" int4,
+	"terminated_at" int4,
+	"terminated_message" text COLLATE "default",
+	"terminated_code" varchar COLLATE "default"
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."workers" OWNER TO "postgres";
+
 
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 315 OWNED BY "instruments"."id";
-ALTER SEQUENCE "public"."orders_id_seq" RESTART 890 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 2033591 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219652 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 25 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 437 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."orders_id_seq" RESTART 891 OWNED BY "orders"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 2033592 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219653 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 26 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 2 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 2 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table candles
 -- ----------------------------
@@ -262,4 +316,14 @@ ALTER TABLE "public"."instruments" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIAL
 --  Uniques structure for table instruments
 -- ----------------------------
 ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("instrument") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Primary key structure for table tasks
+-- ----------------------------
+ALTER TABLE "public"."tasks" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Primary key structure for table workers
+-- ----------------------------
+ALTER TABLE "public"."workers" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
