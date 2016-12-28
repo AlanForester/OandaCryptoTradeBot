@@ -1,8 +1,3 @@
-import psycopg2
-from psycopg2.extras import NamedTupleCursor
-from api.stream.streamer import Streamer
-# from providers.database import Database
-from providers.config import get_config
 from services.app import App
 
 
