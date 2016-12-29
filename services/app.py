@@ -10,6 +10,7 @@ class App(object):
         try:
             App.execute_fixtures()
             while True:
+                d
                 pass
         finally:
             App.exit_handler()
@@ -18,8 +19,10 @@ class App(object):
     def exit_handler():
         ex_type, ex, tb = sys.exc_info()
         a = traceback.extract_tb(tb)
-        del tb
-        print('My application is ending!', tb)
+
+        print('My application is ending!', a[0].filename, a[0].lineno,a[0].name,a[0].line, str(ex_type.__name__), str(ex))
+        # for t in a:
+        #     print(t)
         sys.exit(0)
 
     @staticmethod
