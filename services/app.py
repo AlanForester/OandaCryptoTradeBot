@@ -1,34 +1,30 @@
-from fixtures.instruments import Instruments
-from fixtures.settings import Settings
 import sys
 import traceback
 
+from fixtures.fixtures import Fixtures
+from services.worker import Worker
+from providers.providers import Providers
+
 
 class App(object):
+    worker = None
 
     def __init__(self):
         try:
-            App.execute_fixtures()
+            Fixtures.execute_fixtures()
+            self.worker = Worker.launch()
             while True:
                 d
                 pass
         finally:
-            App.exit_handler()
+            self.exit_handler()
 
-    @staticmethod
-    def exit_handler():
+    def exit_handler(self):
         ex_type, ex, tb = sys.exc_info()
-        a = traceback.extract_tb(tb)
-
-        print('My application is ending!', a[0].filename, a[0].lineno,a[0].name,a[0].line, str(ex_type.__name__), str(ex))
-        # for t in a:
-        #     print(t)
-        sys.exit(0)
-
-    @staticmethod
-    def execute_fixtures():
-        Instruments.up()
-        Settings.up()
+        tb_list = traceback.extract_tb(tb)
+        Worker.terminate(self.worker, str(ex_type.__name__), tb_list, str(ex))
+        if not Providers.debug():
+            sys.exit(0)
 
     @staticmethod
     def start():

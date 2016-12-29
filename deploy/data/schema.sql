@@ -12,14 +12,14 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 12/30/2016 01:22:01 AM
+ Date: 12/30/2016 02:01:03 AM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 437 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 558 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -178,6 +178,23 @@ COMMENT ON COLUMN "public"."quotations"."ts" IS 'Временная метка';
 COMMENT ON COLUMN "public"."quotations"."instrument_id" IS 'ИД актива';
 
 -- ----------------------------
+--  Table structure for workers
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."workers";
+CREATE TABLE "public"."workers" (
+	"id" int4 NOT NULL DEFAULT nextval('workers_id_seq'::regclass),
+	"host_name" varchar COLLATE "default",
+	"pid" int4,
+	"launched_at" int4,
+	"terminated_at" int4,
+	"terminated_code" varchar COLLATE "default",
+	"terminated_traceback" json,
+	"terminated_description" text COLLATE "default"
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."workers" OWNER TO "postgres";
+
+-- ----------------------------
 --  Table structure for instruments
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."instruments";
@@ -215,22 +232,6 @@ WITH (OIDS=FALSE);
 ALTER TABLE "public"."tasks" OWNER TO "postgres";
 
 -- ----------------------------
---  Table structure for workers
--- ----------------------------
-DROP TABLE IF EXISTS "public"."workers";
-CREATE TABLE "public"."workers" (
-	"id" int4 NOT NULL DEFAULT nextval('workers_id_seq'::regclass),
-	"host_name" varchar COLLATE "default",
-	"pid" int4,
-	"launched_at" int4,
-	"terminated_at" int4,
-	"terminated_message" text COLLATE "default",
-	"terminated_code" varchar COLLATE "default"
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."workers" OWNER TO "postgres";
-
--- ----------------------------
 --  Table structure for settings
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."settings";
@@ -261,7 +262,7 @@ ALTER TABLE "public"."settings" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 438 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 559 OWNED BY "instruments"."id";
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 892 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."patterns_id_seq" RESTART 2033593 OWNED BY "patterns"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219654 OWNED BY "predictions"."id";
@@ -304,6 +305,11 @@ ALTER TABLE "public"."patterns" ADD CONSTRAINT "patterns_uniq_key" UNIQUE ("pare
 ALTER TABLE "public"."quotations" ADD PRIMARY KEY ("ts", "instrument_id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
+--  Primary key structure for table workers
+-- ----------------------------
+ALTER TABLE "public"."workers" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
 --  Primary key structure for table instruments
 -- ----------------------------
 ALTER TABLE "public"."instruments" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
@@ -317,11 +323,6 @@ ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("ins
 --  Primary key structure for table tasks
 -- ----------------------------
 ALTER TABLE "public"."tasks" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Primary key structure for table workers
--- ----------------------------
-ALTER TABLE "public"."workers" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table settings

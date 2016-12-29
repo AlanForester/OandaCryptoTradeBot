@@ -9,6 +9,10 @@ def get_config():
     return gvars.APP_CONFIG
 
 
+def get_debug():
+    return gvars.APP_DEBUG
+
+
 class Config:
     params = None
     _config_path = ""
@@ -24,7 +28,14 @@ class Config:
             help="Path to configuration file."
         )
 
+        parser.add_argument(
+            "-d", "--debug", dest="debug", type=str, required=False,
+            help="Debug mode"
+        )
+
         args = parser.parse_args()
+        if args.debug:
+            gvars.APP_DEBUG = True
         self._config_path = args.config_path
 
     def _parse_config(self):
