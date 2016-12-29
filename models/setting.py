@@ -3,6 +3,7 @@ from providers.providers import Providers
 
 class Setting:
     id = None
+    user_id = None
     name = None
     is_default = None
     created_at = None
@@ -28,13 +29,13 @@ class Setting:
 
     def save(self):
         cursor = Providers.db().get_cursor()
-        query = "INSERT INTO settings (name, is_default, created_at, updated_at, instrument_id, analyzer_bid_times, " \
+        query = "INSERT INTO settings (user_id, name, is_default, created_at, updated_at, instrument_id, analyzer_bid_times, " \
                 "analyzer_deep, analyzer_min_deep, analyzer_prediction_expire, analyzer_save_prediction_if_exists, " \
                 "collector_candles_durations, collector_working_interval_sec, trader_min_chance, trader_min_repeats, " \
                 "trader_delay_on_trend, trader_max_count_orders_for_expiration_time) " \
-                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
+                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
         cursor.execute(query,
-                       (self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
+                       (self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                         self.analyzer_bid_times, self.analyzer_deep,
                         self.analyzer_min_deep, self.analyzer_prediction_expire,
                         self.analyzer_save_prediction_if_exists,
@@ -48,7 +49,7 @@ class Setting:
             return self
 
     def __tuple_str(self):
-        return str((self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
+        return str((self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                     self.analyzer_bid_times, self.analyzer_deep,
                     self.analyzer_min_deep, self.analyzer_prediction_expire,
                     self.analyzer_save_prediction_if_exists,

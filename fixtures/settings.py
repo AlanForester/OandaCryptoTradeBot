@@ -14,6 +14,7 @@ class Settings:
             if not instrument:
                 InstrumentsFixture.up()
             model = Setting()
+            model.user_id = 0
             model.name = "Default",
             model.is_default = True,
             model.created_at = time.time(),
