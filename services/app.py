@@ -13,9 +13,6 @@ class App(object):
         try:
             Fixtures.execute_fixtures()
             self.worker = Worker.launch()
-            while True:
-                d
-                pass
         finally:
             self.exit_handler()
 
