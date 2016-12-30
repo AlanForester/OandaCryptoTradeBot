@@ -17,6 +17,3 @@ class Providers(object):
     def config():
         return providers.config.get_config()
 
-    @staticmethod
-    def debug():
-        return providers.config.get_debug()

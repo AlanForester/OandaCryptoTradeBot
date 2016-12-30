@@ -19,8 +19,14 @@ class App(object):
     def exit_handler(self):
         ex_type, ex, tb = sys.exc_info()
         tb_list = traceback.extract_tb(tb)
-        Worker.terminate(self.worker, str(ex_type.__name__), tb_list, str(ex))
-        if not Providers.debug():
+        code = "Normal"
+        if ex_type:
+            code = str(ex_type.__name__)
+        description = ""
+        if ex:
+            description = str(ex)
+        Worker.terminate(self.worker, code, tb_list, description)
+        if not Providers.config().debug:
             sys.exit(0)
 
     @staticmethod

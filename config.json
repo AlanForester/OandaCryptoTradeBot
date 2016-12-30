@@ -19,5 +19,6 @@
       "EUR_USD",
       "USD_CAD"
     ]
-  }
+  },
+  "debug": true
 }
