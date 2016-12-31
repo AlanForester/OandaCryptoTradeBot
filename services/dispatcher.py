@@ -11,6 +11,7 @@ class Dispatcher(object):
         self.worker_id = worker_id
 
     def start_tracking(self):
+        self.start_service("analyzer")
         while True:
             pass
 
@@ -19,9 +20,9 @@ class Dispatcher(object):
         try:
             thread = None
             if service_name == "analyzer":
-                thread = threading.Thread(target=self.test_thread, name=self.threads_count)
+                thread = threading.Thread(target=self.test_thread, name=self.threads_count, args=(params,))
 
-            thread.daemon(True)
+            thread.setDaemon(True)
             thread.run()
 
         except BaseException:
