@@ -2,6 +2,8 @@ import threading
 import sys
 import traceback
 
+from providers.providers import Providers
+
 
 class Dispatcher(object):
     threads_count = 0
@@ -34,8 +36,12 @@ class Dispatcher(object):
             description = ""
             if ex:
                 description = str(ex)
-            print(self.threads_count, code, tb_list, description)
+            if Providers.config().debug:
+                traceback.print_tb(tb)
+            # print(self.threads_count, code, tb_list, description)
+        finally:
+            print("Fina;l")
 
     def test_thread(self, params):
-        d
+        s
         pass

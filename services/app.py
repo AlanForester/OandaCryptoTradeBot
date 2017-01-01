@@ -30,8 +30,9 @@ class App(object):
             if ex:
                 description = str(ex)
             self.terminate(code, tb_list, description)
-            if not Providers.config().debug:
-                sys.exit(0)
+            if Providers.config().debug:
+                traceback.print_tb(tb)
+            sys.exit(0)
 
     def launch(self):
         self.worker = Worker()
@@ -40,7 +41,7 @@ class App(object):
         self.worker.launched_at = time.time()
         return self.worker.save()
 
-    def terminate(self, code, traceback, description):
+    def terminate(self, code: str, traceback, description):
         self.worker.terminated_code = code
         traceback_list = []
         for item in traceback:
@@ -57,4 +58,3 @@ class App(object):
     @staticmethod
     def start():
         App()
-
