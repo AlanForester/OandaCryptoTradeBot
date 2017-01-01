@@ -1,4 +1,5 @@
 import json
+import time
 
 from providers.providers import Providers
 
@@ -32,3 +33,15 @@ class Task:
     @staticmethod
     def model(raw=None):
         return Task(raw)
+
+    @staticmethod
+    def get_pending(worker_id: int):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("SELECT * FROM tasks WHERE worker_id=%s AND is_enabled=%s AND start_at<=%s AND launched_at=%s", [
+            worker_id, True, time.time(), 0
+        ])
+        rows = cursor.fetchall()
+        if rows:
+            tasks = [].append(Task(row) for row in rows)
+            print(tasks)
+            return tasks

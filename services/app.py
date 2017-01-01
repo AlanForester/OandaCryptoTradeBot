@@ -17,13 +17,14 @@ class App(object):
     def __init__(self):
         try:
             Fixtures.execute_fixtures()
-            self.launch()
-            dispatcher = Dispatcher(self.worker.id)
-            dispatcher.start_tracking()
+            self.worker = self.launch()
+            if self.worker:
+                dispatcher = Dispatcher(self.worker.id)
+                dispatcher.start_tracking()
         finally:
             ex_type, ex, tb = sys.exc_info()
             tb_list = traceback.extract_tb(tb)
-            code = "Normal"
+            code = "WithoutErrors"
             if ex_type:
                 code = str(ex_type.__name__)
             description = ""
