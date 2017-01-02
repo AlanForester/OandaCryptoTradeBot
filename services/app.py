@@ -33,6 +33,8 @@ class App(object):
             self.terminate(code, tb_list, description)
             if Providers.config().debug:
                 traceback.print_tb(tb)
+                if ex_type:
+                    print(code, description)
             sys.exit(0)
 
     def launch(self):

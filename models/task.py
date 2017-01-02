@@ -35,13 +35,13 @@ class Task:
         return Task(raw)
 
     @staticmethod
-    def get_pending(worker_id: int):
+    def get_pending(worker_id):
+        tasks = []
         cursor = Providers.db().get_cursor()
         cursor.execute("SELECT * FROM tasks WHERE worker_id=%s AND is_enabled=%s AND start_at<=%s AND launched_at=%s", [
             worker_id, True, time.time(), 0
         ])
         rows = cursor.fetchall()
         if rows:
-            tasks = [].append(Task(row) for row in rows)
-            print(tasks)
-            return tasks
+            tasks = tasks.append(Task(row) for row in rows)
+        return tasks

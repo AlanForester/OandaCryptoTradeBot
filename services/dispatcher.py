@@ -16,16 +16,17 @@ class Dispatcher(object):
     def start_tracking(self):
         pending_tasks = Task.get_pending(self.worker_id)
         for task in pending_tasks:
-            self.start_service(task.service_name)
-        while True:
-            pass
+            print(vars(task))
+            # self.start_service(task)
+        # while True:
+        #     pass
 
-    def start_service(self, service_name, params=None):
-        self.threads.append()
+    def start_service(self, task):
+        self.threads.append(task)
         try:
             thread = None
-            if service_name == "analyzer":
-                thread = threading.Thread(target=self.test_thread, name=len(self.threads), args=(params,))
+            if task.service_name == "analyzer":
+                thread = threading.Thread(target=self.test_thread, name=len(self.threads), args=(*task.params,))
 
             thread.setDaemon(True)
             thread.run()
@@ -41,6 +42,8 @@ class Dispatcher(object):
                 description = str(ex)
             if Providers.config().debug:
                 traceback.print_tb(tb)
+                if ex_type:
+                    print(code, description)
             # print(self.threads_count, code, tb_list, description)
         finally:
             print("Fina;l")
