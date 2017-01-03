@@ -9,12 +9,12 @@ from fixtures.instruments import Instruments as InstrumentsFixture
 class Settings:
     @staticmethod
     def up():
-        if Setting.get_settings_count() == 0:
+        if Setting.get_count() == 0:
             instrument = Instrument.get_instrument_by_name("EUR_USD")
             if not instrument:
                 InstrumentsFixture.up()
             model = Setting()
-            model.user_id = 0
+            model.user_id = 0  # TODO: Create real users
             model.name = "Default",
             model.is_default = True,
             model.created_at = time.time(),

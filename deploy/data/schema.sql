@@ -12,14 +12,14 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 12/30/2016 23:42:37 PM
+ Date: 01/02/2017 22:50:20 PM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 560 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 681 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -61,7 +61,7 @@ ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 4 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 107 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -248,6 +248,7 @@ CREATE TABLE "public"."tasks" (
 	"is_enabled" bool,
 	"service_name" varchar COLLATE "default",
 	"params" json,
+	"status" json,
 	"thread" varchar COLLATE "default",
 	"start_at" int4,
 	"launched_at" int4,
@@ -264,13 +265,13 @@ ALTER TABLE "public"."tasks" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 561 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 682 OWNED BY "instruments"."id";
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 894 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."patterns_id_seq" RESTART 2033595 OWNED BY "patterns"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219656 OWNED BY "predictions"."id";
 ALTER SEQUENCE "public"."settings_id_seq" RESTART 29 OWNED BY "settings"."id";
 ALTER SEQUENCE "public"."tasks_id_seq" RESTART 5 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 5 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 108 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table predictions
 -- ----------------------------

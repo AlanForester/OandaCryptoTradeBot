@@ -15,12 +15,12 @@ class App(object):
     worker = None
 
     def __init__(self):
+        self.launch()
         try:
-            Fixtures.execute_fixtures()
-            self.worker = self.launch()
             if self.worker:
-                dispatcher = Dispatcher(self.worker.id)
-                dispatcher.start_tracking()
+                Fixtures.execute_fixtures()
+                Fixtures.create_test_task(self.worker.id)
+                Dispatcher(self.worker.id).start_tracking()
         finally:
             ex_type, ex, tb = sys.exc_info()
             tb_list = traceback.extract_tb(tb)
@@ -30,7 +30,8 @@ class App(object):
             description = ""
             if ex:
                 description = str(ex)
-            self.terminate(code, tb_list, description)
+            if self.worker:
+                self.terminate(code, tb_list, description)
             if Providers.config().debug:
                 traceback.print_tb(tb)
                 if ex_type:

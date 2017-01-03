@@ -62,7 +62,15 @@ class Setting:
         return Setting(raw)
 
     @staticmethod
-    def get_settings_count():
+    def get_count():
         cursor = Providers.db().get_cursor()
         cursor.execute("SELECT COUNT(*) FROM settings", [])
         return cursor.fetchone()[0]
+
+    @staticmethod
+    def get_default():
+        cursor = Providers.db().get_cursor()
+        cursor.execute("SELECT * FROM settings WHERE is_default=%s", [True])
+        row = cursor.fetchone()
+        if row:
+            return Setting(row)
