@@ -1,7 +1,10 @@
 import oandapy
 
+from models.quotation import Quotation
+
 
 class Quotations(oandapy.Streamer):
+    quotation = Quotation
 
     def __init__(self, quotation, count=0, *args, **kwargs):
         super(Quotations, self).__init__(*args, **kwargs)
@@ -10,7 +13,9 @@ class Quotations(oandapy.Streamer):
         self.quotation = quotation
 
     def on_success(self, data):
-        print(data)
+        if "tick" in data:
+            tick = data["tick"]
+            print(tick)
         self.reccnt += 1
         if self.reccnt == self.count:
             self.disconnect()

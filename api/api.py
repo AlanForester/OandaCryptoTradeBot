@@ -24,8 +24,8 @@ class Api(object):
     def get_instruments(self):
         return self.api.get_instruments(self.account_id)["instruments"]
 
-    def quotations_stream(self, quotation, instrument: str):
+    def quotations_stream(self, quotation, instrument):
         stream = Quotations(quotation, 0, environment=self.environment, access_token=self.access_token)
-        stream.rates(self.account_id, instrument)
+        stream.rates(self.account_id, instrument.instrument)
 
 

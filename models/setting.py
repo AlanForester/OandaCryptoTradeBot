@@ -1,6 +1,7 @@
 from providers.providers import Providers
 from models.instrument import Instrument
 
+
 class Setting:
     id = None
     user_id = None
@@ -23,7 +24,7 @@ class Setting:
     trader_delay_on_trend = None
     trader_max_count_orders_for_expiration_time = None
 
-    instrument_name = None
+    _instrument = None
 
     def __init__(self, raw=None):
         if raw:
@@ -51,10 +52,10 @@ class Setting:
             return self
 
     @property
-    def get_instrument_name(self):
-        if not self.instrument_name:
-            self.instrument_name = Instrument.get_instrument_by_id(self.instrument_id).instrument
-        return self.instrument_name
+    def instrument(self):
+        if not self._instrument:
+            self._instrument = Instrument.get_instrument_by_id(self.instrument_id)
+        return self._instrument
 
     def __tuple_str(self):
         return str((self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
@@ -79,6 +80,14 @@ class Setting:
     def get_default():
         cursor = Providers.db().get_cursor()
         cursor.execute("SELECT * FROM settings WHERE is_default=%s", [True])
+        row = cursor.fetchone()
+        if row:
+            return Setting(row)
+
+    @staticmethod
+    def get_setting_by_id(pk):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("SELECT * FROM settings WHERE id=%s", [pk])
         row = cursor.fetchone()
         if row:
             return Setting(row)

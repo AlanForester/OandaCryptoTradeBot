@@ -4,6 +4,7 @@ import time
 from providers.providers import Providers
 from models.setting import Setting
 
+
 class Task:
     id = None
     user_id = 0
@@ -22,7 +23,7 @@ class Task:
     terminated_traceback = json.dumps([])
     terminated_description = ""
 
-    setting = None
+    _setting = None
 
     def __init__(self, raw=None):
         if raw:
@@ -64,16 +65,10 @@ class Task:
             return self
 
     @property
-    def get_setting(self):
-        if not self.setting:
-            cursor = Providers.db().get_cursor()
-            cursor.execute("SELECT * FROM settings WHERE id=%s", [
-                self.setting_id
-            ])
-            row = cursor.fetchone()
-            if row:
-                self.setting = Setting(row)
-        return self.setting
+    def setting(self):
+        if not self._setting:
+            self._setting = Setting.get_setting_by_id(self.setting_id)
+        return self._setting
 
     def __tuple_str(self):
         return str((self.user_id, self.setting_id, self.worker_id, self.is_enabled, self.service_name, self.params,
