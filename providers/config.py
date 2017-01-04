@@ -71,9 +71,6 @@ class Params(object):
     def get_broker_environment(self):
         return self._broker_settings["environment"]
 
-    def get_broker_instruments(self):
-        return self._broker_settings["instruments"]
-
     """Постгрес конфиг"""
     @property
     def _postgres_settings(self):

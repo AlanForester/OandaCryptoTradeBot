@@ -55,6 +55,14 @@ class Instrument:
             return Instrument(row)
 
     @staticmethod
+    def get_instrument_by_id(pk):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("SELECT * FROM instruments WHERE id=%s", [pk])
+        row = cursor.fetchone()
+        if row:
+            return Instrument(row)
+
+    @staticmethod
     def save_many(instruments: list):
         cursor = Providers.db().get_cursor()
         query = "INSERT INTO instruments (instrument, pip, name) VALUES " + \

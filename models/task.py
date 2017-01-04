@@ -2,7 +2,7 @@ import json
 import time
 
 from providers.providers import Providers
-
+from models.setting import Setting
 
 class Task:
     id = None
@@ -21,6 +21,8 @@ class Task:
     terminated_code = ""
     terminated_traceback = json.dumps([])
     terminated_description = ""
+
+    setting = None
 
     def __init__(self, raw=None):
         if raw:
@@ -60,6 +62,18 @@ class Task:
         row = cursor.fetchone()
         if row:
             return self
+
+    @property
+    def get_setting(self):
+        if not self.setting:
+            cursor = Providers.db().get_cursor()
+            cursor.execute("SELECT * FROM settings WHERE id=%s", [
+                self.setting_id
+            ])
+            row = cursor.fetchone()
+            if row:
+                self.setting = Setting(row)
+        return self.setting
 
     def __tuple_str(self):
         return str((self.user_id, self.setting_id, self.worker_id, self.is_enabled, self.service_name, self.params,

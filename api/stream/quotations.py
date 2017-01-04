@@ -1,11 +1,13 @@
 import oandapy
 
 
-class Streamer(oandapy.Streamer):
-    def __init__(self, count=0, *args, **kwargs):
-        super(Streamer, self).__init__(*args, **kwargs)
+class Quotations(oandapy.Streamer):
+
+    def __init__(self, quotation, count=0, *args, **kwargs):
+        super(Quotations, self).__init__(*args, **kwargs)
         self.count = count
         self.reccnt = 0
+        self.quotation = quotation
 
     def on_success(self, data):
         print(data)
