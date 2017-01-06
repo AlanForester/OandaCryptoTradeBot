@@ -17,7 +17,7 @@ class Analyzer:
         self.task = task
         self.api = Api()
         ts_repeats = 0
-        max_ts_repeats = 8
+        max_ts_repeats = 4
         last_reception_ts = 0
         while True:
             if not self.thread_stream:
@@ -33,12 +33,18 @@ class Analyzer:
                         ts_repeats = 1
                         continue
 
-                print(self.quotation.ts)
-                self.save_quotation()
+                self.handle_quotation()
 
-            time.sleep(0.5)
+            time.sleep(1)
 
-    def save_quotation(self):
+    def handle_quotation(self):
+        self.save_quotation_to_cache()
+        now_ts = int(time.time())
+        surplus_time_5s = now_ts % 5
+        if surplus_time_5s == 0:
+            print(time.time())
+
+    def save_quotation_to_cache(self):
         cache = Providers.cache()
         cache.setex(self.get_cache_quotation_key(), 5, self.quotation.value)
 

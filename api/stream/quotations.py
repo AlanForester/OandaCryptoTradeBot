@@ -18,7 +18,7 @@ class Quotations(oandapy.Streamer):
             tick = data["tick"]
             self.quotation.ask = tick["ask"]
             self.quotation.bid = tick["bid"]
-            self.quotation.ts = time.time()
+            self.quotation.ts = int(time.time())
             self.quotation.value = (tick["ask"] + tick["bid"]) / 2
         self.reccnt += 1
         if self.reccnt == self.count:
