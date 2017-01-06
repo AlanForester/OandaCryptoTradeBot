@@ -93,7 +93,7 @@ class Task:
         return tasks
 
     @staticmethod
-    def update_on_terminate_keyboard_interrupt(worker_id, code, traceback, description):
+    def update_on_terminate_emergency_exit(worker_id, code, traceback, description):
         cursor = Providers.db().get_cursor()
         query = "UPDATE tasks SET terminated_at=%s, terminated_code=%s, terminated_traceback=%s, " \
                 "terminated_description=%s WHERE worker_id=%s AND terminated_at=%s;"

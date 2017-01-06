@@ -58,8 +58,8 @@ class App(object):
             })
         self.worker.terminated_traceback = json.dumps(traceback_list)
         self.worker.terminated_description = description
-        if code == "KeyboardInterrupt":
-            Task.update_on_terminate_keyboard_interrupt(self.worker.id, self.worker.terminated_code, [], "")
+        Task.update_on_terminate_emergency_exit(self.worker.id, self.worker.terminated_code, "[]",
+                                                "Emergency exit of worker")
         self.worker.update_on_terminate()
 
     @staticmethod
