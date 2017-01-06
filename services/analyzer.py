@@ -33,8 +33,8 @@ class Analyzer:
                         ts_repeats = 1
                         continue
 
-                surplus_time_5s = int(time.time()) % 5
-                if surplus_time_5s == 0:
+                surplus_time = int(time.time()) % self.task.setting.working_interval_sec
+                if surplus_time == 0:
                     self.handle_quotation()
 
             time.sleep(1)
