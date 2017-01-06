@@ -22,7 +22,9 @@ class Dispatcher(object):
         while True:
             pending_tasks = Task.get_pending(self.worker_id)
             for task in pending_tasks:
-                self.start_service(task)
+                thread = threading.Thread(target=self.start_service, args=(task,))
+                thread.setDaemon(True)
+                thread.start()
             time.sleep(1)
 
     def start_service(self, task):

@@ -9,6 +9,7 @@ from fixtures.fixtures import Fixtures
 from models.worker import Worker
 from providers.providers import Providers
 from services.dispatcher import Dispatcher
+from models.task import Task
 
 
 class App(object):
@@ -57,6 +58,8 @@ class App(object):
             })
         self.worker.terminated_traceback = json.dumps(traceback_list)
         self.worker.terminated_description = description
+        if code == "KeyboardInterrupt":
+            Task.update_on_terminate_keyboard_interrupt(self.worker.id, self.worker.terminated_code, [], "")
         self.worker.update_on_terminate()
 
     @staticmethod

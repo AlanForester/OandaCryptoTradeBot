@@ -14,7 +14,6 @@ class Analyzer:
     def __init__(self, task):
         self.task = task
         self.api = Api()
-
         ts_repeats = 0
         max_ts_repeats = 4
         last_reception_ts = 0
