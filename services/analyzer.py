@@ -33,16 +33,15 @@ class Analyzer:
                         ts_repeats = 1
                         continue
 
-                self.handle_quotation()
+                surplus_time_5s = int(time.time()) % 5
+                if surplus_time_5s == 0:
+                    self.handle_quotation()
 
             time.sleep(1)
 
     def handle_quotation(self):
         self.save_quotation_to_cache()
-        now_ts = int(time.time())
-        surplus_time_5s = now_ts % 5
-        if surplus_time_5s == 0:
-            print(time.time())
+        print(time.time())
 
     def save_quotation_to_cache(self):
         cache = Providers.cache()

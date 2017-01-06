@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/02/2017 22:50:20 PM
+ Date: 01/07/2017 00:24:06 AM
 */
 
 -- ----------------------------
@@ -54,14 +54,14 @@ ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 4 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 212 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 107 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 321 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -221,13 +221,12 @@ CREATE TABLE "public"."settings" (
 	"created_at" int4,
 	"updated_at" int4,
 	"instrument_id" int4,
+	"analyzer_working_interval_sec" int4,
 	"analyzer_bid_times" json,
 	"analyzer_deep" int4,
 	"analyzer_min_deep" int4,
 	"analyzer_prediction_expire" json,
 	"analyzer_save_prediction_if_exists" bool,
-	"collector_candles_durations" json,
-	"collector_working_interval_sec" int4,
 	"trader_min_chance" float4,
 	"trader_min_repeats" int4,
 	"trader_delay_on_trend" int4,
@@ -270,8 +269,8 @@ ALTER SEQUENCE "public"."orders_id_seq" RESTART 894 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."patterns_id_seq" RESTART 2033595 OWNED BY "patterns"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219656 OWNED BY "predictions"."id";
 ALTER SEQUENCE "public"."settings_id_seq" RESTART 29 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 5 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 108 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 213 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 322 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table predictions
 -- ----------------------------
