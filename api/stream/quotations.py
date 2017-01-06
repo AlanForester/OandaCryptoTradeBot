@@ -1,4 +1,5 @@
 import oandapy
+import time
 
 from models.quotation import Quotation
 
@@ -15,7 +16,10 @@ class Quotations(oandapy.Streamer):
     def on_success(self, data):
         if "tick" in data:
             tick = data["tick"]
-            print(tick)
+            self.quotation.ask = tick["ask"]
+            self.quotation.bid = tick["bid"]
+            self.quotation.ts = time.time()
+            self.quotation.value = (tick["ask"] + tick["bid"]) / 2
         self.reccnt += 1
         if self.reccnt == self.count:
             self.disconnect()
