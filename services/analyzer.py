@@ -1,8 +1,10 @@
 import threading
 import time
+import json
 
 from api.api import Api
 from models.quotation import Quotation
+from providers.providers import Providers
 
 
 class Analyzer:
@@ -15,7 +17,7 @@ class Analyzer:
         self.task = task
         self.api = Api()
         ts_repeats = 0
-        max_ts_repeats = 4
+        max_ts_repeats = 8
         last_reception_ts = 0
         while True:
             if not self.thread_stream:
@@ -32,7 +34,16 @@ class Analyzer:
                         continue
 
                 print(self.quotation.ts)
-            time.sleep(1)
+                self.save_quotation()
+
+            time.sleep(0.5)
+
+    def save_quotation(self):
+        cache = Providers.cache()
+        cache.setex(self.get_cache_quotation_key(), 5, self.quotation.value)
+
+    def get_cache_quotation_key(self):
+        return "quotation_" + str(self.task.setting_id) + "_" + str(time.time())
 
     def start_stream(self):
         instrument_name = self.task.setting.instrument.instrument
