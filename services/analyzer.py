@@ -1,10 +1,8 @@
 import threading
 import time
-import json
 
 from api.api import Api
 from models.quotation import Quotation
-from providers.providers import Providers
 
 
 class Analyzer:
