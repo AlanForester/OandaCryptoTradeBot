@@ -16,39 +16,41 @@ class Analyzer:
     def __init__(self, task):
         self.task = task
         self.api = Api()
+        self.quotation.instrument_id = self.task.setting.instrument_id
         ts_repeats = 0
-        max_ts_repeats = 4
-        last_reception_ts = 0
+        max_ts_repeats = 8
+        # Последнее пришедшее значение стоимости котировки
+        last_quotation_value = 0
+        # Последнее зафиксированое время обработки
+        last_fixed_ts = 0
         while True:
+            # Фиксируем настоящее время обработчика итерации
+            time_now = int(time.time())
             if not self.thread_stream:
                 self.start_stream()
+
             if self.quotation.ts:
-                if last_reception_ts != self.quotation.ts:
-                    last_reception_ts = self.quotation.ts
+                if last_quotation_value != self.quotation.value:
+                    last_quotation_value = self.quotation.value
                     ts_repeats = 1
                 else:
                     ts_repeats += 1
                     if max_ts_repeats == ts_repeats:
                         self.terminate_stream()
                         ts_repeats = 1
-                        continue
 
-                surplus_time = int(time.time()) % self.task.setting.working_interval_sec
-                if surplus_time == 0:
-                    self.handle_quotation()
+                if last_fixed_ts < time_now:
+                    last_fixed_ts = time_now
 
-            time.sleep(1)
+                    # Устанавливаем настоящее время для котировки и сохраняем
+                    self.quotation.ts = time_now
+                    self.quotation.save()
 
-    def handle_quotation(self):
-        self.save_quotation_to_cache()
-        print(time.time())
+                    surplus_time = time_now % self.task.setting.working_interval_sec
+                    if surplus_time == 0:
+                        print(self.quotation.value, time_now)
 
-    def save_quotation_to_cache(self):
-        cache = Providers.cache()
-        cache.setex(self.get_cache_quotation_key(), 5, self.quotation.value)
-
-    def get_cache_quotation_key(self):
-        return "quotation_" + str(self.task.setting_id) + "_" + str(time.time())
+            time.sleep(0.5)
 
     def start_stream(self):
         instrument_name = self.task.setting.instrument.instrument
