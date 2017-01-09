@@ -10,6 +10,7 @@ class Api(object):
     instruments = None
     environment = None
     access_token = None
+    stream = None
 
     def __init__(self):
         config = get_config()
@@ -25,7 +26,7 @@ class Api(object):
         return self.api.get_instruments(self.account_id)["instruments"]
 
     def quotations_stream(self, quotation, instrument):
-        stream = Quotations(quotation, 0, environment=self.environment, access_token=self.access_token)
-        stream.rates(self.account_id, instrument)
+        self.stream = Quotations(quotation, 0, environment=self.environment, access_token=self.access_token)
+        self.stream.rates(self.account_id, instrument)
 
 
