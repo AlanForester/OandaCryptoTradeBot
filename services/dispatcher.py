@@ -1,14 +1,15 @@
-import threading
-import sys
-import traceback
-import time
 import json
+import sys
+import threading
+import time
+import traceback
 
-from providers.providers import Providers
+from services.history.checker import Checker
+
 from models.task import Task
+from providers.providers import Providers
 from services.analyzer import Analyzer
-from services.collector import Collector
-from services.checker import Checker
+from services.history.collector import Collector
 
 
 class Dispatcher(object):
