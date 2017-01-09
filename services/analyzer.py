@@ -15,8 +15,8 @@ class Analyzer:
         self.task = task
         self.api = Api()
         self.quotation.instrument_id = self.task.setting.instrument_id
-        ts_repeats = 0
-        max_ts_repeats = 8
+        value_repeats = 0
+        max_value_repeats = 8
         # Последнее пришедшее значение стоимости котировки
         last_quotation_value = 0
         # Последнее зафиксированое время обработки
@@ -30,12 +30,12 @@ class Analyzer:
             if self.quotation.ts:
                 if last_quotation_value != self.quotation.value:
                     last_quotation_value = self.quotation.value
-                    ts_repeats = 1
+                    value_repeats = 1
                 else:
-                    ts_repeats += 1
-                    if max_ts_repeats == ts_repeats:
+                    value_repeats += 1
+                    if max_value_repeats == value_repeats:
                         self.terminate_stream()
-                        ts_repeats = 1
+                        value_repeats = 1
 
                 if last_fixed_ts < time_now:
                     last_fixed_ts = time_now
