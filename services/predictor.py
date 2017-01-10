@@ -6,11 +6,14 @@ from helpers.timehelper import TimeHelper
 
 
 class Predictor:
-    def __init__(self, settings, is_history_check=False):
-        self.settings = settings
-        self.is_history_check = is_history_check
+    def __init__(self, task):
+        self.settings = task.setting
+        self.task = task
         self.time_step_on_minute = 5
         self.cache = Providers.cache()
+        self.is_history_check = False
+        if self.task.service_name == "checker":
+            self.is_history_check = True
 
     def make(self, time_bid, quotation, sequence):
         time_step = time_bid['time'] / 60 * self.time_step_on_minute

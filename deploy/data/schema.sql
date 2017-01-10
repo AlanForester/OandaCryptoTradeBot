@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/11/2017 02:09:32 AM
+ Date: 01/11/2017 02:35:16 AM
 */
 
 -- ----------------------------
@@ -47,14 +47,14 @@ ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 240 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 245 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 350 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 355 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -76,30 +76,11 @@ CREATE TABLE "public"."predictions" (
 	"expires" int4,
 	"delay" int4,
 	"created_at" int4,
-	"expiration_at" int4
+	"expiration_at" int4,
+	"history_task" int4
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."predictions" OWNER TO "postgres";
-
--- ----------------------------
---  Table structure for orders
--- ----------------------------
-DROP TABLE IF EXISTS "public"."orders";
-CREATE TABLE "public"."orders" (
-	"id" int8 NOT NULL DEFAULT nextval('orders_id_seq'::regclass),
-	"instrument_id" int4,
-	"prediction_id" int8,
-	"created_at" int4,
-	"expiration_at" int4,
-	"direction" int2,
-	"created_cost" float4,
-	"expiration_cost" float4,
-	"change" float4,
-	"closed_at" int4,
-	"bid_cost" float4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."orders" OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for candles
@@ -239,6 +220,27 @@ CREATE TABLE "public"."tasks" (
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."tasks" OWNER TO "postgres";
 
+-- ----------------------------
+--  Table structure for orders
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."orders";
+CREATE TABLE "public"."orders" (
+	"id" int8 NOT NULL DEFAULT nextval('orders_id_seq'::regclass),
+	"instrument_id" int4,
+	"prediction_id" int8,
+	"created_at" int4,
+	"expiration_at" int4,
+	"direction" int2,
+	"created_cost" float4,
+	"expiration_cost" float4,
+	"change" float4,
+	"closed_at" int4,
+	"bid_cost" float4,
+	"history_task" int4
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."orders" OWNER TO "postgres";
+
 
 -- ----------------------------
 --  Alter sequences owned by
@@ -247,17 +249,12 @@ ALTER SEQUENCE "public"."actives_id_seq" RESTART 1292 OWNED BY "instruments"."id
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 895 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219657 OWNED BY "predictions"."id";
 ALTER SEQUENCE "public"."settings_id_seq" RESTART 34 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 241 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 351 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 246 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 356 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table predictions
 -- ----------------------------
 ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Primary key structure for table orders
--- ----------------------------
-ALTER TABLE "public"."orders" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table candles
@@ -293,4 +290,9 @@ ALTER TABLE "public"."settings" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY 
 --  Primary key structure for table tasks
 -- ----------------------------
 ALTER TABLE "public"."tasks" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Primary key structure for table orders
+-- ----------------------------
+ALTER TABLE "public"."orders" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
