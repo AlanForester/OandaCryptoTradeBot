@@ -35,7 +35,7 @@ class Dispatcher(object):
             thread = None
             if task.service_name:
                 if task.service_name == "analyzer":
-                    thread = threading.Thread(target=Analyzer, args=(task, ), name=len(self.threads))
+                    thread = threading.Thread(target=Analyzer.run, args=(task, ), name=len(self.threads))
                 if task.service_name == "collector":
                     thread = threading.Thread(target=Collector, args=(task,), name=len(self.threads))
                 if task.service_name == "checker":

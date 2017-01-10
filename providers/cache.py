@@ -49,3 +49,6 @@ class Cache:
 
     def setex(self, name, time, value):
         return self._connection.setex(name, time, value)
+
+    def exists(self, name):
+        return self._connection.exists(name)
