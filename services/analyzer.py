@@ -5,7 +5,6 @@ from api.api import Api
 from models.quotation import Quotation
 from models.candle import Candle
 from helpers.fibonacci import FibonacciHelper
-from models.pattern import Pattern
 
 
 class Analyzer:
@@ -23,8 +22,8 @@ class Analyzer:
         self.admissions = FibonacciHelper.get_uniq_unsigned_array(25)
 
     def start_stream(self):
-        instrument_name = self.task.setting.instrument.instrument
-        self.thread_stream = threading.Thread(target=self.api.quotations_stream, args=(self.quotation, instrument_name))
+        self.thread_stream = threading.Thread(target=self.api.quotations_stream, args=(self.quotation,
+                                                                                       self.task.setting.instrument))
         self.thread_stream.setDaemon(True)
         self.thread_stream.start()
 
@@ -34,22 +33,20 @@ class Analyzer:
 
     def do_analysis(self):
         """Метод подготовки прогнозов"""
-        """Получаем свечи разной длинны с их родителями"""
+        # Получаем свечи разной длинны с их родителями
         candles = Candle.get_last_with_parent(self.quotation.ts, self.task.setting.analyzer_deep,
                                               self.task.setting.instrument_id)
-        """Получаем разные вариации последовательностей c глубиной вхождения"""
-        sequences = Pattern.get_sequences(candles, self.admissions)
+        # Получаем разные вариации последовательностей c глубиной вхождения
+        sequences = self.get_sequences(candles)
 
         # TODO: Проверить admission при тестировании выбирается всегда паттерн с 0 силой
         for sequence in sequences:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
                 for time_bid in self.task.setting.analyzer_bid_times:
-                    """Заворачиваем в треды проверки с дальнейшим кешированием прогноза"""
-                    print(time_bid, sequence)
-                    # cache_thread = threading.Thread(target=self.handle_prediction, args=(time_bid, sequence,))
-                    # cache_thread.daemon = True
-                    # cache_thread.start()
-                    # print "Predictor worked at", time.time() - now, "s"
+                    # Заворачиваем в треды проверки с дальнейшим кешированием и проверкой прогноза
+                    cache_thread = threading.Thread(target=self.handle_prediction, args=(time_bid, sequence,))
+                    cache_thread.daemon = True
+                    cache_thread.start()
 
     def handle_prediction(self, time_bid, sequence):
         # cache_thread = threading.Thread(target=self.cache_prediction, args=(time_bid, quotation,
@@ -65,6 +62,45 @@ class Analyzer:
             candle = Candle.make(self.quotation.ts, duration, self.task.setting.instrument_id)
             candles.append(candle)
         Candle.save_many(candles)
+
+    def get_sequences(self, candles_with_parents):
+        """
+        Преобразует массив свечей с родителями в массив последовательностей
+        :returns sequences: [{'duration': 5, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 5, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 10, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 15, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 30, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 60, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 120, 'admission': 144}]
+        [{'duration': 5, 'admission': 144}, {'duration': 300, 'admission': 34}]
+        [{'duration': 10, 'admission': 144}]....
+        """
+        out = list()
+        for candle in candles_with_parents:
+            sequence = list()
+            obj = dict()
+            obj["duration"] = candle["duration"]
+            # obj["till_ts"] = candle["till_ts"]
+            # obj["from_ts"] = candle["from_ts"]
+            # obj["change_power"] = candle["change_power"]
+            for admission in self.admissions:
+                if candle["change_power"] <= admission:
+                    obj["admission"] = admission
+                    break
+
+            if not "admission" in obj:
+                obj["admission"] = int(candle["change_power"] / 100) * 100
+
+            sequence.append(obj)
+            out.append(sequence)
+            if "parents" in candle:
+                parents = self.get_sequences(candle["parents"])
+                if len(parents) > 0:
+                    for p in parents:
+                        with_parents = sequence + p
+                        out.append(with_parents)
+        return out
 
     @staticmethod
     def run(task):
