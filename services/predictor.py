@@ -6,13 +6,13 @@ from helpers.timehelper import TimeHelper
 
 
 class Predictor:
-    def __init__(self, settings, is_test=False):
+    def __init__(self, settings, is_history_check=False):
         self.settings = settings
-        self.is_test = is_test
+        self.is_history_check = is_history_check
         self.time_step_on_minute = 5
         self.cache = Providers.cache()
 
-    def cache_prediction(self, time_bid, quotation, sequence):
+    def make(self, time_bid, quotation, sequence):
         time_step = time_bid['time'] / 60 * self.time_step_on_minute
         remaining = TimeHelper.get_remaining_second_to_minute(quotation.time)
         time_left_minute = int((remaining / time_step) * time_step)
@@ -24,7 +24,7 @@ class Predictor:
             expiration_ts = TimeHelper.get_expiration_time(quotation.time, time_bid)
 
             prediction_cache_prefix = "prediction"
-            if self.is_test:
+            if self.is_history_check:
                 prediction_cache_prefix = "test_prediction"
 
             prediction_cache_key = prediction_cache_prefix + "_" + str(self.settings.instrument_id) + "_" + str(
@@ -62,7 +62,7 @@ class Predictor:
                 (Используется непосредственно в тестировщике)
                 """
                 # Trader
-                # if not self.is_test:
+                # if not self.is_history_check:
                 #     trade_direction = self.trader.check_probability(prediction[1], prediction[2],
                 #                                                     prediction[3], prediction[4],
                 #                                                     prediction[6])
@@ -101,7 +101,7 @@ class Predictor:
                 }
 
                 """Запись прогноза в редис"""
-                if self.is_test:
+                if self.is_history_check:
                     """Для тестирования истории без времени жизни"""
                     self.cache.set(prediction_cache_key, json.dumps(redis_object))
                 else:

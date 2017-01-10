@@ -38,7 +38,7 @@ class Quotation(object):
                        "first_value(value) OVER w AS open, "
                        "last_value(value) OVER w AS close, "
                        "AVG(value) OVER w AS average "
-                       "FROM quotations WHERE ts>=%s AND instrument_id=%s AND ts<%s "
+                       "FROM quotations WHERE ts>=%s AND instrument_id=%s AND ts<=%s "
                        "WINDOW w AS () "
                        "ORDER BY ts DESC LIMIT 1",
                        [from_ts - duration, instrument_id, from_ts])

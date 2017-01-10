@@ -59,17 +59,18 @@ class Candle(object):
         candle.change = candle.open - candle.close
 
         cursor = Providers.db().get_cursor()
-        cursor.execute("SELECT * FROM candles WHERE instrument_id=%s AND duration=%s ORDER BY till_ts DESC LIMIT 1",
-                       (instrument_id, duration))
+        # Свеча для сравнения за прошлую длительность времени, а не просто прошлая свеча
+        cursor.execute("SELECT * FROM candles WHERE instrument_id=%s AND duration=%s AND till_ts<=%s "
+                       "ORDER BY till_ts DESC LIMIT 1",
+                       (instrument_id, duration, from_ts - duration))
 
         last_candle = Candle()
         last_candle_raw = cursor.fetchone()
         if last_candle_raw:
-            last_candle.model(last_candle_raw)
+            last_candle = Candle.model(last_candle_raw)
 
-        if last_candle.change != 0:
+        if last_candle.change:
             candle.change_power = candle.change / (last_candle.change / 100)
-
         return candle
 
     @staticmethod
@@ -80,3 +81,46 @@ class Candle(object):
                 ','.join(v.__tuple_str() for v in candles) + ' ON CONFLICT (instrument_id, from_ts, till_ts) DO NOTHING'
         cursor.execute(query)
         Providers.db().commit()
+
+    @staticmethod
+    def get_last_till_ts(till_ts, instrument_id):
+        """Достает время последней свечи"""
+        cursor = Providers.db().get_cursor()
+        cursor.execute(
+            "SELECT till_ts FROM candles WHERE till_ts<=%s AND instrument_id=%s ORDER BY till_ts DESC LIMIT 1",
+            [till_ts, instrument_id])
+        row = cursor.fetchone()
+        if row:
+            return row.till_ts
+        return False
+
+    @staticmethod
+    def get_last_with_parent(till_ts, deep, instrument_id):
+        """Достаем похожие по длительности свечи в рекурсивной функции
+        Вложенность обеспечивается свойством parent
+        За уровень вложенности отвечает параметр deep(Глубина)"""
+        out = []
+        cursor = Providers.db().get_cursor()
+        if deep > 0:
+            deep -= 1
+            """Получаем последний доступный ts свечи"""
+            last_candle_till = Candle.get_last_till_ts(till_ts, instrument_id)
+
+            if last_candle_till:
+                """Достаем свечи любой длины за время"""
+                cursor.execute(
+                    "SELECT change_power,duration,till_ts,from_ts FROM "
+                    "candles WHERE till_ts=%s AND instrument_id=%s",
+                    [last_candle_till, instrument_id])
+                rows = cursor.fetchall()
+                for row in rows:
+                    model = dict()
+                    model["change_power"] = row.change_power
+                    model["duration"] = row.duration
+                    # model["till_ts"] = row[2]
+                    # model["from_ts"] = row[3]
+                    if deep > 0:
+                        """Ищем родителей по любой длинне"""
+                        model["parents"] = Candle.get_last_with_parent(row.till_ts, deep, instrument_id)
+                    out.append(model)
+        return out
