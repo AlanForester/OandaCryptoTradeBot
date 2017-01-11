@@ -1,4 +1,3 @@
-import threading
 import time
 
 from services.history.checker import Checker
@@ -19,7 +18,7 @@ class Dispatcher(object):
         while True:
             pending_tasks = Task.get_pending(self.worker_id)
             for task in pending_tasks:
-                thread = threading.Thread(target=self.start_service, args=(task,))
+                thread = ExThread(target=self.start_service, args=(task,))
                 thread.setDaemon(True)
                 thread.start()
             time.sleep(1)

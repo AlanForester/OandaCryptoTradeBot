@@ -2,7 +2,6 @@ import json
 import time
 
 from providers.providers import Providers
-from helpers.timehelper import TimeHelper
 
 
 class Predictor:

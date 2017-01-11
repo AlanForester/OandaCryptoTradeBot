@@ -22,7 +22,7 @@ class Settings:
             model.instrument_id = instrument.id,
             model.candles_durations = json.dumps([30, 60]),
             model.working_interval_sec = 1,
-            model.analyzer_bid_times = json.dumps([{"purchase": 0, "time": 180}]),
+            model.analyzer_bid_times = json.dumps([180]),
             model.analyzer_deep = 2,
             model.analyzer_min_deep = 2,
             model.analyzer_prediction_expire = json.dumps([{"expire": 0, "history_duration": 0}]),

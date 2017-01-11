@@ -1,10 +1,10 @@
-import threading
 import time
 
 from api.api import Api
 from models.quotation import Quotation
 from models.candle import Candle
 from helpers.fibonacci import FibonacciHelper
+from helpers.exthread import ExThread
 
 
 class Analyzer:
@@ -22,8 +22,8 @@ class Analyzer:
         self.admissions = FibonacciHelper.get_uniq_unsigned_array(25)
 
     def start_stream(self):
-        self.thread_stream = threading.Thread(target=self.api.quotations_stream, args=(self.quotation,
-                                                                                       self.task.setting.instrument))
+        self.thread_stream = ExThread(target=self.api.quotations_stream, args=(self.quotation,
+                                                                               self.task.setting.instrument))
         self.thread_stream.setDaemon(True)
         self.thread_stream.start()
 
@@ -44,8 +44,9 @@ class Analyzer:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
                 for time_bid in self.task.setting.analyzer_bid_times:
                     # Заворачиваем в треды проверки с дальнейшим кешированием и проверкой прогноза
-                    cache_thread = threading.Thread(target=self.handle_prediction, args=(time_bid, sequence,))
+                    cache_thread = ExThread(target=self.handle_prediction, args=(time_bid, sequence,))
                     cache_thread.daemon = True
+                    cache_thread.task = self.task
                     cache_thread.start()
 
     def handle_prediction(self, time_bid, sequence):
@@ -141,9 +142,13 @@ class Analyzer:
                     surplus_time = time_now % analyzer.task.setting.working_interval_sec
                     if surplus_time == 0:
                         print(vars(analyzer.quotation))
+                        # Сохраняем свечи
                         analyzer.save_candles()
-                        analyzer.do_analysis()
+                        # Запускаем поток на анализ
+                        analysis_thread = ExThread(target=analyzer.do_analysis)
+                        analysis_thread.daemon = True
+                        analysis_thread.task = task
+                        analysis_thread.start()
+                        # Запускаем поток на проверку прогнозов
 
             time.sleep(0.5)
-
-
