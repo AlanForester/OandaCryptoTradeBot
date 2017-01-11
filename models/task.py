@@ -53,7 +53,17 @@ class Task:
     def terminate(self):
         cursor = Providers.db().get_cursor()
         query = "UPDATE tasks SET terminated_at=%s WHERE id=%s RETURNING id;"
-        cursor.execute(query, (time.time(), ))
+        cursor.execute(query, (time.time(), self.id ))
+        Providers.db().commit()
+        row = cursor.fetchone()
+        if row:
+            return self
+
+    def append_exception(self, json_exception):
+        self.handled_exceptions.append(json_exception)
+        cursor = Providers.db().get_cursor()
+        query = "UPDATE tasks SET handled_exceptions=%s WHERE id=%s RETURNING id;"
+        cursor.execute(query, (json.dumps(self.handled_exceptions), self.id))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:

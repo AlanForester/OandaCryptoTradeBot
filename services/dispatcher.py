@@ -1,15 +1,11 @@
-import json
-import sys
 import threading
 import time
-import traceback
 
 from services.history.checker import Checker
-
 from models.task import Task
-from providers.providers import Providers
 from services.analyzer import Analyzer
 from services.history.collector import Collector
+from helpers.exthread import ExThread
 
 
 class Dispatcher(object):
@@ -31,18 +27,23 @@ class Dispatcher(object):
     def start_service(self, task):
         self.threads.append(task)
 
-        service = None
-        if task.service_name:
-            Dispatcher.launch_task(task, len(self.threads))
+        thread = None
+        try:
             if task.service_name == "analyzer":
-                service = Analyzer.run(task)
+                thread = ExThread(target=Analyzer.run, args=(task, ), name=len(self.threads))
             if task.service_name == "collector":
-                service = Collector(task)
+                thread = ExThread(target=Collector, args=(task,), name=len(self.threads))
             if task.service_name == "checker":
-                service = Checker(task)
-            Dispatcher.terminate_task(task)
+                thread = ExThread(target=Checker, args=(task,), name=len(self.threads))
 
-        if not service:
+            if thread:
+                self.launch_task(task, len(self.threads))
+                thread.task = task
+                thread.run()
+        finally:
+            self.terminate_task(task)
+
+        if not thread:
             raise Exception("Launch service is undefined: " + task.service_name)
 
     @staticmethod

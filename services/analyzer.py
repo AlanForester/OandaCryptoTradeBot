@@ -111,6 +111,7 @@ class Analyzer:
         last_quotation_value = 0
         # Последнее зафиксированое время обработки
         last_fixed_ts = 0
+
         while True:
             # Фиксируем настоящее время обработчика итерации
             time_now = int(time.time())
