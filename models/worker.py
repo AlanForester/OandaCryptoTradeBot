@@ -31,7 +31,7 @@ class Worker:
             self.id = row[0]
             return self
 
-    def update_on_terminate(self):
+    def terminate(self):
         cursor = Providers.db().get_cursor()
         query = "UPDATE workers SET terminated_at=%s, terminated_code=%s, terminated_traceback=%s, " \
                 "terminated_description=%s WHERE id=%s RETURNING id;"

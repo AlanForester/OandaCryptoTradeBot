@@ -3,9 +3,9 @@ from providers.providers import Providers
 
 class Instrument:
     id = None
-    instrument = None
-    pip = None
-    name = None
+    instrument = ""
+    pip = 0.0
+    name = ""
 
     def __init__(self, raw=None):
         if raw:

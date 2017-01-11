@@ -58,9 +58,8 @@ class App(object):
             })
         self.worker.terminated_traceback = json.dumps(traceback_list)
         self.worker.terminated_description = description
-        Task.update_on_terminate_emergency_exit(self.worker.id, self.worker.terminated_code, "[]",
-                                                "Emergency exit of worker")
-        self.worker.update_on_terminate()
+        Task.terminate_on_emergency_exit(self.worker.id)
+        self.worker.terminate()
 
     @staticmethod
     def start():

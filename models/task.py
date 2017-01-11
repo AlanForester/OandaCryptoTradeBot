@@ -19,9 +19,7 @@ class Task:
     launched_at = 0
     stop_at = 0
     terminated_at = 0
-    terminated_code = ""
-    terminated_traceback = json.dumps([])
-    terminated_description = ""
+    handled_exceptions = json.dumps([])
 
     _setting = None
 
@@ -32,33 +30,30 @@ class Task:
     def save(self):
         cursor = Providers.db().get_cursor()
         query = "INSERT INTO tasks (user_id, setting_id, worker_id, is_enabled, service_name, params, status, thread, " \
-                "start_at, launched_at, stop_at, terminated_at, terminated_code, terminated_traceback, " \
-                "terminated_description) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
+                "start_at, launched_at, stop_at, terminated_at, handled_exceptions) " \
+                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
         cursor.execute(query, [self.user_id, self.setting_id, self.worker_id, self.is_enabled, self.service_name,
                                self.params, self.status, self.thread, self.start_at, self.launched_at, self.stop_at,
-                               self.terminated_at, self.terminated_code, self.terminated_traceback,
-                               self.terminated_description])
+                               self.terminated_at, self.handled_exceptions])
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
             self.id = row[0]
             return self
 
-    def update_on_launch(self):
+    def launch(self, thread):
         cursor = Providers.db().get_cursor()
         query = "UPDATE tasks SET launched_at=%s, thread=%s WHERE id=%s RETURNING id;"
-        cursor.execute(query, (time.time(), self.thread, self.id))
+        cursor.execute(query, (time.time(), thread, self.id))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
             return self
 
-    def update_on_terminate(self):
+    def terminate(self):
         cursor = Providers.db().get_cursor()
-        query = "UPDATE tasks SET terminated_at=%s, terminated_code=%s, terminated_traceback=%s, " \
-                "terminated_description=%s WHERE id=%s RETURNING id;"
-        cursor.execute(query, (time.time(), self.terminated_code, self.terminated_traceback,
-                               self.terminated_description, self.id))
+        query = "UPDATE tasks SET terminated_at=%s WHERE id=%s RETURNING id;"
+        cursor.execute(query, (time.time(), ))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
@@ -73,7 +68,7 @@ class Task:
     def __tuple_str(self):
         return str((self.user_id, self.setting_id, self.worker_id, self.is_enabled, self.service_name, self.params,
                     self.status, self.thread, self.start_at, self.launched_at, self.stop_at, self.terminated_at,
-                    self.terminated_code, self.terminated_traceback, self.terminated_description))
+                    self.handled_exceptions))
 
     @staticmethod
     def model(raw=None):
@@ -93,10 +88,8 @@ class Task:
         return tasks
 
     @staticmethod
-    def update_on_terminate_emergency_exit(worker_id, code, traceback, description):
+    def terminate_on_emergency_exit(worker_id):
         cursor = Providers.db().get_cursor()
-        query = "UPDATE tasks SET terminated_at=%s, terminated_code=%s, terminated_traceback=%s, " \
-                "terminated_description=%s WHERE worker_id=%s AND terminated_at=%s;"
-        cursor.execute(query, (time.time(), code, traceback,
-                               description, worker_id, 0))
+        query = "UPDATE tasks SET terminated_at=%s WHERE worker_id=%s AND terminated_at=%s;"
+        cursor.execute(query, (time.time(), worker_id, 0))
         Providers.db().commit()

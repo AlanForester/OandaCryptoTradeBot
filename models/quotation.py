@@ -2,7 +2,7 @@ from providers.providers import Providers
 
 
 class Quotation(object):
-    ts = None
+    ts = 0
     instrument_id = None
     ask = None
     bid = None
