@@ -67,15 +67,7 @@ class Analyzer:
     def get_sequences(self, candles_with_parents):
         """
         Преобразует массив свечей с родителями в массив последовательностей
-        :returns sequences: [{'duration': 5, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 5, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 10, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 15, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 30, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 60, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 120, 'admission': 144}]
-        [{'duration': 5, 'admission': 144}, {'duration': 300, 'admission': 34}]
-        [{'duration': 10, 'admission': 144}]....
+        :returns sequences: [{'duration': 5, 'admission': 144}, {'duration': 5, 'admission': 144}]
         """
         out = list()
         for candle in candles_with_parents:
