@@ -12,14 +12,14 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/12/2017 01:26:31 AM
+ Date: 01/13/2017 03:12:41 AM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 1291 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 1413 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -40,21 +40,21 @@ ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 33 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 34 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 246 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 290 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 359 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 403 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -64,10 +64,10 @@ DROP TABLE IF EXISTS "public"."predictions";
 CREATE TABLE "public"."predictions" (
 	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
 	"setting_id" int4,
-	"instrument_id" int4,
 	"time_bid" int4,
 	"sequence" json,
 	"sequence_hash" int4,
+	"sequence_duration" int4,
 	"created_cost" float4,
 	"expiration_cost" float4,
 	"admission" float4,
@@ -241,12 +241,12 @@ ALTER TABLE "public"."orders" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 1292 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 1414 OWNED BY "instruments"."id";
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 895 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219657 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 34 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 247 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 360 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 35 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 291 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 404 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table predictions
 -- ----------------------------
