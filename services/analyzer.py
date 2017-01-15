@@ -3,6 +3,11 @@ import time
 from api.api import Api
 from models.quotation import Quotation
 from models.candle import Candle
+from models.sequence import Sequence
+from models.prediction import Prediction
+from models.pattern import Pattern
+from services.controller import Controller
+from services.trader import Trader
 from helpers.fibonacci import FibonacciHelper
 from helpers.exthread import ExThread
 
@@ -39,22 +44,25 @@ class Analyzer:
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = self.get_sequences(candles)
 
-        # TODO: Проверить admission при тестировании выбирается всегда паттерн с 0 силой
         for sequence in sequences:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
                 for time_bid in self.task.setting.analyzer_bid_times:
                     # Заворачиваем в треды проверки с дальнейшим кешированием и проверкой прогноза
-                    cache_thread = ExThread(target=self.handle_prediction, args=(time_bid, sequence,))
+                    cache_thread = ExThread(target=self.handle_prediction, args=(time_bid, sequence))
                     cache_thread.daemon = True
                     cache_thread.task = self.task
                     cache_thread.start()
 
-    def handle_prediction(self, time_bid, sequence):
-        # cache_thread = threading.Thread(target=self.cache_prediction, args=(time_bid, quotation,
-        #                                                                     sequence,))
-        # cache_thread.daemon = True
-        # cache_thread.start()
-        pass
+    def handle_prediction(self, time_bid, sequence_json):
+        # Получаем свечу и сразу ее сохраняем
+        sequence = Sequence.save(sequence_json)
+        # Предварительно собираем прогноз
+        prediction = Prediction.make(self.task, time_bid, self.quotation, sequence)
+        if Controller.is_save_prediction(self.task.setting, prediction):
+            pattern = Pattern.upsert(self.task, sequence, time_bid)
+            prediction.pattern_id = pattern.id
+            # is_trading = Trader.check(self.task, prediction)
+        prediction.save()
 
     def save_candles(self):
         candles = []
@@ -133,7 +141,7 @@ class Analyzer:
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
                     surplus_time = time_now % analyzer.task.setting.working_interval_sec
                     if surplus_time == 0:
-                        print(vars(analyzer.quotation))
+                        # print(vars(analyzer.quotation))
                         # Сохраняем свечи
                         analyzer.save_candles()
                         # Запускаем поток на анализ

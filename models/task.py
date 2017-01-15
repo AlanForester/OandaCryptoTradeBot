@@ -69,6 +69,14 @@ class Task:
         if row:
             return self
 
+    def get_param(self, param):
+        res = None
+        if param == "history_num":
+            res = 0
+        if param in self.params:
+            res = self.params[param]
+        return res
+
     @property
     def setting(self):
         if not self._setting:
