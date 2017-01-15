@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/14/2017 20:00:41 PM
+ Date: 01/16/2017 01:14:16 AM
 */
 
 -- ----------------------------
@@ -72,26 +72,6 @@ CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 416 MAXVALUE 9223372
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
---  Table structure for predictions
--- ----------------------------
-DROP TABLE IF EXISTS "public"."predictions";
-CREATE TABLE "public"."predictions" (
-	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
-	"sequence_id" int8,
-	"setting_id" int4,
-	"time_bid" int4,
-	"pattern_id" int4,
-	"created_cost" float4,
-	"expiration_cost" float4,
-	"admission" float4,
-	"change" float4,
-	"created_at" int4,
-	"expiration_at" int4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."predictions" OWNER TO "postgres";
-
--- ----------------------------
 --  Table structure for workers
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."workers";
@@ -107,6 +87,27 @@ CREATE TABLE "public"."workers" (
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."workers" OWNER TO "postgres";
+
+-- ----------------------------
+--  Table structure for predictions
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."predictions";
+CREATE TABLE "public"."predictions" (
+	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
+	"sequence_id" int8,
+	"setting_id" int4,
+	"task_id" int4,
+	"time_bid" int4,
+	"pattern_id" int4,
+	"created_cost" float4,
+	"expiration_cost" float4,
+	"admission" float4,
+	"change" float4,
+	"created_at" int4,
+	"expiration_at" int4
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."predictions" OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for sequences
@@ -129,6 +130,7 @@ CREATE TABLE "public"."patterns" (
 	"id" int8 NOT NULL DEFAULT nextval('patterns_id_seq'::regclass),
 	"sequence_id" int8,
 	"setting_id" int4,
+	"task_id" int4,
 	"time_bid" int4,
 	"used_count" int4,
 	"calls_count" int4,
@@ -137,7 +139,7 @@ CREATE TABLE "public"."patterns" (
 	"last_call" int2,
 	"delay" int4,
 	"expires" int4,
-	"task_id" int4,
+	"history_num" int4,
 	"created_at" int4
 )
 WITH (OIDS=FALSE);
@@ -295,14 +297,14 @@ ALTER SEQUENCE "public"."settings_id_seq" RESTART 35 OWNED BY "settings"."id";
 ALTER SEQUENCE "public"."tasks_id_seq" RESTART 304 OWNED BY "tasks"."id";
 ALTER SEQUENCE "public"."workers_id_seq" RESTART 417 OWNED BY "workers"."id";
 -- ----------------------------
---  Primary key structure for table predictions
--- ----------------------------
-ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
 --  Primary key structure for table workers
 -- ----------------------------
 ALTER TABLE "public"."workers" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Primary key structure for table predictions
+-- ----------------------------
+ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table sequences
@@ -318,6 +320,11 @@ ALTER TABLE "public"."sequences" ADD CONSTRAINT "hash_uniq" UNIQUE ("hash") NOT 
 --  Primary key structure for table patterns
 -- ----------------------------
 ALTER TABLE "public"."patterns" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Uniques structure for table patterns
+-- ----------------------------
+ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table candles
