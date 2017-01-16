@@ -8,6 +8,6 @@ from models.sequence import Sequence
 class Controller:
 
     @staticmethod
-    def check_on_save_prediction():
+    def check_on_save_pattern():
         return True
 

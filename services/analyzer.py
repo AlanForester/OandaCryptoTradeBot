@@ -58,7 +58,7 @@ class Analyzer:
         sequence = Sequence.save_and_get(sequence_json)
         # Предварительно собираем прогноз
         prediction = Prediction.make(self.task, time_bid, self.quotation, sequence)
-        if Controller.check_on_save_prediction():
+        if Controller.check_on_save_pattern():
             pattern = Pattern.upsert(self.task, sequence, time_bid)
             prediction.pattern_id = pattern.id
             # is_trading = Trader.check(self.task, prediction)
@@ -137,13 +137,11 @@ class Analyzer:
                     # Устанавливаем настоящее время для котировки и сохраняем
                     analyzer.quotation.ts = time_now
                     analyzer.quotation.save()
-
+                    # Сохраняем свечи
+                    analyzer.save_candles()
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
                     surplus_time = time_now % analyzer.task.setting.working_interval_sec
                     if surplus_time == 0:
-                        # print(vars(analyzer.quotation))
-                        # Сохраняем свечи
-                        analyzer.save_candles()
                         # Запускаем поток на анализ
                         analysis_thread = ExThread(target=analyzer.do_analysis)
                         analysis_thread.daemon = True
