@@ -1,6 +1,6 @@
-class Trader:
+class Signaler:
     @staticmethod
-    def check(task, prediction):
+    def check(task, pattern):
         # setting pattern
         result = None
         if delay == 0:

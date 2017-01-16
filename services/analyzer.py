@@ -19,8 +19,7 @@ class Analyzer:
     thread_stream = None
     admissions = None
 
-    def __init__(self, task, is_history_check=False):
-        self.is_history_check = is_history_check
+    def __init__(self, task):
         self.task = task
         self.api = Api()
         self.quotation.instrument_id = self.task.setting.instrument_id
