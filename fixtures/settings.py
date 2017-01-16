@@ -27,8 +27,7 @@ class Settings:
             model.analyzer_min_deep = 2,
             model.analyzer_prediction_expire = json.dumps([{"expire": 0, "history_duration": 0}]),
             model.analyzer_save_prediction_if_exists = False,
-            model.trader_min_chance = 60,
-            model.trader_min_repeats = 2,
-            model.trader_delay_on_trend = 0,
-            model.trader_max_count_orders_for_expiration_time = 1
+            model.signaler_min_chance = 60,
+            model.signaler_min_repeats = 2,
+            model.signaler_delay_on_trend = 0,
             model.save()

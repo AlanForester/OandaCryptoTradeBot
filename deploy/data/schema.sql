@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/16/2017 16:14:44 PM
+ Date: 01/16/2017 16:50:03 PM
 */
 
 -- ----------------------------
@@ -54,7 +54,7 @@ ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 35 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -77,6 +77,32 @@ ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
 CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 417 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
+
+-- ----------------------------
+--  Table structure for settings
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."settings";
+CREATE TABLE "public"."settings" (
+	"id" int4 NOT NULL DEFAULT nextval('settings_id_seq'::regclass),
+	"user_id" int4,
+	"name" varchar(255) NOT NULL COLLATE "default",
+	"is_default" bool,
+	"created_at" int4,
+	"updated_at" int4,
+	"instrument_id" int4,
+	"candles_durations" json,
+	"working_interval_sec" int4,
+	"analyzer_bid_times" json,
+	"analyzer_deep" int4,
+	"analyzer_min_deep" int4,
+	"analyzer_prediction_expire" json,
+	"analyzer_save_prediction_if_exists" bool,
+	"signaler_min_chance" float4,
+	"signaler_min_repeats" int4,
+	"signaler_delay_on_trend" int4
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."settings" OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for workers
@@ -245,33 +271,6 @@ ALTER TABLE "public"."instruments" OWNER TO "postgres";
 COMMENT ON COLUMN "public"."instruments"."instrument" IS 'Название актива';
 
 -- ----------------------------
---  Table structure for settings
--- ----------------------------
-DROP TABLE IF EXISTS "public"."settings";
-CREATE TABLE "public"."settings" (
-	"id" int4 NOT NULL DEFAULT nextval('settings_id_seq'::regclass),
-	"user_id" int4,
-	"name" varchar(255) NOT NULL COLLATE "default",
-	"is_default" bool,
-	"created_at" int4,
-	"updated_at" int4,
-	"instrument_id" int4,
-	"candles_durations" json,
-	"working_interval_sec" int4,
-	"analyzer_bid_times" json,
-	"analyzer_deep" int4,
-	"analyzer_min_deep" int4,
-	"analyzer_prediction_expire" json,
-	"analyzer_save_prediction_if_exists" bool,
-	"trader_min_chance" float4,
-	"trader_min_repeats" int4,
-	"trader_delay_on_trend" int4,
-	"trader_max_count_orders_for_expiration_time" int4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."settings" OWNER TO "postgres";
-
--- ----------------------------
 --  Table structure for orders
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."orders";
@@ -326,10 +325,15 @@ ALTER SEQUENCE "public"."orders_id_seq" RESTART 896 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."patterns_id_seq" RESTART 3 OWNED BY "patterns"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219658 OWNED BY "predictions"."id";
 ALTER SEQUENCE "public"."sequences_id_seq" RESTART 3 OWNED BY "sequences"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 36 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 2 OWNED BY "settings"."id";
 ALTER SEQUENCE "public"."signals_id_seq" RESTART 2 OWNED BY "signals"."id";
 ALTER SEQUENCE "public"."tasks_id_seq" RESTART 305 OWNED BY "tasks"."id";
 ALTER SEQUENCE "public"."workers_id_seq" RESTART 418 OWNED BY "workers"."id";
+-- ----------------------------
+--  Primary key structure for table settings
+-- ----------------------------
+ALTER TABLE "public"."settings" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
 -- ----------------------------
 --  Primary key structure for table workers
 -- ----------------------------
@@ -384,11 +388,6 @@ ALTER TABLE "public"."instruments" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIAL
 --  Uniques structure for table instruments
 -- ----------------------------
 ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("instrument") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Primary key structure for table settings
--- ----------------------------
-ALTER TABLE "public"."settings" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table orders

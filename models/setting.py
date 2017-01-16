@@ -19,10 +19,9 @@ class Setting:
     analyzer_save_prediction_if_exists = None
     prediction_expire = None
     save_prediction_if_exists = None
-    trader_min_chance = None
-    trader_min_repeats = None
-    trader_delay_on_trend = None
-    trader_max_count_orders_for_expiration_time = None
+    signaler_min_chance = None
+    signaler_min_repeats = None
+    signaler_delay_on_trend = None
 
     _instrument = None
 
@@ -34,16 +33,15 @@ class Setting:
         cursor = Providers.db().get_cursor()
         query = "INSERT INTO settings (user_id, name, is_default, created_at, updated_at, instrument_id, " \
                 "candles_durations, working_interval_sec, analyzer_bid_times, analyzer_deep, analyzer_min_deep, " \
-                "analyzer_prediction_expire, analyzer_save_prediction_if_exists, trader_min_chance, " \
-                "trader_min_repeats, trader_delay_on_trend, trader_max_count_orders_for_expiration_time) " \
-                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
+                "analyzer_prediction_expire, analyzer_save_prediction_if_exists, signaler_min_chance, " \
+                "signaler_min_repeats, signaler_delay_on_trend) " \
+                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
         cursor.execute(query,
                        (self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                         self.candles_durations, self.working_interval_sec, self.analyzer_bid_times,
                         self.analyzer_deep, self.analyzer_min_deep, self.analyzer_prediction_expire,
-                        self.analyzer_save_prediction_if_exists, self.trader_min_chance,
-                        self.trader_min_repeats, self.trader_delay_on_trend,
-                        self.trader_max_count_orders_for_expiration_time))
+                        self.analyzer_save_prediction_if_exists, self.signaler_min_chance,
+                        self.signaler_min_repeats, self.signaler_delay_on_trend))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
@@ -60,8 +58,8 @@ class Setting:
         return str((self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                     self.candles_durations, self.working_interval_sec, self.analyzer_bid_times,
                     self.analyzer_deep, self.analyzer_min_deep, self.analyzer_prediction_expire,
-                    self.analyzer_save_prediction_if_exists, self.trader_min_chance, self.trader_min_repeats,
-                    self.trader_delay_on_trend, self.trader_max_count_orders_for_expiration_time))
+                    self.analyzer_save_prediction_if_exists, self.signaler_min_chance, self.signaler_min_repeats,
+                    self.signaler_delay_on_trend))
 
     @staticmethod
     def model(raw=None):

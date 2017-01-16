@@ -7,7 +7,7 @@ from models.sequence import Sequence
 from models.prediction import Prediction
 from models.pattern import Pattern
 from services.controller import Controller
-from services.trader import Trader
+from services.signaler import Signaler
 from helpers.fibonacci import FibonacciHelper
 from helpers.exthread import ExThread
 
@@ -41,7 +41,7 @@ class Analyzer:
         candles = Candle.get_last_with_parent(self.quotation.ts, self.task.setting.analyzer_deep,
                                               self.task.setting.instrument_id)
         # Получаем разные вариации последовательностей c глубиной вхождения
-        sequences = self.get_sequences(candles)
+        sequences = Sequence.get_sequences_json(candles, self.admissions)
 
         for sequence in sequences:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
@@ -60,7 +60,10 @@ class Analyzer:
         if Controller.check_on_save_pattern():
             pattern = Pattern.upsert(self.task, sequence, time_bid)
             prediction.pattern_id = pattern.id
-            # is_trading = Trader.check(self.task, prediction)
+            # Проверка условий вероятности при создании сигнала
+            check = Signaler.check_probability(self.task, prediction)
+            if check:
+                pass
         prediction.save()
 
     def save_candles(self):
@@ -70,37 +73,6 @@ class Analyzer:
             candle = Candle.make(self.quotation.ts, duration, self.task.setting.instrument_id)
             candles.append(candle)
         Candle.save_many(candles)
-
-    def get_sequences(self, candles_with_parents):
-        """
-        Преобразует массив свечей с родителями в массив последовательностей
-        :returns sequences: [{'duration': 5, 'admission': 144}, {'duration': 5, 'admission': 144}]
-        """
-        out = list()
-        for candle in candles_with_parents:
-            sequence = list()
-            obj = dict()
-            obj["duration"] = candle["duration"]
-            # obj["till_ts"] = candle["till_ts"]
-            # obj["from_ts"] = candle["from_ts"]
-            # obj["change_power"] = candle["change_power"]
-            for admission in self.admissions:
-                if candle["change_power"] <= admission:
-                    obj["admission"] = admission
-                    break
-
-            if not "admission" in obj:
-                obj["admission"] = int(candle["change_power"] / 100) * 100
-
-            sequence.append(obj)
-            out.append(sequence)
-            if "parents" in candle:
-                parents = self.get_sequences(candle["parents"])
-                if len(parents) > 0:
-                    for p in parents:
-                        with_parents = sequence + p
-                        out.append(with_parents)
-        return out
 
     @staticmethod
     def run(task):
