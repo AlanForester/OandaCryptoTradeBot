@@ -1,6 +1,6 @@
 class Signaler:
     @staticmethod
-    def check_probability(task, pattern):
+    def check(task, pattern):
         result = None
         if pattern.delay == 0:
             all_amounts = pattern.call_amount + pattern.put_amount
@@ -14,7 +14,6 @@ class Signaler:
                     if pattern.last_call >= task.settings.trader_min_repeats:
                         if pattern.call_amount / all_condition > task.settings.signaler_min_chance:
                             result = 'call'
-            # TODO: Добавить параметры максимальной просадки ограничителя
             # TODO: Добавить параметры максимальной цены ограничителя
             # TODO: Добавить параметры минимальной цены ограничителя
 

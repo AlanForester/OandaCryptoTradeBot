@@ -61,7 +61,7 @@ class Analyzer:
             pattern = Pattern.upsert(self.task, sequence, time_bid)
             prediction.pattern_id = pattern.id
             # Проверка условий вероятности при создании сигнала
-            check = Signaler.check_probability(self.task, prediction)
+            check = Signaler.check(self.task, prediction)
             if check:
                 pass
         prediction.save()
