@@ -17,38 +17,37 @@ class Sequence:
     def save(self):
         cursor = Providers.db().get_cursor()
         query = "INSERT INTO sequences (json, hash, duration) VALUES (%s,%s,%s) " \
-                "ON CONFLICT (hash) DO NOTHING RETURNING id"
-        cursor.execute(query,
-                       (json.dumps(self.json), self.hash, self.duration))
-        Providers.db().commit()
+                "ON CONFLICT (hash) DO UPDATE SET hash=EXCLUDED.hash RETURNING id"
+        cursor.execute(query, (json.dumps(self.json), self.hash, self.duration))
         row = cursor.fetchone()
+        Providers.db().commit()
         if row:
-            self.id = row[0]
+            self.id = row.id
             return self
 
-    @property
-    def duration(self):
+    def get_duration(self):
         total_duration = 0
         for item in self.json:
             total_duration += item["duration"]
         return total_duration
 
-    @property
-    def hash(self):
+    def get_hash(self):
         return hashlib.md5(json.dumps(self.json).encode('utf-8')).hexdigest()
 
     def __tuple_str(self):
-        return str((self.json, self.hash, self.duration))
+        return str((self.json, self.get_hash(), self.get_duration()))
 
     @staticmethod
     def model(raw=None):
         return Sequence(raw)
 
     @staticmethod
-    def save(sequence):
-        pattern = Sequence()
-        pattern.json = sequence
-        pattern.save()
-        return pattern
+    def save_and_get(sequence_json):
+        sequence = Sequence()
+        sequence.json = sequence_json
+        sequence.hash = sequence.get_hash()
+        sequence.duration = sequence.get_duration()
+        sequence.save()
+        return sequence
 
 

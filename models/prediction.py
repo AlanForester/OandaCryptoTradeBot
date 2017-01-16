@@ -35,16 +35,6 @@ class Prediction(object):
             self.id = row.id
             return self
 
-    def exists_on_expiration(self):
-        check = False
-        cursor = Providers.db().get_cursor()
-        cursor.execute("SELECT COUNT(*) FROM predictions WHERE setting_id=%s AND expiration_at=%s AND sequence_id=%s",
-                       [self.setting_id, self.expiration_at, self.sequence_id])
-        row = cursor.fetchone()
-        if row and row[0] > 0:
-            check = True
-        return check
-
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.time_bid, self.pattern_id,
                     self.created_cost, self.expiration_cost, self.admission, self.change,
