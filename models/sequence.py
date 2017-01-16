@@ -75,7 +75,7 @@ class Sequence:
             sequence.append(obj)
             out.append(sequence)
             if "parents" in candle:
-                parents = Sequence.get_sequences_json(candle["parents"])
+                parents = Sequence.get_sequences_json(candle["parents"], admissions)
                 if len(parents) > 0:
                     for p in parents:
                         with_parents = sequence + p

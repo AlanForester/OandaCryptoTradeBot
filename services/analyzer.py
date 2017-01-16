@@ -61,7 +61,8 @@ class Analyzer:
             pattern = Pattern.upsert(self.task, sequence, time_bid)
             prediction.pattern_id = pattern.id
             # Проверка условий вероятности при создании сигнала
-            check = Signaler.check(self.task, prediction)
+            check = Signaler.check(self.task, pattern)
+            print(check)
             if check:
                 pass
         prediction.save()
@@ -105,13 +106,16 @@ class Analyzer:
                 if last_fixed_ts < time_now:
                     last_fixed_ts = time_now
 
-                    # Устанавливаем настоящее время для котировки и сохраняем
-                    analyzer.quotation.ts = time_now
-                    analyzer.quotation.save()
-                    # Сохраняем свечи
-                    analyzer.save_candles()
+                    save_surplus_time = time_now % analyzer.task.setting.analyzer_collect_interval_sec
+                    if save_surplus_time == 0:
+                        # Устанавливаем настоящее время для котировки и сохраняем
+                        analyzer.quotation.ts = time_now
+                        analyzer.quotation.save()
+                        # Сохраняем свечи
+                        analyzer.save_candles()
+
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
-                    surplus_time = time_now % analyzer.task.setting.working_interval_sec
+                    surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec
                     if surplus_time == 0:
                         # Запускаем поток на анализ
                         analysis_thread = ExThread(target=analyzer.do_analysis)
