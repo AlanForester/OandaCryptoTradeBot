@@ -1,3 +1,6 @@
+from models.signal import Signal
+
+
 class Signaler:
     @staticmethod
     def check(task, pattern):
@@ -26,5 +29,23 @@ class Signaler:
         return result
 
     @staticmethod
-    def make_and_save(task, sequence, quotation, direction):
+    def make_and_save(task, sequence, quotation, direction, time_bid, pattern, prediction):
+        signal = Signal()
+        signal.sequence_id = sequence.id
+        signal.expiration_at = quotation.ts + time_bid
+        signal.prediction_id = prediction.id
+        signal.setting_id = task.setting_id
+        signal.time_bid = time_bid
+        signal.task_id = task.id
+        signal.history_num = task.get_param("history_num")
+        signal.pattern_id = pattern.id
+        signal.created_cost = quotation.value
+        signal.direction = direction
+        signal.instrument_id = task.setting.instrument_id
+        signal.created_at = quotation.ts
+        signal.drawdown = 0
+        signal.change = 0
+        signal.expiration_cost = 0
+        signal.max_cost = 0
+        signal.min_cost = 0
         pass

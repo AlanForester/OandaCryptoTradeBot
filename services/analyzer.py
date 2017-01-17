@@ -60,12 +60,14 @@ class Analyzer:
         if Controller.check_on_save_pattern():
             pattern = Pattern.upsert(self.task, sequence, time_bid)
             prediction.pattern_id = pattern.id
+            prediction.save()
             # Проверка условий вероятности при создании сигнала
             direction = Signaler.check(self.task, pattern)
             print(direction)
             if direction:
-                Signaler.make_and_save(self.task, sequence, self.quotation, direction)
-        prediction.save()
+                Signaler.make_and_save(self.task, sequence, self.quotation, direction, time_bid, pattern, prediction)
+        else:
+            prediction.save()
 
     def save_candles(self):
         candles = []
