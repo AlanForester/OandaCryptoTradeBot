@@ -24,3 +24,7 @@ class Signaler:
                 result = None
 
         return result
+
+    @staticmethod
+    def make_and_save(task, sequence, quotation, direction):
+        pass

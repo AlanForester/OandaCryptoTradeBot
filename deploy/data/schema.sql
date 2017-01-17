@@ -12,70 +12,70 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/17/2017 05:09:45 AM
+ Date: 01/17/2017 13:34:49 PM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 1780 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 1781 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."orders_id_seq";
-CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 896 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 897 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 194 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 195 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 219773 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 219774 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sequences_id_seq";
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 198 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 199 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 4 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 5 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."signals_id_seq";
-CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 2 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 3 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."signals_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 322 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 323 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 435 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 436 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -102,29 +102,6 @@ CREATE TABLE "public"."patterns" (
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."patterns" OWNER TO "postgres";
-
--- ----------------------------
---  Table structure for predictions
--- ----------------------------
-DROP TABLE IF EXISTS "public"."predictions";
-CREATE TABLE "public"."predictions" (
-	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
-	"sequence_id" int8,
-	"setting_id" int4,
-	"task_id" int4,
-	"time_bid" int4,
-	"pattern_id" int4,
-	"created_cost" float4,
-	"expiration_cost" float4,
-	"admission" float4,
-	"change" float4,
-	"max_change" float4,
-	"min_change" float4,
-	"created_at" int4,
-	"expiration_at" int4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."predictions" OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for workers
@@ -269,32 +246,6 @@ WITH (OIDS=FALSE);
 ALTER TABLE "public"."orders" OWNER TO "postgres";
 
 -- ----------------------------
---  Table structure for signals
--- ----------------------------
-DROP TABLE IF EXISTS "public"."signals";
-CREATE TABLE "public"."signals" (
-	"id" int8 NOT NULL DEFAULT nextval('signals_id_seq'::regclass),
-	"instrument_id" int4,
-	"sequence_id" int8,
-	"setting_id" int4,
-	"task_id" int4,
-	"created_at" int4,
-	"expiration_at" int4,
-	"closed_at" int4,
-	"direction" int2,
-	"created_cost" float4,
-	"projected_cost" float4,
-	"expiration_cost" float4,
-	"max_cost" float4,
-	"min_cost" float4,
-	"time_bid" int4,
-	"change" float4,
-	"drawdown" float4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."signals" OWNER TO "postgres";
-
--- ----------------------------
 --  Table structure for settings
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."settings";
@@ -323,19 +274,70 @@ CREATE TABLE "public"."settings" (
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."settings" OWNER TO "postgres";
 
+-- ----------------------------
+--  Table structure for predictions
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."predictions";
+CREATE TABLE "public"."predictions" (
+	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
+	"sequence_id" int8,
+	"setting_id" int4,
+	"task_id" int4,
+	"time_bid" int4,
+	"pattern_id" int4,
+	"created_cost" float4,
+	"expiration_cost" float4,
+	"admission" float4,
+	"change" float4,
+	"max_change" float4,
+	"min_change" float4,
+	"created_at" int4,
+	"expiration_at" int4,
+	"history_num" int4
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."predictions" OWNER TO "postgres";
+
+-- ----------------------------
+--  Table structure for signals
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."signals";
+CREATE TABLE "public"."signals" (
+	"id" int8 NOT NULL DEFAULT nextval('signals_id_seq'::regclass),
+	"instrument_id" int4,
+	"sequence_id" int8,
+	"setting_id" int4,
+	"task_id" int4,
+	"prediction_id" int8,
+	"pattern_id" int8,
+	"created_at" int4,
+	"expiration_at" int4,
+	"direction" int2,
+	"created_cost" float4,
+	"expiration_cost" float4,
+	"max_cost" float4,
+	"min_cost" float4,
+	"time_bid" int4,
+	"change" float4,
+	"drawdown" float4,
+	"history_num" int4
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."signals" OWNER TO "postgres";
+
 
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 1781 OWNED BY "instruments"."id";
-ALTER SEQUENCE "public"."orders_id_seq" RESTART 897 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 195 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219774 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 199 OWNED BY "sequences"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 5 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."signals_id_seq" RESTART 3 OWNED BY "signals"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 323 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 436 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 1782 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."orders_id_seq" RESTART 898 OWNED BY "orders"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 196 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 219775 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."sequences_id_seq" RESTART 200 OWNED BY "sequences"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 6 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."signals_id_seq" RESTART 4 OWNED BY "signals"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 324 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 437 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table patterns
 -- ----------------------------
@@ -345,11 +347,6 @@ ALTER TABLE "public"."patterns" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY 
 --  Uniques structure for table patterns
 -- ----------------------------
 ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Primary key structure for table predictions
--- ----------------------------
-ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table workers
@@ -397,12 +394,17 @@ ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("ins
 ALTER TABLE "public"."orders" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
---  Primary key structure for table signals
--- ----------------------------
-ALTER TABLE "public"."signals" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
 --  Primary key structure for table settings
 -- ----------------------------
 ALTER TABLE "public"."settings" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Primary key structure for table predictions
+-- ----------------------------
+ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Primary key structure for table signals
+-- ----------------------------
+ALTER TABLE "public"."signals" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 

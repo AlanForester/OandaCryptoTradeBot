@@ -90,6 +90,7 @@ class Pattern:
             model.used_count = 1
             model.expires = expires
             model.task_id = task.id
+            model.history_num = task.get_param("history_num")
             model.created_at = time.time()
             model.save()
         Providers.db().commit()
