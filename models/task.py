@@ -77,6 +77,9 @@ class Task:
             res = self.params[param]
         return res
 
+    def flush_setting(self):
+        self._setting = None
+
     @property
     def setting(self):
         if not self._setting:

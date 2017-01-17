@@ -117,6 +117,9 @@ class Analyzer:
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
                     surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec
                     if surplus_time == 0:
+                        # Перезагружаем настройки
+                        task.flush_setting()
+
                         # Запускаем поток на анализ
                         analysis_thread = ExThread(target=analyzer.do_analysis)
                         analysis_thread.daemon = True
