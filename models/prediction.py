@@ -63,3 +63,7 @@ class Prediction(object):
         prediction.expiration_at = quotation.ts + time_bid
         prediction.history_num = task.get_param("history_num")
         return prediction
+
+    @staticmethod
+    def update_cost(quotation):
+        return quotation
