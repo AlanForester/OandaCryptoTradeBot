@@ -10,10 +10,10 @@ class Prediction(object):
     pattern_id = 0
     created_cost = 0
     expiration_cost = 0
-    admission = 0.0
-    change = 0.0
-    max_cost = 0.0
-    min_cost = 0.0
+    admission = 0
+    change = 0
+    max_cost = 0
+    min_cost = 0
     created_at = 0
     expiration_at = 0
 

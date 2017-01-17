@@ -14,8 +14,8 @@ class Pattern:
     puts_count = 0
     same_count = 0
     last_call = 0
-    max_cost = 0.0
-    min_cost = 0.0
+    max_cost = 0
+    min_cost = 0
     delay = 0
     expires = 0
     history_num = 0
