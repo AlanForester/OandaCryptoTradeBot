@@ -17,7 +17,10 @@ class Signaler:
 
             max_change = task.setting.signaler_max_change_cost
             min_change = task.setting.signaler_min_change_cost
-            if pattern.max_change > max_change or pattern.min_change < min_change:
+
+            if 0 < max_change < pattern.max_change:
+                result = None
+            if 0 < min_change > pattern.min_change:
                 result = None
 
         return result
