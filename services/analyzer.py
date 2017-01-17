@@ -63,7 +63,6 @@ class Analyzer:
             prediction.save()
             # Проверка условий вероятности при создании сигнала
             direction = Signaler.check(self.task, pattern)
-            print(direction)
             if direction:
                 Signaler.make_and_save(self.task, sequence, self.quotation, direction, time_bid, pattern, prediction)
         else:

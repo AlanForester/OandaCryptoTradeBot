@@ -43,9 +43,15 @@ class Signaler:
         signal.direction = direction
         signal.instrument_id = task.setting.instrument_id
         signal.created_at = quotation.ts
-        signal.drawdown = 0
-        signal.change = 0
-        signal.expiration_cost = 0
-        signal.max_cost = 0
-        signal.min_cost = 0
-        pass
+
+        if direction == 'call':
+            expiration_cost = quotation.value + pattern.max_avg_change
+        else:
+            expiration_cost = quotation.value - pattern.min_avg_change
+        signal.expiration_cost = expiration_cost
+
+        signal.max_cost = quotation.value + pattern.max_change
+        signal.min_cost = quotation.value - pattern.min_change
+        signal.max_change_cost = pattern.max_change
+        signal.min_change_cost = pattern.min_change
+        return signal.save()
