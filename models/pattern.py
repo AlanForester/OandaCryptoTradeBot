@@ -41,15 +41,15 @@ class Pattern:
     def save(self):
         cursor = Providers.db().get_cursor()
         cursor.execute("INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,"
-                       "puts_count,same_count,last_call,range, avg_range, max_change, min_change, "
+                       "puts_count,same_count,last_call,range,avg_range,max_change,min_change,"
                        "max_avg_change,min_avg_change,delay,expires,history_num,created_at) "
-                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
                        "ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)"
                        "DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
                         self.calls_count, self.puts_count, self.same_count, self.last_call, self.range, self.avg_range,
-                        self.max_change, self.min_change, self.max_avg_change, self.delay, self.expires,
-                        self.history_num, self.created_at))
+                        self.max_change, self.min_change, self.max_avg_change, self.min_avg_change, self.delay,
+                        self.expires, self.history_num, self.created_at))
         row = cursor.fetchone()
         if row:
             self.id = row.id
@@ -58,7 +58,7 @@ class Pattern:
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count, self.calls_count,
                     self.puts_count, self.same_count, self.last_call, self.range, self.avg_range,
-                    self.max_change, self.min_change, self.max_avg_change,
+                    self.max_change, self.min_change, self.max_avg_change, self.min_avg_change,
                     self.delay, self.expires, self.history_num, self.created_at))
 
     @staticmethod
