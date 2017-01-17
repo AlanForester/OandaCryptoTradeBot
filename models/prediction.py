@@ -12,8 +12,8 @@ class Prediction(object):
     expiration_cost = 0
     admission = 0
     change = 0
-    max_cost = 0
-    min_cost = 0
+    max_change = 0
+    min_change = 0
     created_at = 0
     expiration_at = 0
 
@@ -24,12 +24,12 @@ class Prediction(object):
     def save(self):
         cursor = Providers.db().get_cursor()
         row = cursor.execute("INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, "
-                             "created_cost, expiration_cost, admission, change, max_cost, min_cost, created_at, "
+                             "created_cost, expiration_cost, admission, change, max_change, min_change, created_at, "
                              "expiration_at) "
                              "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
                              (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
-                              self.created_cost, self.expiration_cost, self.admission, self.change, self.max_cost,
-                              self.min_cost, self.created_at, self.expiration_at))
+                              self.created_cost, self.expiration_cost, self.admission, self.change, self.max_change,
+                              self.min_change, self.created_at, self.expiration_at))
 
         Providers.db().commit()
         if row:
@@ -38,8 +38,8 @@ class Prediction(object):
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.time_bid, self.pattern_id,
-                    self.created_cost, self.expiration_cost, self.admission, self.change, self.max_cost, self.min_cost,
-                    self.created_at, self.expiration_at))
+                    self.created_cost, self.expiration_cost, self.admission, self.change, self.max_change,
+                    self.min_change, self.created_at, self.expiration_at))
 
     @staticmethod
     def model(raw=None):

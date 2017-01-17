@@ -14,7 +14,10 @@ class Signaler:
                     if pattern.last_call >= task.settings.trader_min_repeats:
                         if pattern.calls_count / all_condition > task.settings.signaler_min_chance:
                             result = 'call'
-            # TODO: Добавить параметры максимальной цены ограничителя
-            # TODO: Добавить параметры минимальной цены ограничителя
+
+            max_change = task.settings.signaler_max_change_cost
+            min_change = task.settings.signaler_min_change_cost
+            if pattern.max_change > max_change or pattern.min_change < min_change:
+                result = None
 
         return result
