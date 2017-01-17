@@ -23,6 +23,8 @@ class Setting:
     signaler_min_chance = None
     signaler_min_repeats = None
     signaler_delay_on_trend = None
+    signaler_min_change_cost = None
+    signaler_max_change_cost = None
 
     _instrument = None
 
@@ -36,14 +38,15 @@ class Setting:
                 "candles_durations, analyzer_working_interval_sec, analyzer_collect_interval_sec, " \
                 "analyzer_bid_times, analyzer_deep, analyzer_min_deep, " \
                 "analyzer_prediction_expire, analyzer_save_prediction_if_exists, signaler_min_chance, " \
-                "signaler_min_repeats, signaler_delay_on_trend) " \
-                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
+                "signaler_min_repeats, signaler_delay_on_trend,signaler_min_change_cost,signaler_max_change_cost) " \
+                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
         cursor.execute(query,
                        (self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                         self.candles_durations, self.analyzer_working_interval_sec, self.analyzer_collect_interval_sec,
                         self.analyzer_bid_times, self.analyzer_deep, self.analyzer_min_deep,
                         self.analyzer_prediction_expire, self.analyzer_save_prediction_if_exists,
-                        self.signaler_min_chance, self.signaler_min_repeats, self.signaler_delay_on_trend))
+                        self.signaler_min_chance, self.signaler_min_repeats, self.signaler_delay_on_trend,
+                        self.signaler_min_change_cost, self.signaler_max_change_cost))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
@@ -59,10 +62,10 @@ class Setting:
     def __tuple_str(self):
         return str((self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                     self.candles_durations, self.analyzer_working_interval_sec, self.analyzer_collect_interval_sec,
-                    self.analyzer_bid_times,
-                    self.analyzer_deep, self.analyzer_min_deep, self.analyzer_prediction_expire,
-                    self.analyzer_save_prediction_if_exists, self.signaler_min_chance, self.signaler_min_repeats,
-                    self.signaler_delay_on_trend))
+                    self.analyzer_bid_times, self.analyzer_deep, self.analyzer_min_deep,
+                    self.analyzer_prediction_expire, self.analyzer_save_prediction_if_exists, self.signaler_min_chance,
+                    self.signaler_min_repeats, self.signaler_delay_on_trend, self.signaler_min_change_cost,
+                    self.signaler_max_change_cost))
 
     @staticmethod
     def model(raw=None):
