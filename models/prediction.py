@@ -65,5 +65,15 @@ class Prediction(object):
         return prediction
 
     @staticmethod
-    def update_cost(quotation):
+    def update_cost(quotation, setting_id):
+        """
+        UPDATE predictions
+SET expiration_cost = CASE
+           WHEN sequence_id = 234 THEN expiration_cost*2
+           ELSE 0
+    END;
+        :param quotation:
+        :param setting_id:
+        :return:
+        """
         return quotation

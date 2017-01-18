@@ -113,8 +113,12 @@ class Analyzer:
                         # Устанавливаем настоящее время для котировки и сохраняем
                         analyzer.quotation.ts = time_now
                         analyzer.quotation.save()
+
                         # Сохраняем свечи
                         analyzer.save_candles()
+
+                        # Обновляем параметры стоимости прогнозов
+                        Prediction.update_cost(analyzer.quotation, analyzer.task.setting.id)
 
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
                     surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec
