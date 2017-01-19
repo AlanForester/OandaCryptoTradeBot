@@ -11,7 +11,6 @@ class Prediction(object):
     created_cost = 0
     expiration_cost = 0
     last_cost = 0
-    admission = 0
     range_max_change_cost = 0
     range_max_avg_change_cost = 0
     call_max_change_cost = 0
@@ -33,14 +32,14 @@ class Prediction(object):
     def save(self):
         cursor = Providers.db().get_cursor()
         row = cursor.execute("INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, "
-                             "created_cost, expiration_cost, last_cost, admission, range_max_change_cost, "
+                             "created_cost, expiration_cost, last_cost, range_max_change_cost, "
                              "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
                              "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
                              "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, "
                              "expiration_at, history_num) "
-                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
+                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
                              (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
-                              self.created_cost, self.expiration_cost, self.last_cost, self.admission,
+                              self.created_cost, self.expiration_cost, self.last_cost,
                               self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
                               self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                               self.range_sum_max_change_cost, self.call_sum_max_change_cost,
@@ -54,7 +53,7 @@ class Prediction(object):
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
-                    self.created_cost, self.expiration_cost, self.last_cost, self.admission,
+                    self.created_cost, self.expiration_cost, self.last_cost,
                     self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                     self.range_sum_max_change_cost, self.call_sum_max_change_cost,
