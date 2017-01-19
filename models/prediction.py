@@ -132,4 +132,3 @@ class Prediction(object):
                                   put_sum_max_change_cost, count_change_cost, last_cost)
         cursor.execute(query)
         Providers.db().commit()
-        return quotation
