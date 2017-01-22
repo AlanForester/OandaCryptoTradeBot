@@ -118,7 +118,7 @@ class Analyzer:
                         analyzer.save_candles()
 
                         # Обновляем параметры стоимости прогнозов
-                        Prediction.update_cost(analyzer.quotation, analyzer.task.setting.id)
+                        Prediction.calculation_costs_for_topical(analyzer.quotation, analyzer.task.setting.id)
 
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
                     surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec

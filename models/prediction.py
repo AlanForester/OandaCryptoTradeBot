@@ -77,7 +77,7 @@ class Prediction(object):
         return prediction
 
     @staticmethod
-    def update_cost(quotation, setting_id):
+    def calculation_costs_for_topical(quotation, setting_id):
         cursor = Providers.db().get_cursor()
         cost = quotation.value
         count_change_cost = "count_change_cost+1"
