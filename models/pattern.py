@@ -53,7 +53,20 @@ class Pattern:
         row = cursor.fetchone()
         if row:
             self.id = row.id
+            Providers.db().commit()
         return self
+
+    def update(self):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("UPDATE patterns SET sequence_id=%s,setting_id=%s,task_id=%s,time_bid=%s,used_count=%s,"
+                       "calls_count=%s,puts_count=%s,same_count=%s,last_call=%s,range=%s,avg_range=%s,max_change=%s,"
+                       "min_change=%s,max_avg_change=%s,min_avg_change=%s,delay=%s,expires=%s,history_num=%s,"
+                       "created_at=%s WHERE id=%s",
+                       (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
+                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range, self.avg_range,
+                        self.max_change, self.min_change, self.max_avg_change, self.min_avg_change, self.delay,
+                        self.expires, self.history_num, self.created_at, self.id))
+        Providers.db().commit()
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count, self.calls_count,
@@ -114,3 +127,11 @@ class Pattern:
         model = cursor.fetchone()
         if model:
             return Pattern.model(model)
+
+    @staticmethod
+    def get_by_id(pk):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("SELECT * FROM patterns WHERE id=%s", [pk])
+        row = cursor.fetchone()
+        if row:
+            return Pattern(row)

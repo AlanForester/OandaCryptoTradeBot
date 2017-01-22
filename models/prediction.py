@@ -1,5 +1,5 @@
 from providers.providers import Providers
-
+from models.pattern import Pattern
 
 class Prediction(object):
     id = None
@@ -24,6 +24,8 @@ class Prediction(object):
     created_at = 0
     expiration_at = 0
     history_num = 0
+
+    _pattern = None
 
     def __init__(self, raw=None):
         if raw:
@@ -55,6 +57,12 @@ class Prediction(object):
         cursor = Providers.db().get_cursor()
         cursor.execute("UPDATE predictions SET expiration_cost=%s WHERE id=%s", (cost, self.id))
         Providers.db().commit()
+
+    @property
+    def pattern(self):
+        if not self._pattern:
+            self._pattern = Pattern.get_by_id(self.pattern_id)
+        return self._pattern
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,

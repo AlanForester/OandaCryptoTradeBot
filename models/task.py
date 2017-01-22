@@ -83,7 +83,7 @@ class Task:
     @property
     def setting(self):
         if not self._setting:
-            self._setting = Setting.get_setting_by_id(self.setting_id)
+            self._setting = Setting.get_by_id(self.setting_id)
         return self._setting
 
     def __tuple_str(self):

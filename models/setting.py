@@ -86,7 +86,7 @@ class Setting:
             return Setting(row)
 
     @staticmethod
-    def get_setting_by_id(pk):
+    def get_by_id(pk):
         cursor = Providers.db().get_cursor()
         cursor.execute("SELECT * FROM settings WHERE id=%s", [pk])
         row = cursor.fetchone()
