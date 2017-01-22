@@ -15,7 +15,6 @@ class Controller:
     def check_predictions(task, quotation=None, times=1):
         cursor = Providers.db().get_cursor()
 
-        trade_result = None
         # redis_prefix = "prediction"
         # if self.is_test:
         #     redis_prefix = "test_prediction"
