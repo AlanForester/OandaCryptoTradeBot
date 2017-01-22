@@ -51,6 +51,11 @@ class Prediction(object):
             self.id = row.id
             return self
 
+    def update_expiration_cost(self, cost):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("UPDATE predictions SET expiration_cost=%s WHERE id=%s", (cost, self.id))
+        Providers.db().commit()
+
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
                     self.created_cost, self.expiration_cost, self.last_cost,
@@ -75,6 +80,21 @@ class Prediction(object):
         prediction.expiration_at = quotation.ts + time_bid
         prediction.history_num = task.get_param("history_num")
         return prediction
+
+    @staticmethod
+    def get_ended(setting_id, history_num, time):
+        cursor = Providers.db().get_cursor()
+        query = "SELECT * FROM predictions WHERE setting_id=%s AND history_num=%s" % (setting_id, history_num)
+        if time:
+            query += " AND expiration_at=%s" % time
+
+        cursor.execute(query)
+        rows = cursor.findall()
+        if rows:
+            res = []
+            for row in rows:
+                res.append(Prediction.model(row))
+            return res
 
     @staticmethod
     def calculation_costs_for_topical(quotation, setting_id):
