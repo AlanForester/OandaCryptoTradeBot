@@ -11,7 +11,7 @@ class Controller:
         return True
 
     @staticmethod
-    def check_predictions(task, quotation=None):
+    def check_expired_predictions(task, quotation=None):
         test_trading = []
         timestamp = int(time.time())
         history_num = task.get_param("history_num")
@@ -20,7 +20,7 @@ class Controller:
         if history_num > 0:
             del timestamp
 
-        ended_predictions = Prediction.get_ended(task.setting_id, history_num, timestamp)
+        ended_predictions = Prediction.get_expired(task.setting_id, history_num, timestamp)
         # Формируем массив патернов для исключения повторения
         taken_patterns = []
         for prediction in ended_predictions:

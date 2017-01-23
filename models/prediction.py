@@ -91,11 +91,11 @@ class Prediction(object):
         return prediction
 
     @staticmethod
-    def get_ended(setting_id, history_num, time):
+    def get_expired(setting_id, history_num, time=None):
         cursor = Providers.db().get_cursor()
         query = "SELECT * FROM predictions WHERE setting_id=%s AND history_num=%s" % (setting_id, history_num)
         if time:
-            query += " AND expiration_at=%s" % time
+            query += " AND expiration_at<=%s" % time
 
         cursor.execute(query)
         rows = cursor.findall()
