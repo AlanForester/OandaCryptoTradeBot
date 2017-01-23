@@ -52,3 +52,11 @@ class ExThread(threading.Thread):
             "description": description
         }
         self.task.append_exception(terminate_log)
+
+    @staticmethod
+    def wait_threads(threads, num):
+        while len(threads) > num:
+            for t in threads:
+                if not t.is_alive():
+                    threads.remove(t)
+
