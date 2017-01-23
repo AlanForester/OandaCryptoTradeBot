@@ -45,3 +45,13 @@ class Quotation(object):
         candle_raw = cursor.fetchone()
         if candle_raw:
             return candle_raw
+
+    @staticmethod
+    def get_one_to_ts(ts, instrument_id):
+        cursor = Providers.db().get_cursor()
+        cursor.execute(
+            "SELECT * FROM quotations WHERE ts<=%s AND instrument_id=%s ORDER BY ts LIMIT 1",
+            (ts, instrument_id))
+        row = cursor.fetchone()
+        if row:
+            return Quotation.model(row)

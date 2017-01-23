@@ -70,7 +70,8 @@ class Prediction(object):
                     self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                     self.range_sum_max_change_cost, self.call_sum_max_change_cost,
-                    self.put_sum_max_change_cost, self.created_at, self.expiration_at, self.history_num))
+                    self.put_sum_max_change_cost, self.count_change_cost, self.created_at, self.expiration_at,
+                    self.history_num))
 
     @staticmethod
     def model(raw=None):

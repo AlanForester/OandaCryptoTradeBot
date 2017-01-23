@@ -14,12 +14,16 @@ class Pattern:
     puts_count = 0
     same_count = 0
     last_call = 0
-    range = 0
-    avg_range = 0
-    max_change = 0
-    min_change = 0
-    max_avg_change = 0
-    min_avg_change = 0
+    range_max_change_cost = 0
+    range_max_avg_change_cost = 0
+    call_max_change_cost = 0
+    put_max_change_cost = 0
+    call_max_avg_change_cost = 0
+    put_max_avg_change_cost = 0
+    range_sum_max_change_cost = 0
+    call_sum_max_change_cost = 0
+    put_sum_max_change_cost = 0
+    count_change_cost = 0
     delay = 0
     expires = 0
     history_num = 0
@@ -41,14 +45,20 @@ class Pattern:
     def save(self):
         cursor = Providers.db().get_cursor()
         cursor.execute("INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,"
-                       "puts_count,same_count,last_call,range,avg_range,max_change,min_change,"
-                       "max_avg_change,min_avg_change,delay,expires,history_num,created_at) "
-                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                       "puts_count,same_count,last_call,range_max_change_cost, "
+                       "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
+                       "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
+                       "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,"
+                       "delay,expires,history_num,created_at) "
+                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
                        "ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)"
                        "DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
-                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range, self.avg_range,
-                        self.max_change, self.min_change, self.max_avg_change, self.min_avg_change, self.delay,
+                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range_max_change_cost,
+                        self.range_max_avg_change_cost, self.call_max_change_cost,
+                        self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
+                        self.range_sum_max_change_cost, self.call_sum_max_change_cost,
+                        self.put_sum_max_change_cost, self.count_change_cost, self.delay,
                         self.expires, self.history_num, self.created_at))
         row = cursor.fetchone()
         if row:
@@ -59,19 +69,28 @@ class Pattern:
     def update(self):
         cursor = Providers.db().get_cursor()
         cursor.execute("UPDATE patterns SET sequence_id=%s,setting_id=%s,task_id=%s,time_bid=%s,used_count=%s,"
-                       "calls_count=%s,puts_count=%s,same_count=%s,last_call=%s,range=%s,avg_range=%s,max_change=%s,"
-                       "min_change=%s,max_avg_change=%s,min_avg_change=%s,delay=%s,expires=%s,history_num=%s,"
+                       "calls_count=%s,puts_count=%s,same_count=%s,last_call=%s,range_max_change_cost, "
+                       "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
+                       "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
+                       "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,"
+                       "delay=%s,expires=%s,history_num=%s,"
                        "created_at=%s WHERE id=%s",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
-                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range, self.avg_range,
-                        self.max_change, self.min_change, self.max_avg_change, self.min_avg_change, self.delay,
+                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range_max_change_cost,
+                        self.range_max_avg_change_cost, self.call_max_change_cost,
+                        self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
+                        self.range_sum_max_change_cost, self.call_sum_max_change_cost,
+                        self.put_sum_max_change_cost, self.count_change_cost, self.delay,
                         self.expires, self.history_num, self.created_at, self.id))
         Providers.db().commit()
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count, self.calls_count,
-                    self.puts_count, self.same_count, self.last_call, self.range, self.avg_range,
-                    self.max_change, self.min_change, self.max_avg_change, self.min_avg_change,
+                    self.puts_count, self.same_count, self.last_call, self.range_max_change_cost,
+                    self.range_max_avg_change_cost, self.call_max_change_cost,
+                    self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
+                    self.range_sum_max_change_cost, self.call_sum_max_change_cost,
+                    self.put_sum_max_change_cost, self.count_change_cost,
                     self.delay, self.expires, self.history_num, self.created_at))
 
     @staticmethod
