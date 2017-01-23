@@ -95,7 +95,7 @@ class Candle(object):
         return False
 
     @staticmethod
-    def get_last_with_parent(till_ts, deep, instrument_id):
+    def get_last(till_ts, deep, instrument_id, relation="parent"):
         """Достаем похожие по длительности свечи в рекурсивной функции
         Вложенность обеспечивается свойством parent
         За уровень вложенности отвечает параметр deep(Глубина)"""
@@ -117,10 +117,16 @@ class Candle(object):
                     model = dict()
                     model["change_power"] = row.change_power
                     model["duration"] = row.duration
-                    # model["till_ts"] = row[2]
-                    # model["from_ts"] = row[3]
+                    model["till_ts"] = row.till_ts
+                    model["from_ts"] = row.from_ts
                     if deep > 0:
-                        """Ищем родителей по любой длинне"""
-                        model["parents"] = Candle.get_last_with_parent(row.till_ts, deep, instrument_id)
+                        ts = row.from_ts
+                        if relation == "parent":
+                            # Ищем родителей за прошлые промежутки по from_ts
+                            ts = row.from_ts
+                        if relation == "related":
+                            # Ищем смежные за этот же промежуток по till_ts
+                            ts = row.till_ts
+                        model["parents"] = Candle.get_last(ts, deep, instrument_id, relation)
                     out.append(model)
         return out

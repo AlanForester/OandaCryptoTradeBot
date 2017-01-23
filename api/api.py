@@ -33,47 +33,44 @@ class Api(object):
         self.stream.rates(self.account_id, instrument.instrument)
 
     def get_history(self, instrument, start_ts, end_ts, granularity="S5"):
-        print(start_ts, end_ts)
+        max_count = 5000
         delta_ts = end_ts - start_ts
         delta_candles_count = int(delta_ts / 5)
-        quotations = []
+        quotations = {}
         while delta_candles_count > 0:
-            if delta_candles_count >= 5000:
-                count = 5000
+            if delta_candles_count >= max_count:
+                count = max_count
             else:
                 count = delta_candles_count
             start = datetime.utcfromtimestamp(start_ts).strftime("%Y-%m-%dT%H-%M-%S")
-            params = {
-                "instrument": instrument.instrument,
-                "count": count,
-                "candleFormat": "bidask",
-                "granularity": granularity,
-                "start": start
-            }
-            candles = self.api.get_history(**params)
-
-            if candles:
-                last_time = start_ts
-                print(start_ts, len(candles["candles"]))
+            candles = self.api.get_history(
+                instrument=instrument.instrument,
+                candleFormat="bidask",
+                granularity=granularity,
+                count=count,
+                start=start
+            )
+            if candles and len(candles["candles"]) > 0:
                 for candle in candles["candles"]:
                     quotation = Quotation
-                    quotation.ts = int(time.mktime(datetime.strptime(candle["time"], "%Y-%m-%dT%H:%M:%S.%fZ").timetuple()))
+                    quotation.ts = int(
+                        time.mktime(datetime.strptime(candle["time"], "%Y-%m-%dT%H:%M:%S.%fZ").timetuple()))
                     quotation.instrument_id = instrument.id
                     quotation.ask = (candle["highAsk"] + candle["lowAsk"]) / 2
                     quotation.bid = (candle["highBid"] + candle["lowBid"]) / 2
                     quotation.value = (((candle["openBid"] + candle["openAsk"]) / 2) +
                                        ((candle["closeBid"] + candle["closeAsk"]) / 2)) / 2
 
-                    quotations.append(quotation)
-                    last_time = quotation.ts
-                    if quotation.ts >= end_ts:
-                        print("Break")
-                        break
+                    if quotation.ts not in quotations:
+                        quotations[quotation.ts] = quotation
 
-                start_ts = last_time
-                print(start_ts)
-            else:
-                start_ts -= count * 5
+            start_ts += count * 5
             delta_candles_count -= count
-            #print(len(quotations), start_ts, count)
-        return quotations
+            print(len(quotations), start_ts, count)
+            time.sleep(1)
+            
+        result = []
+        if len(quotations) > 0:
+            for k, v in quotations.items():
+                result.append(v)
+        return result

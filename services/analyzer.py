@@ -37,9 +37,9 @@ class Analyzer:
 
     def do_analysis(self):
         """Метод подготовки прогнозов"""
-        # Получаем свечи разной длинны с их родителями
-        candles = Candle.get_last_with_parent(self.quotation.ts, self.task.setting.analyzer_deep,
-                                              self.task.setting.instrument_id)
+        # Получаем свечи разной длинны
+        candles = Candle.get_last(self.quotation.ts, self.task.setting.analyzer_deep,
+                                  self.task.setting.instrument_id, "parent")
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(candles, self.admissions)
 
@@ -79,8 +79,10 @@ class Analyzer:
     @staticmethod
     def run(task):
         analyzer = Analyzer(task)
+        save_handle = False
+        analysis_handle = False
         value_repeats = 0
-        max_value_repeats = 16
+        max_value_repeats = 30
         # Последнее пришедшее значение стоимости котировки
         last_quotation_value = 0
         # Последнее зафиксированое время обработки
@@ -96,15 +98,26 @@ class Analyzer:
                 # Счетчик устаревших данных котировок
                 if last_quotation_value != analyzer.quotation.value:
                     last_quotation_value = analyzer.quotation.value
+                    wait = False
                     value_repeats = 1
                 else:
+                    wait = True
                     value_repeats += 1
                     if max_value_repeats == value_repeats:
                         analyzer.terminate_stream()
                         value_repeats = 1
 
+                # Проверка возможности начать работу коллектора
+                save_surplus_time = time_now % analyzer.task.setting.analyzer_collect_interval_sec
+                if save_surplus_time == 0:
+                    save_handle = True
+                # Проверка возможности начать работу анализатору
+                surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec
+                if surplus_time == 0:
+                    analysis_handle = True
+
                 # Защита от повторного срабатывания секунды
-                if last_fixed_ts < time_now:
+                if last_fixed_ts < time_now and not wait:
                     last_fixed_ts = time_now
 
                     check_expired_predictions_thread = ExThread(target=Controller.check_expired_predictions,
@@ -112,8 +125,7 @@ class Analyzer:
                     check_expired_predictions_thread.task = task
                     check_expired_predictions_thread.start()
 
-                    save_surplus_time = time_now % analyzer.task.setting.analyzer_collect_interval_sec
-                    if save_surplus_time == 0:
+                    if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем
                         analyzer.quotation.ts = time_now
                         analyzer.quotation.save()
@@ -124,9 +136,10 @@ class Analyzer:
                         # Обновляем параметры стоимости прогнозов
                         Prediction.calculation_cost_for_topical(analyzer.quotation, analyzer.task.setting.id)
 
-                    # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
-                    surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec
-                    if surplus_time == 0:
+                        save_handle = False
+                        print("save")
+
+                    if analysis_handle:
                         # Перезагружаем настройки
                         task.flush_setting()
 
@@ -136,5 +149,7 @@ class Analyzer:
                         analysis_thread.task = task
                         analysis_thread.start()
                         # Запускаем поток на проверку прогнозов
+
+                        analysis_handle = False
 
             time.sleep(0.5)
