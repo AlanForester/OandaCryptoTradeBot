@@ -38,9 +38,7 @@ class Pattern:
 
     def update_used_counter(self):
         cursor = Providers.db().get_cursor()
-        cursor.execute(
-            "UPDATE patterns SET used_count=used_count+1 "
-            "WHERE id=%s", (self.id,))
+        cursor.execute("UPDATE patterns SET used_count=used_count+1 WHERE id=%s", (self.id,))
 
     def save(self):
         cursor = Providers.db().get_cursor()
