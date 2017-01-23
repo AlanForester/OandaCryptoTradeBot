@@ -40,6 +40,7 @@ class Analyzer:
         # Получаем свечи разной длинны
         candles = Candle.get_last(self.quotation.ts, self.task.setting.analyzer_deep,
                                   self.task.setting.instrument_id, "parent")
+
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(candles, self.admissions)
 
@@ -137,7 +138,6 @@ class Analyzer:
                         Prediction.calculation_cost_for_topical(analyzer.quotation, analyzer.task.setting.id)
 
                         save_handle = False
-                        print("save")
 
                     if analysis_handle:
                         # Перезагружаем настройки

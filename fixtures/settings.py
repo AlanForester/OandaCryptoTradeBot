@@ -28,6 +28,7 @@ class Settings:
             model.analyzer_min_deep = 2,
             model.analyzer_prediction_expire = json.dumps([{"expire": 0, "history_duration": 0}]),
             model.analyzer_save_prediction_if_exists = False,
+            model.analyzer_candles_parent_relation = "parent"
             model.signaler_min_chance = 60,
             model.signaler_min_repeats = 2,
             model.signaler_delay_on_trend = 0,
