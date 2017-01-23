@@ -93,12 +93,13 @@ class Prediction(object):
     @staticmethod
     def get_expired(setting_id, history_num, time=None):
         cursor = Providers.db().get_cursor()
-        query = "SELECT * FROM predictions WHERE setting_id=%s AND history_num=%s" % (setting_id, history_num)
+        query = "SELECT * FROM predictions WHERE expiration_cost=0 AND setting_id=%s AND history_num=%s" % \
+                (setting_id, history_num)
         if time:
             query += " AND expiration_at<=%s" % time
 
         cursor.execute(query)
-        rows = cursor.findall()
+        rows = cursor.fetchall()
         if rows:
             res = []
             for row in rows:
@@ -106,7 +107,7 @@ class Prediction(object):
             return res
 
     @staticmethod
-    def calculation_costs_for_topical(quotation, setting_id):
+    def calculation_cost_for_topical(quotation, setting_id):
         cursor = Providers.db().get_cursor()
         cost = quotation.value
         count_change_cost = "count_change_cost+1"

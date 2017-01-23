@@ -18,12 +18,13 @@ class Signaler:
                         if pattern.calls_count / all_condition > task.setting.signaler_min_chance:
                             result = 'call'
 
+            print(result)
             max_change = task.setting.signaler_max_change_cost
             min_change = task.setting.signaler_min_change_cost
 
-            if 0 < max_change < pattern.max_change:
+            if 0 < max_change <= pattern.call_max_change_cost:
                 result = None
-            if 0 < min_change > pattern.min_change:
+            if 0 < min_change >= pattern.put_max_change_cost:
                 result = None
 
         return result

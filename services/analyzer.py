@@ -63,7 +63,6 @@ class Analyzer:
             prediction.save()
             # Проверка условий вероятности при создании сигнала
             direction = Signaler.check(self.task, pattern)
-            print(direction)
             if direction:
                 Signaler.make_and_save(self.task, sequence, self.quotation, direction, time_bid, pattern, prediction)
         else:
@@ -108,6 +107,11 @@ class Analyzer:
                 if last_fixed_ts < time_now:
                     last_fixed_ts = time_now
 
+                    check_expired_predictions_thread = ExThread(target=Controller.check_expired_predictions,
+                                                                args=(task, analyzer.quotation))
+                    check_expired_predictions_thread.task = task
+                    check_expired_predictions_thread.start()
+
                     save_surplus_time = time_now % analyzer.task.setting.analyzer_collect_interval_sec
                     if save_surplus_time == 0:
                         # Устанавливаем настоящее время для котировки и сохраняем
@@ -118,7 +122,7 @@ class Analyzer:
                         analyzer.save_candles()
 
                         # Обновляем параметры стоимости прогнозов
-                        Prediction.calculation_costs_for_topical(analyzer.quotation, analyzer.task.setting.id)
+                        Prediction.calculation_cost_for_topical(analyzer.quotation, analyzer.task.setting.id)
 
                     # Проверка возможности начать работу согласно временному рабочему интервалу в конфигурации
                     surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec

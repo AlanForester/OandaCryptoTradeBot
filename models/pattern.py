@@ -67,10 +67,10 @@ class Pattern:
     def update(self):
         cursor = Providers.db().get_cursor()
         cursor.execute("UPDATE patterns SET sequence_id=%s,setting_id=%s,task_id=%s,time_bid=%s,used_count=%s,"
-                       "calls_count=%s,puts_count=%s,same_count=%s,last_call=%s,range_max_change_cost, "
-                       "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
-                       "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
-                       "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,"
+                       "calls_count=%s,puts_count=%s,same_count=%s,last_call=%s,range_max_change_cost=%s, "
+                       "range_max_avg_change_cost=%s,call_max_change_cost=%s,put_max_change_cost=%s,"
+                       "call_max_avg_change_cost=%s, put_max_avg_change_cost=%s, range_sum_max_change_cost=%s,"
+                       "call_sum_max_change_cost=%s, put_sum_max_change_cost=%s, count_change_cost=%s,"
                        "delay=%s,expires=%s,history_num=%s,"
                        "created_at=%s WHERE id=%s",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
@@ -81,6 +81,24 @@ class Pattern:
                         self.put_sum_max_change_cost, self.count_change_cost, self.delay,
                         self.expires, self.history_num, self.created_at, self.id))
         Providers.db().commit()
+
+    def calculation_cost_from_prediction(self, prediction):
+        self.count_change_cost += 1
+
+        self.range_sum_max_change_cost += prediction.range_max_change_cost
+        self.range_max_change_cost = prediction.range_max_change_cost \
+            if prediction.range_max_change_cost > self.range_max_change_cost else self.range_max_change_cost
+        self.range_max_avg_change_cost = self.range_sum_max_change_cost / self.count_change_cost
+
+        self.call_sum_max_change_cost += prediction.call_max_change_cost
+        self.call_max_change_cost = prediction.call_max_change_cost \
+            if prediction.call_max_change_cost > self.call_max_change_cost else self.call_max_change_cost
+        self.call_max_avg_change_cost = self.call_sum_max_change_cost / self.count_change_cost
+
+        self.put_sum_max_change_cost += prediction.put_max_change_cost
+        self.put_max_change_cost = prediction.put_max_change_cost \
+            if prediction.put_max_change_cost > self.put_max_change_cost else self.put_max_change_cost
+        self.put_max_avg_change_cost = self.put_max_change_cost / self.count_change_cost
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count, self.calls_count,
