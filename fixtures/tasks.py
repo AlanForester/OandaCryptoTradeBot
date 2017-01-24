@@ -18,7 +18,7 @@ class Tasks:
             task.worker_id = worker_id
             task.is_enabled = True
             task.service_name = service
-            task.params = json.dumps(Tasks.get_params(service))
+            task.params = Tasks.get_params(service)
             task.start_at = time.time()
             task.save()
 

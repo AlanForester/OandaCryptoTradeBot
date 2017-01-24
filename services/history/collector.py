@@ -80,4 +80,5 @@ class Collector:
                 if quotation.ts not in quotations:
                     quotations[str(quotation.ts)] = quotation
 
-            # TODO: Добавить запись в состояние таска
+            self.task.status["handled_quotations"] = len(quotations)
+            self.task.update_status()

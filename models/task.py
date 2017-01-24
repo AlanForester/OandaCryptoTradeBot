@@ -12,8 +12,8 @@ class Task:
     worker_id = 0
     is_enabled = False
     service_name = ""
-    params = json.dumps({})
-    status = json.dumps({})
+    params = {}
+    status = {}
     thread = ""
     start_at = 0
     launched_at = 0
@@ -33,13 +33,19 @@ class Task:
                 "start_at, launched_at, stop_at, terminated_at, handled_exceptions) " \
                 "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
         cursor.execute(query, [self.user_id, self.setting_id, self.worker_id, self.is_enabled, self.service_name,
-                               self.params, self.status, self.thread, self.start_at, self.launched_at, self.stop_at,
-                               self.terminated_at, self.handled_exceptions])
+                               json.dumps(self.params), json.dumps(self.status), self.thread, self.start_at,
+                               self.launched_at, self.stop_at, self.terminated_at, self.handled_exceptions])
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
             self.id = row[0]
             return self
+
+    def update_status(self):
+        cursor = Providers.db().get_cursor()
+        query = "UPDATE tasks SET status=%s WHERE id=%s"
+        cursor.execute(query, [json.dumps(self.status), self.id])
+        Providers.db().commit()
 
     def launch(self, thread):
         cursor = Providers.db().get_cursor()
@@ -53,7 +59,7 @@ class Task:
     def terminate(self):
         cursor = Providers.db().get_cursor()
         query = "UPDATE tasks SET terminated_at=%s WHERE id=%s RETURNING id;"
-        cursor.execute(query, (time.time(), self.id ))
+        cursor.execute(query, (time.time(), self.id))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
