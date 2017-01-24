@@ -40,6 +40,7 @@ class Quotation(object):
         res = cursor.fetchone()
         if res:
             return res.count
+        return 0
 
     @staticmethod
     def prepare_candle(from_ts, duration, instrument_id):
