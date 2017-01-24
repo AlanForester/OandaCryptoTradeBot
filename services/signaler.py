@@ -14,7 +14,7 @@ class Signaler:
                         result = 'put'
             else:
                 if pattern.calls_count > pattern.puts_count:
-                    if pattern.last_call >= task.setting.trader_min_repeats:
+                    if pattern.last_call >= task.setting.signaler_min_repeats:
                         if pattern.calls_count / all_condition > task.setting.signaler_min_chance:
                             result = 'call'
 
@@ -22,10 +22,12 @@ class Signaler:
             max_change = task.setting.signaler_max_change_cost
             min_change = task.setting.signaler_min_change_cost
 
-            if 0 < max_change <= pattern.call_max_change_cost:
-                result = None
-            if 0 < min_change >= pattern.put_max_change_cost:
-                result = None
+            if max_change > 0:
+                if max_change <= pattern.call_max_change_cost:
+                    result = None
+            if min_change > 0:
+                if min_change >= pattern.put_max_change_cost:
+                    result = None
 
         return result
 
