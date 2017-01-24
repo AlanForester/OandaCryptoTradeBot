@@ -4,6 +4,7 @@ from api.api import Api
 from datetime import datetime
 from models.quotation import Quotation
 from helpers.exthread import ExThread
+from models.candle import Candle
 
 
 class Collector:
@@ -25,16 +26,15 @@ class Collector:
         for item in history:
             counter += 1
             insert_pack.append(item)
-            if len(insert_pack) == 100:
-                insert_count = Quotation.save_many(insert_pack)
+            if (len(insert_pack) == 100) or (counter == len(history) and len(insert_pack) > 0):
+                ts_array = Quotation.save_many(insert_pack)
                 insert_pack = []
-                inserted_count += insert_count
+                inserted_count += len(ts_array)
+                if len(tsts_arrays) > 0:
+                    # Создаем свечи
+                    for row in ts_array:
+                        self.save_candles(row.ts)
                 self.task.update_status("inserted_quotations", inserted_count)
-
-        if len(insert_pack) > 0:
-            insert_count = Quotation.save_many(insert_pack)
-            inserted_count += insert_count
-            self.task.update_status("inserted_quotations", inserted_count)
 
     def get_quotations(self):
         start = self.task.get_param("start")
@@ -107,3 +107,11 @@ class Collector:
                     quotations[str(quotation.ts)] = quotation
 
             self.task.update_status("received_quotations", len(quotations))
+
+    def save_candles(self, ts):
+        candles = []
+        candles_durations = self.task.setting.candles_durations
+        for duration in candles_durations:
+            candle = Candle.make(ts, duration, self.task.setting.instrument_id)
+            candles.append(candle)
+        Candle.save_many(candles)
