@@ -13,6 +13,28 @@ class Collector:
         self.task = task
         self.api = Api()
         history = self.get_quotations()
+        self.insert_history(history)
+
+    def insert_history(self, history):
+        insert_pack = []
+        counter = 0
+        inserted_count = self.task.get_param("inserted_quotations")
+        if not inserted_count:
+            inserted_count = 0
+
+        for item in history:
+            counter += 1
+            insert_pack.append(item)
+            if len(insert_pack) == 100:
+                insert_count = Quotation.save_many(insert_pack)
+                insert_pack = []
+                inserted_count += insert_count
+                self.task.update_status("inserted_quotations", inserted_count)
+
+        if len(insert_pack) > 0:
+            insert_count = Quotation.save_many(insert_pack)
+            inserted_count += insert_count
+            self.task.update_status("inserted_quotations", inserted_count)
 
     def get_quotations(self):
         start = self.task.get_param("start")
@@ -23,6 +45,9 @@ class Collector:
         max_count = 500
         delta_ts = end_ts - start_ts
         delta_candles_count = int(delta_ts / 5)
+
+        self.task.update_status("total_quotations", delta_candles_count)
+
         quotations = {}
         threads = []
         while delta_candles_count > 0:
@@ -50,10 +75,11 @@ class Collector:
 
         ExThread.wait_threads(threads, 0)
         result = []
+
+        self.task.update_status("total_quotations", len(quotations))
         if len(quotations) > 0:
             q_keys = quotations.keys()
             for k in sorted(q_keys):
-                print(quotations[k])
                 result.append(quotations[k])
 
         return result
@@ -80,5 +106,4 @@ class Collector:
                 if quotation.ts not in quotations:
                     quotations[str(quotation.ts)] = quotation
 
-            self.task.status["handled_quotations"] = len(quotations)
-            self.task.update_status()
+            self.task.update_status("received_quotations", len(quotations))

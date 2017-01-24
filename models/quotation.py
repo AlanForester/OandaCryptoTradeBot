@@ -30,6 +30,18 @@ class Quotation(object):
         return Quotation(raw)
 
     @staticmethod
+    def save_many(quotations: list):
+        cursor = Providers.db().get_cursor()
+        query = 'WITH rows AS ( INSERT INTO quotations (ts, instrument_id, ask, bid, "value") VALUES ' + \
+                ','.join(v.__tuple_str() for v in quotations) + \
+                ' ON CONFLICT (ts,instrument_id) DO NOTHING RETURNING 1) SELECT count(*) as count FROM rows;'
+        cursor.execute(query)
+        Providers.db().commit()
+        res = cursor.fetchone()
+        if res:
+            return res.count
+
+    @staticmethod
     def prepare_candle(from_ts, duration, instrument_id):
         cursor = Providers.db().get_cursor()
         cursor.execute("SELECT "

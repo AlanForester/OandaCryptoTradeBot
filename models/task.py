@@ -41,7 +41,9 @@ class Task:
             self.id = row[0]
             return self
 
-    def update_status(self):
+    def update_status(self, key=None, value=None):
+        if key and value:
+            self.status[key] = value
         cursor = Providers.db().get_cursor()
         query = "UPDATE tasks SET status=%s WHERE id=%s"
         cursor.execute(query, [json.dumps(self.status), self.id])
