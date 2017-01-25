@@ -60,6 +60,19 @@ class Quotation(object):
             return candle_raw
 
     @staticmethod
+    def get_from_interval(start_ts, end_ts, instrument_id):
+        cursor = Providers.db().get_cursor()
+        cursor.execute(
+            "SELECT * FROM quotations WHERE ts>=%s AND ts<=%s AND instrument_id=%s ORDER BY ts;",
+            (start_ts, end_ts, instrument_id))
+        rows = cursor.fetchall()
+        if rows:
+            res = []
+            for row in rows:
+                res.append(Quotation.model(row))
+            return res
+
+    @staticmethod
     def get_one_to_ts(ts, instrument_id):
         cursor = Providers.db().get_cursor()
         cursor.execute(
