@@ -41,8 +41,8 @@ class Checker:
                     # print "Run analysis thread. Total:", len(total_threads)
                     i = 0
 
-            for th in total_threads:
-                th.join()
+            # Ждем все потоки
+            ExThread.wait_threads(total_threads, 0)
 
             print("All threads closed")
 
