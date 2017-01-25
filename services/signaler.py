@@ -18,7 +18,6 @@ class Signaler:
                         if pattern.calls_count / all_condition > task.setting.signaler_min_chance:
                             result = 'call'
 
-            print(result)
             max_change = task.setting.signaler_max_change_cost
             min_change = task.setting.signaler_min_change_cost
 
@@ -32,29 +31,34 @@ class Signaler:
         return result
 
     @staticmethod
-    def make_and_save(task, sequence, quotation, direction, time_bid, pattern, prediction):
+    def make_and_save(task, direction, pattern, prediction):
         signal = Signal()
-        signal.sequence_id = sequence.id
-        signal.expiration_at = quotation.ts + time_bid
+        signal.sequence_id = prediction.sequence_id
+        signal.expiration_at = prediction.created_at + prediction.time_bid
         signal.prediction_id = prediction.id
-        signal.setting_id = task.setting_id
-        signal.time_bid = time_bid
+        signal.setting_id = prediction.setting_id
+        signal.time_bid = prediction.time_bid
         signal.task_id = task.id
         signal.history_num = task.get_param("history_num")
-        signal.pattern_id = pattern.id
-        signal.created_cost = quotation.value
-        signal.direction = direction
+        signal.pattern_id = prediction.pattern_id
+        signal.created_cost = prediction.created_cost
+        direction_status = 0
+        if direction == 'call':
+            direction_status = 1
+        if direction == 'put':
+            direction_status = -1
+        signal.direction = direction_status
         signal.instrument_id = task.setting.instrument_id
-        signal.created_at = quotation.ts
+        signal.created_at = prediction.created_at
 
         if direction == 'call':
-            expiration_cost = quotation.value + pattern.max_avg_change
+            expiration_cost = prediction.created_cost + pattern.call_max_avg_change_cost
         else:
-            expiration_cost = quotation.value - pattern.min_avg_change
+            expiration_cost = prediction.created_cost - pattern.put_max_avg_change_cost
         signal.expiration_cost = expiration_cost
 
-        signal.max_cost = quotation.value + pattern.max_change
-        signal.min_cost = quotation.value - pattern.min_change
-        signal.max_change_cost = pattern.max_change
-        signal.min_change_cost = pattern.min_change
+        signal.max_cost = prediction.created_cost + pattern.call_max_change_cost
+        signal.min_cost = prediction.created_cost - pattern.put_max_change_cost
+        signal.max_change_cost = pattern.call_max_change_cost
+        signal.min_change_cost = pattern.put_max_change_cost
         return signal.save()

@@ -66,11 +66,11 @@ class Quotation(object):
             "SELECT * FROM quotations WHERE ts>=%s AND ts<=%s AND instrument_id=%s ORDER BY ts;",
             (start_ts, end_ts, instrument_id))
         rows = cursor.fetchall()
+        res = []
         if rows:
-            res = []
             for row in rows:
                 res.append(Quotation.model(row))
-            return res
+        return res
 
     @staticmethod
     def get_one_to_ts(ts, instrument_id):

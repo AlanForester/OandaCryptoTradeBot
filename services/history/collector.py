@@ -19,7 +19,7 @@ class Collector:
     def insert_history(self, history):
         insert_pack = []
         counter = 0
-        inserted_count = self.task.get_param("inserted_quotations")
+        inserted_count = self.task.get_param("collector_inserted_quotations")
         if not inserted_count:
             inserted_count = 0
 
@@ -34,7 +34,7 @@ class Collector:
                     # Создаем свечи
                     for row in ts_array:
                         self.save_candles(row.ts)
-                self.task.update_status("inserted_quotations", inserted_count)
+                self.task.update_status("collector_inserted_quotations", inserted_count)
 
     def get_quotations(self):
         start = self.task.get_param("start")
@@ -46,7 +46,7 @@ class Collector:
         delta_ts = end_ts - start_ts
         delta_candles_count = int(delta_ts / 5)
 
-        self.task.update_status("total_quotations", delta_candles_count)
+        self.task.update_status("collector_total_quotations", delta_candles_count)
 
         quotations = {}
         threads = []
@@ -76,7 +76,7 @@ class Collector:
         ExThread.wait_threads(threads, 0)
         result = []
 
-        self.task.update_status("total_quotations", len(quotations))
+        self.task.update_status("collector_total_quotations", len(quotations))
         if len(quotations) > 0:
             q_keys = quotations.keys()
             for k in sorted(q_keys):
@@ -106,7 +106,7 @@ class Collector:
                 if quotation.ts not in quotations:
                     quotations[str(quotation.ts)] = quotation
 
-            self.task.update_status("received_quotations", len(quotations))
+            self.task.update_status("collector_received_quotations", len(quotations))
 
     def save_candles(self, ts):
         candles = []

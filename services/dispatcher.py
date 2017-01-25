@@ -34,6 +34,8 @@ class Dispatcher(object):
                 thread = ExThread(target=Collector, args=(task,), name=len(self.threads))
             if task.service_name == "checker":
                 thread = ExThread(target=Checker, args=(task,), name=len(self.threads))
+            if task.service_name == "collector_and_checker":
+                thread = ExThread(target=Dispatcher.collector_and_checker, args=(task,), name=len(self.threads))
 
             if thread:
                 self.launch_task(task, len(self.threads))
@@ -44,6 +46,11 @@ class Dispatcher(object):
 
         if not thread:
             raise Exception("Launch service is undefined: " + task.service_name)
+
+    @staticmethod
+    def collector_and_checker(task):
+        Collector(task)
+        Checker(task)
 
     @staticmethod
     def launch_task(task, thread):

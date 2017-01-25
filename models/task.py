@@ -42,7 +42,7 @@ class Task:
             return self
 
     def update_status(self, key=None, value=None):
-        if key and value:
+        if key is not None and value is not None:
             self.status[key] = value
         cursor = Providers.db().get_cursor()
         query = "UPDATE tasks SET status=%s WHERE id=%s"

@@ -26,7 +26,7 @@ class Config:
 
         parser.add_argument(
             "-l", "--launch", dest="launch", type=str, required=False,
-            help="Launch task on startup", choices=["analyzer", "collector", "checker"]
+            help="Launch task on startup", choices=["analyzer", "collector", "checker", "collector_and_checker"]
         )
 
         args = parser.parse_args()

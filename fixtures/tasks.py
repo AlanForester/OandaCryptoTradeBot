@@ -36,4 +36,10 @@ class Tasks:
                 "end": int(time.time()),
                 "history_num": 1
             }
+        if service == "collector_and_checker":
+            params = {
+                "start": int(time.time() - 86400),
+                "end": int(time.time()),
+                "history_num": 1
+            }
         return params

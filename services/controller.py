@@ -18,7 +18,7 @@ class Controller:
 
         # Если это тестирование истории то время не нужно
         if history_num > 0:
-            del timestamp
+            timestamp = None
 
         ended_predictions = Prediction.get_expired(task.setting_id, history_num, timestamp)
         if ended_predictions:
@@ -63,8 +63,12 @@ class Controller:
                     if history_num > 0:
                         # Формируем сигнал для тестовой проверки
                         trade_direction = Signaler.check(task, pattern)
-                        test_trading.append({"prediction": prediction.id, "pattern": pattern.id,
-                                             "signal": trade_direction})
+                        Signaler.make_and_save(task, trade_direction, pattern, prediction)
+                        test_trading.append({"direction": trade_direction,
+                                             "prediction": prediction.id,
+                                             "pattern": pattern.id,
+                                             "signal": trade_direction
+                                             })
 
             # Обновляем паттерн и устанавливаем счетчики
             if len(taken_patterns) > 0:
