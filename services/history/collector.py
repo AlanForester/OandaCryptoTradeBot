@@ -30,7 +30,7 @@ class Collector:
                 ts_array = Quotation.save_many(insert_pack)
                 insert_pack = []
                 inserted_count += len(ts_array)
-                if len(tsts_arrays) > 0:
+                if len(ts_array) > 0:
                     # Создаем свечи
                     for row in ts_array:
                         self.save_candles(row.ts)
