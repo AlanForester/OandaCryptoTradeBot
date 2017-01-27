@@ -83,6 +83,13 @@ class Candle(object):
         Providers.db().commit()
 
     @staticmethod
+    def save_through_pg(ts, durations: list, instrument_id):
+        cursor = Providers.db().get_cursor()
+        query = "SELECT make_candles({0},{1},{2})" .format(ts, "ARRAY" + str(durations), instrument_id)
+        cursor.execute(query)
+        Providers.db().commit()
+
+    @staticmethod
     def get_last_till_ts(till_ts, instrument_id):
         """Достает время последней свечи"""
         cursor = Providers.db().get_cursor()

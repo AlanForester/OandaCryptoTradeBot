@@ -12,70 +12,70 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/26/2017 23:59:08 PM
+ Date: 01/27/2017 14:20:14 PM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 2765 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 2890 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."orders_id_seq";
-CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 901 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 902 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 79163 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 79221 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 298685 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 298743 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sequences_id_seq";
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 79212 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 79270 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 12 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 13 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."signals_id_seq";
-CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 61 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 62 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."signals_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 525 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 545 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 638 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 658 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -135,7 +135,7 @@ BEGIN
     ORDER BY till_ts DESC
     LIMIT 1;
 
-    IF last_change_var IS NOT NULL
+    IF last_change_var IS NOT NULL AND last_change_var > 0
     THEN
       change_power_var = change_var / (last_change_var / 100);
     END IF;
@@ -425,15 +425,15 @@ ALTER TABLE "public"."settings" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 2766 OWNED BY "instruments"."id";
-ALTER SEQUENCE "public"."orders_id_seq" RESTART 902 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 79164 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 298686 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 79213 OWNED BY "sequences"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 13 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."signals_id_seq" RESTART 62 OWNED BY "signals"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 526 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 639 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 2891 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."orders_id_seq" RESTART 903 OWNED BY "orders"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 79222 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 298744 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."sequences_id_seq" RESTART 79271 OWNED BY "sequences"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 14 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."signals_id_seq" RESTART 63 OWNED BY "signals"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 546 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 659 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table tasks
 -- ----------------------------

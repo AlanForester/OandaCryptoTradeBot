@@ -109,9 +109,5 @@ class Collector:
             self.task.update_status("collector_received_quotations", len(quotations))
 
     def save_candles(self, ts):
-        candles = []
         candles_durations = self.task.setting.candles_durations
-        for duration in candles_durations:
-            candle = Candle.make(ts, duration, self.task.setting.instrument_id)
-            candles.append(candle)
-        Candle.save_many(candles)
+        Candle.save_through_pg(ts, candles_durations, self.task.setting.instrument_id)

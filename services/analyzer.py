@@ -70,12 +70,8 @@ class Analyzer:
             prediction.save()
 
     def save_candles(self):
-        candles = []
         candles_durations = self.task.setting.candles_durations
-        for duration in candles_durations:
-            candle = Candle.make(self.quotation.ts, duration, self.task.setting.instrument_id)
-            candles.append(candle)
-        Candle.save_many(candles)
+        Candle.save_through_pg(self.quotation.ts, candles_durations, self.task.setting.instrument_id)
 
     @staticmethod
     def run(task):
