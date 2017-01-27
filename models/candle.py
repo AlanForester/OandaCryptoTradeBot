@@ -85,7 +85,7 @@ class Candle(object):
     @staticmethod
     def save_through_pg(ts, durations: list, instrument_id):
         cursor = Providers.db().get_cursor()
-        query = "SELECT make_candles({0},{1},{2})" .format(ts, "ARRAY" + str(durations), instrument_id)
+        query = "SELECT make_candles({0},{1},{2})".format(ts, "ARRAY" + str(durations), instrument_id)
         cursor.execute(query)
         Providers.db().commit()
 
@@ -100,6 +100,45 @@ class Candle(object):
         if row:
             return row.till_ts
         return False
+
+    @staticmethod
+    def get_last_with_nesting(till_ts, deep, instrument_id, durations, relation="parent"):
+        cursor = Providers.db().get_cursor()
+        query = "SELECT change_power,duration,till_ts,from_ts FROM " \
+                "get_last_candles_with_nesting({0},{1},{2},'{3}',{4}) " \
+                "ORDER BY till_ts DESC".format(instrument_id, till_ts, deep, relation, "ARRAY" + str(durations))
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        if rows:
+            return Candle.get_candles_with_parents(till_ts, rows, deep, relation)
+
+    @staticmethod
+    def get_candles_with_parents(ts, rows, deep, relation):
+        uniq_durations = []
+        out = []
+        if deep > 0:
+            deep -= 1
+            for row in rows:
+                if ts >= row.till_ts:
+                    if row.duration not in uniq_durations:
+                        uniq_durations.append(row.duration)
+                        model = dict()
+                        model["change_power"] = row.change_power
+                        model["duration"] = row.duration
+                        model["till_ts"] = row.till_ts
+                        model["from_ts"] = row.from_ts
+                        if deep > 0:
+                            ts_rel = row.from_ts
+                            if relation == "parent":
+                                # Ищем родителей за прошлые промежутки по from_ts
+                                ts_rel = row.from_ts
+                            if relation == "related":
+                                # Ищем смежные за этот же промежуток по till_ts
+                                ts_rel = row.till_ts
+                            model["parents"] = Candle.get_candles_with_parents(ts_rel, rows, deep, relation)
+                        out.append(model)
+
+        return out
 
     @staticmethod
     def get_last(till_ts, deep, instrument_id, relation="parent"):

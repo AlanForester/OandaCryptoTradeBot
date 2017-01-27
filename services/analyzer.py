@@ -38,12 +38,13 @@ class Analyzer:
     def do_analysis(self):
         """Метод подготовки прогнозов"""
         # Получаем свечи разной длинны
-        candles = Candle.get_last(self.quotation.ts, self.task.setting.analyzer_deep,
-                                  self.task.setting.instrument_id, "parent")
-
+        # candles = Candle.get_last(self.quotation.ts, self.task.setting.analyzer_deep,
+        #                           self.task.setting.instrument_id, "parent")
+        candles = Candle.get_last_with_nesting(self.quotation.ts, self.task.setting.analyzer_deep,
+                                  self.task.setting.instrument_id, self.task.setting.candles_durations, "parent")
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(candles, self.admissions)
-
+        print(len(sequences))
         for sequence in sequences:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
                 for time_bid in self.task.setting.analyzer_bid_times:
