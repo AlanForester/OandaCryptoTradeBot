@@ -12,13 +12,16 @@ def get_database():
 
 
 class Database:
+    connections_count = 5
+    connection_used = 0
+
     username = None
     password = None
     hostname = None
     port = None
     database = None
 
-    _connection = None
+    _connections = []
 
     def __init__(self):
         config = get_config()
@@ -28,24 +31,27 @@ class Database:
         self.port = config.get_postgres_port()
         self.database = config.get_postgres_database()
 
-        self.connect()
+        i = 0
+        while i < self.connections_count:
+            self._connections.append(self.connect())
+            i += 1
 
     def connect(self):
-        self._connection = psycopg2.connect(
+        con = psycopg2.connect(
             database=self.database,
             user=self.username,
             host=self.hostname,
             password=self.password,
             cursor_factory=NamedTupleCursor
         )
-
-    def get_connection(self):
-        return self._connection
+        con.autocommit = True
+        return con
 
     def get_cursor(self):
-        return self._connection.cursor()
+        cursor = self._connections[self.connection_used].cursor()
+        if self.connection_used >= len(self._connections) - 1:
+            self.connection_used = 0
+        return cursor
 
     def commit(self):
-        return self._connection.commit()
-
-
+        return False
