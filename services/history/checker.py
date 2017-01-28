@@ -38,7 +38,9 @@ class Checker:
                     analysis_thread.start()
                     # print "Run analysis thread. Total:", len(total_threads)
                     i = 0
+
                     Prediction.calculation_cost_for_topical(analyzer.quotation, analyzer.task.setting.id)
+
                     checked_quotations += 1
                     if checked_quotations % 10 == 0:
                         # Обновляем параметры стоимости прогнозов

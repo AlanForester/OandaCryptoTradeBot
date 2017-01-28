@@ -153,7 +153,7 @@ class Pattern:
                         expires = 0
 
         if expires > 0:
-            model_for_expires = Pattern.get_last(sequence.id, time_bid, task)
+            model_for_expires = Pattern.get_last(sequence.id, time_bid['time'], task)
 
             if model_for_expires and model_for_expires.check_on_expire():
                 expires = model_for_expires.expires
@@ -162,7 +162,7 @@ class Pattern:
         model.sequence_id = sequence.id
         model.setting_id = task.setting.id
         model.task_id = task.id
-        model.time_bid = time_bid
+        model.time_bid = time_bid['time']
         model.used_count = 1
         model.expires = expires
         model.task_id = task.id

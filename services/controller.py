@@ -17,7 +17,7 @@ class Controller:
         history_num = task.get_param("history_num")
 
         # Если это тестирование истории то время не нужно
-        if task.service_name == "collector" or task.service_name == "collector_and_checker":
+        if task.service_name == "checker" or task.service_name == "collector_and_checker":
             timestamp = None
 
         ended_predictions = Prediction.get_expired(task.setting_id, history_num, timestamp)
@@ -25,7 +25,7 @@ class Controller:
             # Формируем массив патернов для исключения повторения
             taken_patterns = {}
             for prediction in ended_predictions:
-                if task.service_name == "collector" or task.service_name == "collector_and_checker":
+                if task.service_name == "checker" or task.service_name == "collector_and_checker":
                     """В режиме теста нет котировки - поэтому достаем вручную"""
                     # quotation = Quotation.get_one_to_ts(prediction.expiration_at, task.setting.instrument_id)
                     quotation = Quotation
@@ -62,7 +62,7 @@ class Controller:
                     if abs(pattern.last_call) >= task.setting.signaler_min_repeats and pattern.delay == 0:
                         pattern.delay = task.setting.signaler_delay_on_trend
 
-                    if task.service_name == "collector" or task.service_name == "collector_and_checker":
+                    if task.service_name == "checker" or task.service_name == "collector_and_checker":
                         # Формируем сигнал для тестовой проверки
                         trade_direction = Signaler.check(task, pattern)
                         if trade_direction == "put" or trade_direction == "call":
@@ -78,5 +78,5 @@ class Controller:
                 for item in taken_patterns:
                     taken_patterns[item].update()
 
-            if task.service_name == "collector" or task.service_name == "collector_and_checker":
+            if task.service_name == "checker" or task.service_name == "collector_and_checker":
                 return test_trading

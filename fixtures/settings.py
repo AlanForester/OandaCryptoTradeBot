@@ -23,12 +23,12 @@ class Settings:
             model.candles_durations = json.dumps([30, 60]),
             model.analyzer_working_interval_sec = 5,
             model.analyzer_collect_interval_sec = 1,
-            model.analyzer_bid_times = json.dumps([180]),
+            model.analyzer_bid_times = json.dumps([{"time": 180, "admission": 60}]),
             model.analyzer_deep = 2,
             model.analyzer_min_deep = 2,
             model.analyzer_prediction_expire = json.dumps([{"expire": 0, "history_duration": 0}]),
-            model.analyzer_save_prediction_if_exists = False,
             model.analyzer_candles_parent_relation = "parent"
+            model.analyzer_expiry_time_bid_divider = 60
             model.signaler_min_chance = 60,
             model.signaler_min_repeats = 2,
             model.signaler_delay_on_trend = 0,

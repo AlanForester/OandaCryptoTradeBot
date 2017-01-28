@@ -56,17 +56,18 @@ class Analyzer:
         predictions_models = []
         for time_bid in self.task.setting.analyzer_bid_times:
             for seq in sequences_ret:
-                pass
                 prediction = Prediction.make(self.task, time_bid, self.quotation, seq)
-                predictions_models.append(prediction)
-                pattern = Pattern.make(self.task, seq, time_bid)
-                patterns_models.append(pattern)
+                # Проверка оставшегося времени до ставки
+                if prediction.time_to_expiration >= (time_bid['time'] - time_bid['admission']):
+                    predictions_models.append(prediction)
+                    pattern = Pattern.make(self.task, seq, time_bid)
+                    patterns_models.append(pattern)
 
-                # Проверка условий вероятности при создании сигнала
-                if self.task.get_param("history_num") == 0:
-                    direction = Signaler.check(self.task, pattern)
-                    if direction:
-                        Signaler.make_and_save(self.task, direction, pattern, prediction)
+                    # Проверка условий вероятности при создании сигнала
+                    if self.task.get_param("history_num") == 0:
+                        direction = Signaler.check(self.task, pattern)
+                        if direction:
+                            Signaler.make_and_save(self.task, direction, pattern, prediction)
 
         if len(patterns_models) > 0:
             patterns_ids = Pattern.save_many(patterns_models)

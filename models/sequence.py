@@ -52,7 +52,7 @@ class Sequence:
         cursor = Providers.db().get_cursor()
         query = 'INSERT INTO sequences (json, hash, duration) VALUES ' + \
                 ','.join(v.__tuple_str() for v in sequences) + \
-                ' ON CONFLICT (hash) DO UPDATE SET id=EXCLUDED.id RETURNING id,duration'
+                ' ON CONFLICT (hash) DO UPDATE SET hash=EXCLUDED.hash RETURNING id,duration'
         cursor.execute(query)
         Providers.db().commit()
         res = cursor.fetchall()

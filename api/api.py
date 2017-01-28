@@ -1,4 +1,5 @@
 import oandapy
+import json
 
 from api.stream.quotations import Quotations
 from providers.config import get_config
@@ -30,4 +31,7 @@ class Api(object):
         self.stream.rates(self.account_id, instrument.instrument)
 
     def get_history(self, **params):
-        return self.api.get_history(**params)
+        try:
+            return self.api.get_history(**params)
+        except json.JSONDecodeError:
+            return []
