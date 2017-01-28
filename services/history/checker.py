@@ -45,7 +45,8 @@ class Checker:
                     i = 0
 
                     checked_quotations += 1
-                    self.task.update_status("checker_checked_quotations", checked_quotations)
+                    if checked_quotations % 10 == 0:
+                        self.task.update_status("checker_checked_quotations", checked_quotations)
 
             # Ждем все потоки
             ExThread.wait_threads(total_threads, 0)

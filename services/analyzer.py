@@ -37,7 +37,6 @@ class Analyzer:
 
     def do_analysis(self):
         """Метод подготовки прогнозов"""
-        print(time.time())
         # Получаем свечи разной длинны
         # candles = Candle.get_last(self.quotation.ts, self.task.setting.analyzer_deep,
         #                           self.task.setting.instrument_id, "parent")
