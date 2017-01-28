@@ -12,14 +12,14 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/28/2017 03:28:14 AM
+ Date: 01/28/2017 05:39:29 AM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 3015 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 3265 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -33,49 +33,49 @@ ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 349941 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 756149 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 547192 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 951418 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sequences_id_seq";
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 310773 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 465185 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 14 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 16 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."signals_id_seq";
-CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 3336 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 95941 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."signals_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 624 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 646 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 737 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 759 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -244,6 +244,200 @@ $BODY$
 	SECURITY INVOKER
 	VOLATILE;
 ALTER FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) OWNER TO "postgres";
+
+-- ----------------------------
+--  Function structure for public.update_predictions(int4, int4, float4)
+-- ----------------------------
+DROP FUNCTION IF EXISTS "public"."update_predictions"(int4, int4, float4);
+CREATE FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) RETURNS "void" 
+	AS $BODY$
+DECLARE
+
+BEGIN
+  UPDATE predictions
+  SET put_max_change_cost     = CASE WHEN
+    put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+    expiration_at > input_ts
+    THEN created_cost - input_created_cost
+                                ELSE put_max_change_cost END,
+    put_max_avg_change_cost   = CASE WHEN
+      put_max_avg_change_cost !=
+      (put_sum_max_change_cost +
+       (CASE WHEN
+         put_max_change_cost <
+         created_cost - input_created_cost
+         AND setting_id = input_setting_id AND
+         expiration_at > input_ts
+         THEN created_cost -
+              input_created_cost
+        ELSE put_max_change_cost END))
+      / (count_change_cost + 1)
+      AND setting_id = input_setting_id AND
+      expiration_at >
+      input_ts
+      THEN (put_sum_max_change_cost +
+            (CASE WHEN put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+                       expiration_at > input_ts
+              THEN created_cost - input_created_cost
+             ELSE put_max_change_cost END)) / (count_change_cost + 1)
+                                ELSE put_max_avg_change_cost END,
+    call_max_change_cost      = CASE WHEN
+      call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+      expiration_at > input_ts
+      THEN input_created_cost - created_cost
+                                ELSE call_max_change_cost END,
+    call_max_avg_change_cost  = CASE WHEN
+      call_max_avg_change_cost != (call_sum_max_change_cost +
+                                   (CASE WHEN call_max_change_cost < input_created_cost - created_cost AND
+                                              setting_id = input_setting_id AND
+                                              expiration_at > input_ts
+                                     THEN input_created_cost - created_cost
+                                    ELSE call_max_change_cost END)) / (count_change_cost + 1) AND
+      setting_id = input_setting_id AND
+      expiration_at > input_ts
+      THEN (call_sum_max_change_cost +
+            (CASE WHEN call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+                       expiration_at > input_ts
+              THEN input_created_cost - created_cost
+             ELSE call_max_change_cost END)) / (count_change_cost + 1)
+                                ELSE put_max_avg_change_cost END,
+    range_max_change_cost     = CASE WHEN
+      range_max_change_cost <
+      (CASE WHEN put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+                 expiration_at > input_ts
+        THEN created_cost - input_created_cost
+       ELSE put_max_change_cost END) +
+      (CASE WHEN call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+                 expiration_at > input_ts
+        THEN input_created_cost - created_cost
+       ELSE call_max_change_cost END) AND setting_id = input_setting_id AND
+      expiration_at > input_ts
+      THEN (CASE WHEN put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+                      expiration_at > input_ts
+        THEN created_cost - input_created_cost
+            ELSE put_max_change_cost END) +
+           (CASE WHEN call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+                      expiration_at > input_ts
+             THEN input_created_cost - created_cost
+            ELSE call_max_change_cost END)
+                                ELSE range_max_change_cost END,
+    range_max_avg_change_cost = CASE WHEN
+      range_max_avg_change_cost != (range_sum_max_change_cost + (CASE WHEN range_max_change_cost < (CASE WHEN
+        put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+        expiration_at > input_ts
+        THEN created_cost - input_created_cost
+                                                                                                    ELSE put_max_change_cost END)
+                                                                                                   + (CASE WHEN
+        call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+        expiration_at > input_ts
+        THEN input_created_cost - created_cost
+                                                                                                      ELSE call_max_change_cost END)
+                                                                           AND setting_id = input_setting_id AND
+                                                                           expiration_at > input_ts
+        THEN (CASE WHEN put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+                        expiration_at > input_ts
+          THEN created_cost - input_created_cost
+              ELSE put_max_change_cost END) +
+             (CASE WHEN call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+                        expiration_at > input_ts
+               THEN input_created_cost - created_cost
+              ELSE call_max_change_cost END)
+                                                                 ELSE range_max_change_cost END)) /
+                                   (count_change_cost + 1) AND setting_id = input_setting_id AND
+      expiration_at > input_ts
+      THEN (range_sum_max_change_cost + (CASE WHEN range_max_change_cost < (CASE WHEN
+        put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+        expiration_at > input_ts
+        THEN created_cost - input_created_cost
+                                                                            ELSE put_max_change_cost END) + (CASE WHEN
+        call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+        expiration_at > input_ts
+        THEN input_created_cost - created_cost
+                                                                                                             ELSE call_max_change_cost END)
+                                                   AND setting_id = input_setting_id AND
+                                                   expiration_at > input_ts
+        THEN (CASE WHEN put_max_change_cost < created_cost - input_created_cost AND setting_id = input_setting_id AND
+                        expiration_at > input_ts
+          THEN created_cost - input_created_cost
+              ELSE put_max_change_cost END) +
+             (CASE WHEN call_max_change_cost < input_created_cost - created_cost AND setting_id = input_setting_id AND
+                        expiration_at > input_ts
+               THEN input_created_cost - created_cost
+              ELSE call_max_change_cost END)
+                                         ELSE range_max_change_cost END)) / (count_change_cost + 1)
+                                ELSE range_max_avg_change_cost END,
+    range_sum_max_change_cost = range_sum_max_change_cost +
+                                (CASE WHEN
+                                  range_max_change_cost <
+                                  (CASE WHEN
+                                    put_max_change_cost <
+                                    created_cost - input_created_cost AND
+                                    setting_id = input_setting_id AND
+                                    expiration_at >
+                                    input_ts
+                                    THEN created_cost - input_created_cost
+                                   ELSE put_max_change_cost END)
+                                  + (CASE WHEN
+                                    call_max_change_cost <
+                                    input_created_cost - created_cost AND
+                                    setting_id = input_setting_id AND
+                                    expiration_at >
+                                    input_ts
+                                    THEN input_created_cost - created_cost
+                                     ELSE call_max_change_cost END)
+                                  AND setting_id = input_setting_id AND
+                                  expiration_at >
+                                  input_ts
+                                  THEN (CASE WHEN
+                                    put_max_change_cost <
+                                    created_cost - input_created_cost AND
+                                    setting_id = input_setting_id AND
+                                    expiration_at >
+                                    input_ts
+                                    THEN created_cost - input_created_cost
+                                        ELSE put_max_change_cost END)
+                                       +
+                                       (CASE WHEN
+                                         call_max_change_cost <
+                                         input_created_cost - created_cost
+                                         AND setting_id = input_setting_id AND
+                                         expiration_at >
+                                         input_ts
+                                         THEN input_created_cost -
+                                              created_cost
+                                        ELSE call_max_change_cost END)
+                                 ELSE range_max_change_cost END),
+    call_sum_max_change_cost  = call_sum_max_change_cost +
+                                (CASE WHEN
+                                  call_max_change_cost <
+                                  input_created_cost - created_cost AND
+                                  setting_id = input_setting_id AND
+                                  expiration_at >
+                                  input_ts
+                                  THEN input_created_cost - created_cost
+                                 ELSE call_max_change_cost END),
+    put_sum_max_change_cost   = put_sum_max_change_cost +
+                                (CASE WHEN
+                                  put_max_change_cost <
+                                  created_cost - input_created_cost AND
+                                  setting_id = input_setting_id AND
+                                  expiration_at >
+                                  input_ts
+                                  THEN created_cost - input_created_cost
+                                 ELSE put_max_change_cost END),
+    count_change_cost         = count_change_cost + 1,
+    last_cost                 = CASE WHEN
+      last_cost != input_created_cost AND setting_id = input_setting_id AND expiration_at > input_ts
+      THEN input_created_cost
+                                ELSE last_cost END;
+END;
+$BODY$
+	LANGUAGE plpgsql
+	COST 100
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	VOLATILE;
+ALTER FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for tasks
@@ -512,15 +706,15 @@ ALTER TABLE "public"."settings" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 3016 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 3266 OWNED BY "instruments"."id";
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 904 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 349942 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 547193 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 310774 OWNED BY "sequences"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 15 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."signals_id_seq" RESTART 3337 OWNED BY "signals"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 625 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 738 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 756150 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 951419 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."sequences_id_seq" RESTART 465186 OWNED BY "sequences"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 17 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."signals_id_seq" RESTART 95942 OWNED BY "signals"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 647 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 760 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table tasks
 -- ----------------------------
@@ -530,6 +724,12 @@ ALTER TABLE "public"."tasks" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMM
 --  Primary key structure for table predictions
 -- ----------------------------
 ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Indexes structure for table predictions
+-- ----------------------------
+CREATE INDEX  "created_cost" ON "public"."predictions" USING btree(expiration_cost ASC NULLS LAST, setting_id ASC NULLS LAST, expiration_at ASC NULLS LAST);
+CREATE INDEX  "ex_set_his" ON "public"."predictions" USING btree(setting_id ASC NULLS LAST, expiration_cost ASC NULLS LAST, history_num ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table workers
@@ -550,6 +750,12 @@ ALTER TABLE "public"."sequences" ADD CONSTRAINT "hash_uniq" UNIQUE ("hash") NOT 
 --  Primary key structure for table candles
 -- ----------------------------
 ALTER TABLE "public"."candles" ADD PRIMARY KEY ("instrument_id", "from_ts", "till_ts") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Indexes structure for table candles
+-- ----------------------------
+CREATE INDEX  "instr_dur_till" ON "public"."candles" USING btree(instrument_id ASC NULLS LAST, duration ASC NULLS LAST, till_ts ASC NULLS LAST);
+CREATE INDEX  "till_instr" ON "public"."candles" USING btree(till_ts ASC NULLS LAST, instrument_id ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table quotations
@@ -585,6 +791,11 @@ ALTER TABLE "public"."patterns" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY 
 --  Uniques structure for table patterns
 -- ----------------------------
 ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Indexes structure for table patterns
+-- ----------------------------
+CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence_id ASC NULLS LAST, setting_id ASC NULLS LAST, time_bid ASC NULLS LAST, history_num ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table settings

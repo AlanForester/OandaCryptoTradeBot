@@ -17,7 +17,7 @@ class Controller:
         history_num = task.get_param("history_num")
 
         # Если это тестирование истории то время не нужно
-        if history_num > 0:
+        if task.service_name == "collector" or task.service_name == "collector_and_checker":
             timestamp = None
 
         ended_predictions = Prediction.get_expired(task.setting_id, history_num, timestamp)
@@ -25,9 +25,11 @@ class Controller:
             # Формируем массив патернов для исключения повторения
             taken_patterns = {}
             for prediction in ended_predictions:
-                if history_num > 0:
+                if task.service_name == "collector" or task.service_name == "collector_and_checker":
                     """В режиме теста нет котировки - поэтому достаем вручную"""
-                    quotation = Quotation.get_one_to_ts(prediction.expiration_at, task.setting.instrument_id)
+                    # quotation = Quotation.get_one_to_ts(prediction.expiration_at, task.setting.instrument_id)
+                    quotation = Quotation
+                    quotation.value = prediction.last_cost
 
                 if quotation:
                     # Закрываем стоимость прогноза
@@ -60,20 +62,21 @@ class Controller:
                     if abs(pattern.last_call) >= task.setting.signaler_min_repeats and pattern.delay == 0:
                         pattern.delay = task.setting.signaler_delay_on_trend
 
-                    if history_num > 0:
+                    if task.service_name == "collector" or task.service_name == "collector_and_checker":
                         # Формируем сигнал для тестовой проверки
                         trade_direction = Signaler.check(task, pattern)
-                        Signaler.make_and_save(task, trade_direction, pattern, prediction)
-                        test_trading.append({"direction": trade_direction,
-                                             "prediction": prediction.id,
-                                             "pattern": pattern.id,
-                                             "signal": trade_direction
-                                             })
+                        if trade_direction == "put" or trade_direction == "call":
+                            Signaler.make_and_save(task, trade_direction, pattern, prediction)
+                            test_trading.append({"direction": trade_direction,
+                                                 "prediction": prediction.id,
+                                                 "pattern": pattern.id,
+                                                 "signal": trade_direction
+                                                 })
 
             # Обновляем паттерн и устанавливаем счетчики
             if len(taken_patterns) > 0:
                 for item in taken_patterns:
                     taken_patterns[item].update()
 
-            if history_num > 0:
+            if task.service_name == "collector" or task.service_name == "collector_and_checker":
                 return test_trading

@@ -1,3 +1,5 @@
+import time
+
 from providers.providers import Providers
 from models.pattern import Pattern
 
@@ -127,56 +129,56 @@ class Prediction(object):
     @staticmethod
     def calculation_cost_for_topical(quotation, setting_id):
         cursor = Providers.db().get_cursor()
-        cost = quotation.value
-        count_change_cost = "count_change_cost+1"
-        last_cost = "CASE WHEN last_cost != %s AND setting_id = %s AND expiration_at > extract(EPOCH FROM now()) " \
-                    "THEN %s ELSE last_cost END" % \
-                    (cost, setting_id, cost)
-        call_max_change_cost = "CASE WHEN call_max_change_cost < %s - created_cost AND setting_id = %s AND " \
-                               "expiration_at > extract(EPOCH FROM now()) " \
-                               "THEN %s - created_cost ELSE call_max_change_cost END" % (cost, setting_id, cost)
-        call_sum_max_change_cost = "call_sum_max_change_cost + (%s)" % call_max_change_cost
-        call_max_avg_change_cost = "CASE WHEN call_max_avg_change_cost != (%s) / (%s) " \
-                                   "AND setting_id = %s AND expiration_at > extract(EPOCH FROM now()) " \
-                                   "THEN (%s) / (%s) ELSE put_max_avg_change_cost END" % \
-                                   (call_sum_max_change_cost, count_change_cost, setting_id, call_sum_max_change_cost,
-                                    count_change_cost)
-
-        put_max_change_cost = "CASE WHEN put_max_change_cost < created_cost - %s AND setting_id = %s AND " \
-                              "expiration_at > extract(EPOCH FROM now()) THEN created_cost - %s " \
-                              "ELSE put_max_change_cost END" % (cost, setting_id, cost)
-        put_sum_max_change_cost = "put_sum_max_change_cost + (%s)" % put_max_change_cost
-        put_max_avg_change_cost = "CASE WHEN put_max_avg_change_cost != (%s) / (%s) " \
-                                  "AND setting_id = %s AND expiration_at > extract(EPOCH FROM now()) " \
-                                  "THEN (%s) / (%s) ELSE put_max_avg_change_cost END" % \
-                                  (put_sum_max_change_cost, count_change_cost, setting_id, put_sum_max_change_cost,
-                                   count_change_cost)
-        range_max_change_cost = "CASE WHEN range_max_change_cost < (%s) + (%s) AND setting_id = %s " \
-                                "AND expiration_at > extract(EPOCH FROM now()) THEN (%s) + (%s) " \
-                                "ELSE range_max_change_cost END" % \
-                                (put_max_change_cost, call_max_change_cost, setting_id, put_max_change_cost,
-                                 call_max_change_cost)
-        range_sum_max_change_cost = "range_sum_max_change_cost + (%s)" % range_max_change_cost
-        range_max_avg_change_cost = "CASE WHEN range_max_avg_change_cost != (%s) / (%s) AND setting_id = %s AND " \
-                                    "expiration_at > extract(EPOCH FROM now()) " \
-                                    "THEN (%s) / (%s) ELSE range_max_avg_change_cost END" % \
-                                    (range_sum_max_change_cost, count_change_cost, setting_id,
-                                     range_sum_max_change_cost, count_change_cost)
-
-        query = "UPDATE predictions SET " \
-                "put_max_change_cost = %s, " \
-                "put_max_avg_change_cost = %s, " \
-                "call_max_change_cost = %s, " \
-                "call_max_avg_change_cost = %s, " \
-                "range_max_change_cost = %s, " \
-                "range_max_avg_change_cost = %s, " \
-                "range_sum_max_change_cost = %s, " \
-                "call_sum_max_change_cost = %s, " \
-                "put_sum_max_change_cost = %s, " \
-                "count_change_cost = %s, " \
-                "last_cost=%s" % (put_max_change_cost, put_max_avg_change_cost, call_max_change_cost,
-                                  call_max_avg_change_cost, range_max_change_cost,
-                                  range_max_avg_change_cost, range_sum_max_change_cost, call_sum_max_change_cost,
-                                  put_sum_max_change_cost, count_change_cost, last_cost)
-        cursor.execute(query)
+        # cost = quotation.value
+        # count_change_cost = "count_change_cost+1"
+        # last_cost = "CASE WHEN last_cost != %s AND setting_id = %s AND expiration_at > extract(EPOCH FROM now()) " \
+        #             "THEN %s ELSE last_cost END" % \
+        #             (cost, setting_id, cost)
+        # call_max_change_cost = "CASE WHEN call_max_change_cost < %s - created_cost AND setting_id = %s AND " \
+        #                        "expiration_at > extract(EPOCH FROM now()) " \
+        #                        "THEN %s - created_cost ELSE call_max_change_cost END" % (cost, setting_id, cost)
+        # call_sum_max_change_cost = "call_sum_max_change_cost + (%s)" % call_max_change_cost
+        # call_max_avg_change_cost = "CASE WHEN call_max_avg_change_cost != (%s) / (%s) " \
+        #                            "AND setting_id = %s AND expiration_at > extract(EPOCH FROM now()) " \
+        #                            "THEN (%s) / (%s) ELSE put_max_avg_change_cost END" % \
+        #                            (call_sum_max_change_cost, count_change_cost, setting_id, call_sum_max_change_cost,
+        #                             count_change_cost)
+        #
+        # put_max_change_cost = "CASE WHEN put_max_change_cost < created_cost - %s AND setting_id = %s AND " \
+        #                       "expiration_at > extract(EPOCH FROM now()) THEN created_cost - %s " \
+        #                       "ELSE put_max_change_cost END" % (cost, setting_id, cost)
+        # put_sum_max_change_cost = "put_sum_max_change_cost + (%s)" % put_max_change_cost
+        # put_max_avg_change_cost = "CASE WHEN put_max_avg_change_cost != (%s) / (%s) " \
+        #                           "AND setting_id = %s AND expiration_at > extract(EPOCH FROM now()) " \
+        #                           "THEN (%s) / (%s) ELSE put_max_avg_change_cost END" % \
+        #                           (put_sum_max_change_cost, count_change_cost, setting_id, put_sum_max_change_cost,
+        #                            count_change_cost)
+        # range_max_change_cost = "CASE WHEN range_max_change_cost < (%s) + (%s) AND setting_id = %s " \
+        #                         "AND expiration_at > extract(EPOCH FROM now()) THEN (%s) + (%s) " \
+        #                         "ELSE range_max_change_cost END" % \
+        #                         (put_max_change_cost, call_max_change_cost, setting_id, put_max_change_cost,
+        #                          call_max_change_cost)
+        # range_sum_max_change_cost = "range_sum_max_change_cost + (%s)" % range_max_change_cost
+        # range_max_avg_change_cost = "CASE WHEN range_max_avg_change_cost != (%s) / (%s) AND setting_id = %s AND " \
+        #                             "expiration_at > extract(EPOCH FROM now()) " \
+        #                             "THEN (%s) / (%s) ELSE range_max_avg_change_cost END" % \
+        #                             (range_sum_max_change_cost, count_change_cost, setting_id,
+        #                              range_sum_max_change_cost, count_change_cost)
+        #
+        # query = "UPDATE predictions SET " \
+        #         "put_max_change_cost = %s, " \
+        #         "put_max_avg_change_cost = %s, " \
+        #         "call_max_change_cost = %s, " \
+        #         "call_max_avg_change_cost = %s, " \
+        #         "range_max_change_cost = %s, " \
+        #         "range_max_avg_change_cost = %s, " \
+        #         "range_sum_max_change_cost = %s, " \
+        #         "call_sum_max_change_cost = %s, " \
+        #         "put_sum_max_change_cost = %s, " \
+        #         "count_change_cost = %s, " \
+        #         "last_cost=%s" % (put_max_change_cost, put_max_avg_change_cost, call_max_change_cost,
+        #                           call_max_avg_change_cost, range_max_change_cost,
+        #                           range_max_avg_change_cost, range_sum_max_change_cost, call_sum_max_change_cost,
+        #                           put_sum_max_change_cost, count_change_cost, last_cost)
+        cursor.execute("SELECT update_predictions(%s,%s,%s)", [quotation.ts, setting_id, quotation.value])
         Providers.db().commit()

@@ -61,12 +61,12 @@ class Analyzer:
                 predictions_models.append(prediction)
                 pattern = Pattern.make(self.task, seq, time_bid)
                 patterns_models.append(pattern)
-                # prediction.pattern_id = pattern.id
-                # prediction.save()
+
                 # Проверка условий вероятности при создании сигнала
-                # direction = Signaler.check(self.task, pattern)
-                # if direction:
-                #     Signaler.make_and_save(self.task, direction, pattern, prediction)
+                if self.task.get_param("history_num") == 0:
+                    direction = Signaler.check(self.task, pattern)
+                    if direction:
+                        Signaler.make_and_save(self.task, direction, pattern, prediction)
 
         if len(patterns_models) > 0:
             patterns_ids = Pattern.save_many(patterns_models)
