@@ -12,70 +12,70 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/27/2017 14:20:14 PM
+ Date: 01/28/2017 03:28:14 AM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 2890 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 3015 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."orders_id_seq";
-CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 902 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 903 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 79221 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 349941 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 298743 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 547192 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sequences_id_seq";
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 79270 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 310773 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 13 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 14 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."signals_id_seq";
-CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 62 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 3336 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."signals_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 545 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 624 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 658 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 737 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -157,6 +157,93 @@ $BODY$
 	SECURITY INVOKER
 	VOLATILE;
 ALTER FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) OWNER TO "postgres";
+
+-- ----------------------------
+--  Function structure for public.get_till_ts_from_last_candle_on_ts(int4, int4)
+-- ----------------------------
+DROP FUNCTION IF EXISTS "public"."get_till_ts_from_last_candle_on_ts"(int4, int4);
+CREATE FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) RETURNS "int4" 
+	AS $BODY$
+DECLARE
+  ret INT;
+BEGIN
+  SELECT till_ts
+  INTO ret
+  FROM candles
+  WHERE till_ts <= input_till_ts AND instrument_id = input_instrument_id
+  ORDER BY till_ts DESC
+  LIMIT 1;
+  RETURN ret;
+END
+$BODY$
+	LANGUAGE plpgsql
+	COST 100
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	VOLATILE;
+ALTER FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) OWNER TO "postgres";
+
+-- ----------------------------
+--  Function structure for public.get_last_candles_on_till_ts(int4, int4, _int4)
+-- ----------------------------
+DROP FUNCTION IF EXISTS "public"."get_last_candles_on_till_ts"(int4, int4, _int4);
+CREATE FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) RETURNS SETOF "public"."candles" 
+	AS $BODY$
+DECLARE
+BEGIN
+  RETURN QUERY
+  SELECT *
+  FROM candles
+  WHERE till_ts = (SELECT get_till_ts_from_last_candle_on_ts(input_instrument_id, input_till_ts)) AND
+        instrument_id = input_instrument_id AND duration = ANY(input_durations);
+END
+$BODY$
+	LANGUAGE plpgsql
+	COST 100
+	ROWS 1000
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	VOLATILE;
+ALTER FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) OWNER TO "postgres";
+
+-- ----------------------------
+--  Function structure for public.get_last_candles_with_nesting(int4, int4, int4, varchar, _int4)
+-- ----------------------------
+DROP FUNCTION IF EXISTS "public"."get_last_candles_with_nesting"(int4, int4, int4, varchar, _int4);
+CREATE FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) RETURNS SETOF "public"."candles" 
+	AS $BODY$
+DECLARE
+  deep_var INT = input_deep;
+  r        candles%ROWTYPE;
+BEGIN
+  FOR r IN SELECT *
+           FROM get_last_candles_on_till_ts(input_instrument_id, input_till_ts, input_durations)
+  LOOP
+    deep_var = input_deep - 1;
+    IF deep_var > 0
+    THEN
+      IF input_relation = 'parent'
+      THEN
+        RETURN QUERY SELECT *
+                     FROM get_last_candles_with_nesting(input_instrument_id, r.from_ts, deep_var, input_relation, input_durations);
+      END IF;
+      IF input_relation = 'related'
+      THEN
+        RETURN QUERY SELECT *
+                     FROM get_last_candles_with_nesting(input_instrument_id, r.till_ts, deep_var, input_relation, input_durations);
+      END IF;
+    END IF;
+    RETURN NEXT r;
+  END LOOP;
+END;
+$BODY$
+	LANGUAGE plpgsql
+	COST 100
+	ROWS 1000
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	VOLATILE;
+ALTER FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) OWNER TO "postgres";
 
 -- ----------------------------
 --  Table structure for tasks
@@ -425,15 +512,15 @@ ALTER TABLE "public"."settings" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 2891 OWNED BY "instruments"."id";
-ALTER SEQUENCE "public"."orders_id_seq" RESTART 903 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 79222 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 298744 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 79271 OWNED BY "sequences"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 14 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."signals_id_seq" RESTART 63 OWNED BY "signals"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 546 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 659 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 3016 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."orders_id_seq" RESTART 904 OWNED BY "orders"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 349942 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 547193 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."sequences_id_seq" RESTART 310774 OWNED BY "sequences"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 15 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."signals_id_seq" RESTART 3337 OWNED BY "signals"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 625 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 738 OWNED BY "workers"."id";
 -- ----------------------------
 --  Primary key structure for table tasks
 -- ----------------------------

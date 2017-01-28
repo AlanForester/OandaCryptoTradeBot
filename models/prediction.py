@@ -1,6 +1,7 @@
 from providers.providers import Providers
 from models.pattern import Pattern
 
+
 class Prediction(object):
     id = None
     sequence_id = None
@@ -78,12 +79,29 @@ class Prediction(object):
         return Prediction(raw)
 
     @staticmethod
-    def make(task, time_bid, quotation, sequence):
+    def save_many(predictions: list):
+        cursor = Providers.db().get_cursor()
+        query = 'INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, ' + \
+                'created_cost, expiration_cost, last_cost, range_max_change_cost, ' + \
+                'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
+                'call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,' + \
+                'call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, ' + \
+                'expiration_at, history_num) VALUES ' + \
+                ','.join(v.__tuple_str() for v in predictions) + ' RETURNING id;'
+        cursor.execute(query)
+        Providers.db().commit()
+        res = cursor.fetchall()
+        if res:
+            return res
+        return []
+
+    @staticmethod
+    def make(task, time_bid, quotation, seq):
         prediction = Prediction()
         prediction.setting_id = task.setting.id
         prediction.time_bid = time_bid
         prediction.task_id = task.id
-        prediction.sequence_id = sequence.id
+        prediction.sequence_id = seq.id
         prediction.created_cost = quotation.value
         prediction.created_at = quotation.ts
         prediction.expiration_at = quotation.ts + time_bid

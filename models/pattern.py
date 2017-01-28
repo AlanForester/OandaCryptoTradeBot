@@ -58,6 +58,7 @@ class Pattern:
                         self.range_sum_max_change_cost, self.call_sum_max_change_cost,
                         self.put_sum_max_change_cost, self.count_change_cost, self.delay,
                         self.expires, self.history_num, self.created_at))
+        Providers.db().commit()
         row = cursor.fetchone()
         if row:
             self.id = row.id
@@ -114,10 +115,32 @@ class Pattern:
         return Pattern(raw)
 
     @staticmethod
-    def upsert(task, sequence, time_bid):
-        model = None
-        is_update = False
+    def save_many(patterns: list):
+        cursor = Providers.db().get_cursor()
+        query = 'INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,' + \
+                'puts_count,same_count,last_call,range_max_change_cost,' + \
+                'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
+                'call_max_avg_change_cost, put_max_avg_change_cost,range_sum_max_change_cost,' + \
+                'call_sum_max_change_cost, put_sum_max_change_cost,count_change_cost,' + \
+                'delay,expires,history_num,created_at) VALUES ' + \
+                ','.join(v.__tuple_str() for v in patterns) + \
+                'ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)' + \
+                'DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id'
+        cursor.execute(query)
+        Providers.db().commit()
+        res = cursor.fetchall()
+        if res:
+            return res
+        return []
 
+    @staticmethod
+    def upsert(task, sequence, time_bid):
+        model = Pattern.make(task, sequence, time_bid)
+        model.save()
+        return model
+
+    @staticmethod
+    def make(task, sequence, time_bid):
         expires = 0
         max_duration = 0
         for expire in task.setting.analyzer_prediction_expire:
@@ -130,25 +153,21 @@ class Pattern:
                         expires = 0
 
         if expires > 0:
-            model = Pattern.get_last(sequence.id, time_bid, task)
+            model_for_expires = Pattern.get_last(sequence.id, time_bid, task)
 
-            if model and model.check_on_expire():
-                model.update_used_counter()
-                is_update = True
+            if model_for_expires and model_for_expires.check_on_expire():
+                expires = model_for_expires.expires
 
-        if not is_update:
-            model = Pattern()
-            model.sequence_id = sequence.id
-            model.setting_id = task.setting.id
-            model.task_id = task.id
-            model.time_bid = time_bid
-            model.used_count = 1
-            model.expires = expires
-            model.task_id = task.id
-            model.history_num = task.get_param("history_num")
-            model.created_at = time.time()
-            model.save()
-        Providers.db().commit()
+        model = Pattern()
+        model.sequence_id = sequence.id
+        model.setting_id = task.setting.id
+        model.task_id = task.id
+        model.time_bid = time_bid
+        model.used_count = 1
+        model.expires = expires
+        model.task_id = task.id
+        model.history_num = task.get_param("history_num")
+        model.created_at = time.time()
         return model
 
     @staticmethod

@@ -35,7 +35,7 @@ class Sequence:
         return hashlib.md5(json.dumps(self.json).encode('utf-8')).hexdigest()
 
     def __tuple_str(self):
-        return str((self.json, self.get_hash(), self.get_duration()))
+        return str((json.dumps(self.json), self.get_hash(), self.get_duration()))
 
     @staticmethod
     def model(raw=None):
@@ -43,11 +43,29 @@ class Sequence:
 
     @staticmethod
     def save_and_get(sequence_json):
+        sequence = Sequence.make(sequence_json)
+        sequence.save()
+        return sequence
+
+    @staticmethod
+    def save_many(sequences: list):
+        cursor = Providers.db().get_cursor()
+        query = 'INSERT INTO sequences (json, hash, duration) VALUES ' + \
+                ','.join(v.__tuple_str() for v in sequences) + \
+                ' ON CONFLICT (hash) DO UPDATE SET id=EXCLUDED.id RETURNING id,duration'
+        cursor.execute(query)
+        Providers.db().commit()
+        res = cursor.fetchall()
+        if res:
+            return res
+        return []
+
+    @staticmethod
+    def make(sequence_json):
         sequence = Sequence()
         sequence.json = sequence_json
         sequence.hash = sequence.get_hash()
         sequence.duration = sequence.get_duration()
-        sequence.save()
         return sequence
 
     @staticmethod

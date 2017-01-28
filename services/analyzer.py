@@ -37,38 +37,45 @@ class Analyzer:
 
     def do_analysis(self):
         """Метод подготовки прогнозов"""
+        print(time.time())
         # Получаем свечи разной длинны
         # candles = Candle.get_last(self.quotation.ts, self.task.setting.analyzer_deep,
         #                           self.task.setting.instrument_id, "parent")
         candles = Candle.get_last_with_nesting(self.quotation.ts, self.task.setting.analyzer_deep,
-                                  self.task.setting.instrument_id, self.task.setting.candles_durations, "parent")
+                                               self.task.setting.instrument_id, self.task.setting.candles_durations,
+                                               "parent")
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(candles, self.admissions)
-        print(len(sequences))
+
+        sequences_models = []
         for sequence in sequences:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
-                for time_bid in self.task.setting.analyzer_bid_times:
-                    # Заворачиваем в треды проверки с дальнейшим кешированием и проверкой прогноза
-                    cache_thread = ExThread(target=self.handle_prediction, args=(time_bid, sequence))
-                    cache_thread.daemon = True
-                    cache_thread.task = self.task
-                    cache_thread.start()
+                sequences_models.append(Sequence.make(sequence))
 
-    def handle_prediction(self, time_bid, sequence_json):
-        # Получаем свечу и сразу ее сохраняем
-        sequence = Sequence.save_and_get(sequence_json)
-        # Предварительно собираем прогноз
-        prediction = Prediction.make(self.task, time_bid, self.quotation, sequence)
-        if Controller.check_on_save_pattern():
-            pattern = Pattern.upsert(self.task, sequence, time_bid)
-            prediction.pattern_id = pattern.id
-            prediction.save()
-            # Проверка условий вероятности при создании сигнала
-            direction = Signaler.check(self.task, pattern)
-            if direction:
-                Signaler.make_and_save(self.task, direction, pattern, prediction)
-        else:
-            prediction.save()
+        sequences_ret = Sequence.save_many(sequences_models)
+        patterns_models = []
+        predictions_models = []
+        for time_bid in self.task.setting.analyzer_bid_times:
+            for seq in sequences_ret:
+                pass
+                prediction = Prediction.make(self.task, time_bid, self.quotation, seq)
+                predictions_models.append(prediction)
+                pattern = Pattern.make(self.task, seq, time_bid)
+                patterns_models.append(pattern)
+                # prediction.pattern_id = pattern.id
+                # prediction.save()
+                # Проверка условий вероятности при создании сигнала
+                # direction = Signaler.check(self.task, pattern)
+                # if direction:
+                #     Signaler.make_and_save(self.task, direction, pattern, prediction)
+
+        if len(patterns_models) > 0:
+            patterns_ids = Pattern.save_many(patterns_models)
+            i = 0
+            for pat_rec_id in patterns_ids:
+                predictions_models[i].pattern_id = pat_rec_id.id
+                i += 1
+            Prediction.save_many(predictions_models)
 
     def save_candles(self):
         candles_durations = self.task.setting.candles_durations
