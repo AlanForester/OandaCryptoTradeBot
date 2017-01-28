@@ -28,6 +28,19 @@ class Signaler:
                 if min_change >= pattern.put_max_change_cost:
                     result = None
 
+            # Проверка на количество тиков
+            if result:
+                change = 0
+                if result == 'call':
+                    change = pattern.call_max_change_cost
+                if result == 'put':
+                    change = pattern.put_max_change_cost
+
+                one_tick = task.setting.instrument.pip
+                ticks_count = int(change / one_tick)
+                if ticks_count < task.setting.signaler_min_ticks_count:
+                    result = None
+
         return result
 
     @staticmethod

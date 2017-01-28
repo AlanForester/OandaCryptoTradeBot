@@ -34,4 +34,5 @@ class Settings:
             model.signaler_delay_on_trend = 0,
             model.signaler_min_change_cost = 0
             model.signaler_max_change_cost = 0
+            model.signaler_min_ticks_count = 2
             model.save()
