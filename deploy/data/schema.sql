@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 01/29/2017 01:02:46 AM
+ Date: 01/30/2017 00:12:34 AM
 */
 
 -- ----------------------------
@@ -679,7 +679,7 @@ ALTER TABLE "public"."predictions" OWNER TO "postgres";
 DROP TABLE IF EXISTS "public"."settings";
 CREATE TABLE "public"."settings" (
 	"id" int4 NOT NULL DEFAULT nextval('settings_id_seq'::regclass),
-	"user_id" int4,
+	"user_id" varchar COLLATE "default",
 	"name" varchar(255) NOT NULL COLLATE "default",
 	"is_default" bool,
 	"created_at" int4,
