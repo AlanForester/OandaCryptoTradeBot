@@ -82,7 +82,7 @@ ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 --  Function structure for public.make_candles(int4, _int4, int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."make_candles"(int4, _int4, int4);
-CREATE FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) RETURNS "void" 
+CREATE FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) RETURNS "void"
 	AS $BODY$
 DECLARE
   duration_key     INT;
@@ -162,7 +162,7 @@ ALTER FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int
 --  Function structure for public.get_till_ts_from_last_candle_on_ts(int4, int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."get_till_ts_from_last_candle_on_ts"(int4, int4);
-CREATE FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) RETURNS "int4" 
+CREATE FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) RETURNS "int4"
 	AS $BODY$
 DECLARE
   ret INT;
@@ -187,7 +187,7 @@ ALTER FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument
 --  Function structure for public.get_last_candles_on_till_ts(int4, int4, _int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."get_last_candles_on_till_ts"(int4, int4, _int4);
-CREATE FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) RETURNS SETOF "public"."candles" 
+CREATE FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) RETURNS SETOF "public"."candles"
 	AS $BODY$
 DECLARE
 BEGIN
@@ -210,7 +210,7 @@ ALTER FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int
 --  Function structure for public.get_last_candles_with_nesting(int4, int4, int4, varchar, _int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."get_last_candles_with_nesting"(int4, int4, int4, varchar, _int4);
-CREATE FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) RETURNS SETOF "public"."candles" 
+CREATE FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) RETURNS SETOF "public"."candles"
 	AS $BODY$
 DECLARE
   deep_var INT = input_deep;
@@ -249,7 +249,7 @@ ALTER FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id i
 --  Function structure for public.update_predictions(int4, int4, float4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."update_predictions"(int4, int4, float4);
-CREATE FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) RETURNS "void" 
+CREATE FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) RETURNS "void"
 	AS $BODY$
 DECLARE
 
