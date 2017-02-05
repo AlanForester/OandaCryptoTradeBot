@@ -41,6 +41,14 @@ class Task:
             self.id = row[0]
             return self
 
+    def get_status(self, param, default_type=None):
+        res = default_type
+        if param == "history_num":
+            res = 0
+        if param in self.status:
+            res = self.status[param]
+        return res
+
     def update_status(self, key=None, value=None):
         if key is not None and value is not None:
             self.status[key] = value

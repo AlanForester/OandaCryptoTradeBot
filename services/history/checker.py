@@ -57,7 +57,7 @@ class Checker:
         self.checker_predictions()
 
     def checker_predictions(self):
-        signals_count = self.task.get_param("checker_signals_count")
+        signals_count = self.task.get_status("checker_signals_count", 0)
         if not signals_count:
             signals_count = 0
         check_result = Controller.check_expired_predictions(self.task)
