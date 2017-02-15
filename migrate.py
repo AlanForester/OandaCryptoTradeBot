@@ -276,11 +276,11 @@ commands:
     parser.add_argument("--path", default=migration_path,
                         help="path to the migration folder either absolute or relative to the "
                              "current directory. (default: \"./migrations\")")
-    parser.add_argument("-f", dest='file', metavar='CONFIG', default=".migrate",
-                        help="configuration file in \".ini\" format. "
+    parser.add_argument("-f", dest='file', metavar='CONFIG', default="config.json",
+                        help="configuration file in \".json\" format. "
                              "sections represent different configuration environments.\n"
                              "keys include: migration_path, user, password, host, port, "
-                             "database, and engine. (default: \".migrate\")")
+                             "database, and engine. (default: \"config.json\")")
     parser.add_argument("--env", default='dev',
                         help="configuration environment. applies only to config file option "
                              "(default: \"dev\")")
@@ -310,7 +310,7 @@ commands:
                 config['port'] = config_data['postgres']['port']
                 config['database'] = config_data['postgres']['database']
                 config['verbose'] = True
-        elif config['file'] != '.migrate':
+        elif config['file'] != 'migrations':
             raise Exception("Couldn't find configuration file: %s" % config['file'])
         Migrate(**config).run()
     except MigrateException as e:
