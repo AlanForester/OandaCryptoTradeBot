@@ -249,7 +249,7 @@ CREATE TABLE "public"."patterns" (
 	"calls_count" int4,
 	"puts_count" int4,
 	"same_count" int4,
-	"last_call" int2,
+	"trend" int2,
 	"range_max_change_cost" float4,
 	"range_max_avg_change_cost" float4,
 	"call_max_change_cost" float4,

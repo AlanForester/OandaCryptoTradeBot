@@ -13,7 +13,7 @@ class Pattern:
     calls_count = 0
     puts_count = 0
     same_count = 0
-    last_call = 0
+    trend = 0
     range_max_change_cost = 0
     range_max_avg_change_cost = 0
     call_max_change_cost = 0
@@ -43,7 +43,7 @@ class Pattern:
     def save(self):
         cursor = Providers.db().get_cursor()
         cursor.execute("INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,"
-                       "puts_count,same_count,last_call,range_max_change_cost, "
+                       "puts_count,same_count,trend,range_max_change_cost, "
                        "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
                        "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
                        "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,"
@@ -52,7 +52,7 @@ class Pattern:
                        "ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)"
                        "DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
-                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range_max_change_cost,
+                        self.calls_count, self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                         self.range_max_avg_change_cost, self.call_max_change_cost,
                         self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                         self.range_sum_max_change_cost, self.call_sum_max_change_cost,
@@ -68,14 +68,14 @@ class Pattern:
     def update(self):
         cursor = Providers.db().get_cursor()
         cursor.execute("UPDATE patterns SET sequence_id=%s,setting_id=%s,task_id=%s,time_bid=%s,used_count=%s,"
-                       "calls_count=%s,puts_count=%s,same_count=%s,last_call=%s,range_max_change_cost=%s, "
+                       "calls_count=%s,puts_count=%s,same_count=%s,trend=%s,range_max_change_cost=%s, "
                        "range_max_avg_change_cost=%s,call_max_change_cost=%s,put_max_change_cost=%s,"
                        "call_max_avg_change_cost=%s, put_max_avg_change_cost=%s, range_sum_max_change_cost=%s,"
                        "call_sum_max_change_cost=%s, put_sum_max_change_cost=%s, count_change_cost=%s,"
                        "delay=%s,expires=%s,history_num=%s,"
                        "created_at=%s WHERE id=%s",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
-                        self.calls_count, self.puts_count, self.same_count, self.last_call, self.range_max_change_cost,
+                        self.calls_count, self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                         self.range_max_avg_change_cost, self.call_max_change_cost,
                         self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                         self.range_sum_max_change_cost, self.call_sum_max_change_cost,
@@ -103,7 +103,7 @@ class Pattern:
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count, self.calls_count,
-                    self.puts_count, self.same_count, self.last_call, self.range_max_change_cost,
+                    self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                     self.range_max_avg_change_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                     self.range_sum_max_change_cost, self.call_sum_max_change_cost,
@@ -118,7 +118,7 @@ class Pattern:
     def save_many(patterns: list):
         cursor = Providers.db().get_cursor()
         query = 'INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,' + \
-                'puts_count,same_count,last_call,range_max_change_cost,' + \
+                'puts_count,same_count,trend,range_max_change_cost,' + \
                 'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
                 'call_max_avg_change_cost, put_max_avg_change_cost,range_sum_max_change_cost,' + \
                 'call_sum_max_change_cost, put_sum_max_change_cost,count_change_cost,' + \

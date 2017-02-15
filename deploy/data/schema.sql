@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 02/15/2017 16:49:55 PM
+ Date: 02/15/2017 17:16:29 PM
 */
 
 -- ----------------------------
@@ -33,21 +33,21 @@ ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 800857 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 800726 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 995926 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 995795 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sequences_id_seq";
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 518017 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 517549 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
@@ -623,7 +623,7 @@ CREATE TABLE "public"."patterns" (
 	"calls_count" int4,
 	"puts_count" int4,
 	"same_count" int4,
-	"last_call" int2,
+	"trend" int2,
 	"range_max_change_cost" float4,
 	"range_max_avg_change_cost" float4,
 	"call_max_change_cost" float4,
@@ -715,9 +715,9 @@ ALTER TABLE "public"."settings" OWNER TO "postgres";
 -- ----------------------------
 ALTER SEQUENCE "public"."actives_id_seq" RESTART 4141 OWNED BY "instruments"."id";
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 905 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 800858 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 995927 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 518018 OWNED BY "sequences"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 800727 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 995796 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."sequences_id_seq" RESTART 517550 OWNED BY "sequences"."id";
 ALTER SEQUENCE "public"."settings_id_seq" RESTART 23 OWNED BY "settings"."id";
 ALTER SEQUENCE "public"."signals_id_seq" RESTART 105324 OWNED BY "signals"."id";
 ALTER SEQUENCE "public"."tasks_id_seq" RESTART 675 OWNED BY "tasks"."id";

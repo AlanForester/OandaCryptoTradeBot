@@ -45,21 +45,21 @@ class Controller:
 
                     if quotation.value < prediction.created_cost:
                         pattern.puts_count += 1
-                        if pattern.last_call < 0:
-                            pattern.last_call -= 1
+                        if pattern.trend < 0:
+                            pattern.trend -= 1
                         else:
-                            pattern.last_call = -1
+                            pattern.trend = -1
 
                     if quotation.value > prediction.created_cost:
                         pattern.calls_count += 1
-                        if pattern.last_call > 0:
-                            pattern.last_call += 1
+                        if pattern.trend > 0:
+                            pattern.trend += 1
                         else:
-                            pattern.last_call = 1
+                            pattern.trend = 1
 
                     if pattern.delay > 0:
                         pattern.delay -= 1
-                    if abs(pattern.last_call) >= task.setting.signaler_min_repeats and pattern.delay == 0:
+                    if abs(pattern.trend) >= task.setting.signaler_min_repeats and pattern.delay == 0:
                         pattern.delay = task.setting.signaler_delay_on_trend
 
                     if task.service_name == "checker" or task.service_name == "collector_and_checker":
