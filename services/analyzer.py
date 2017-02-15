@@ -51,31 +51,32 @@ class Analyzer:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
                 sequences_models.append(Sequence.make(sequence))
 
-        sequences_ret = Sequence.save_many(sequences_models)
-        patterns_models = []
-        predictions_models = []
-        for time_bid in self.task.setting.analyzer_bid_times:
-            for seq in sequences_ret:
-                prediction = Prediction.make(self.task, time_bid, self.quotation, seq)
-                # Проверка оставшегося времени до ставки
-                if prediction.time_to_expiration >= (time_bid['time'] - time_bid['admission']):
-                    predictions_models.append(prediction)
-                    pattern = Pattern.make(self.task, seq, time_bid)
-                    patterns_models.append(pattern)
+        if len(sequences_models) > 0:
+            sequences_ret = Sequence.save_many(sequences_models)
+            patterns_models = []
+            predictions_models = []
+            for time_bid in self.task.setting.analyzer_bid_times:
+                for seq in sequences_ret:
+                    prediction = Prediction.make(self.task, time_bid, self.quotation, seq)
+                    # Проверка оставшегося времени до ставки
+                    if prediction.time_to_expiration >= (time_bid['time'] - time_bid['admission']):
+                        predictions_models.append(prediction)
+                        pattern = Pattern.make(self.task, seq, time_bid)
+                        patterns_models.append(pattern)
 
-                    # Проверка условий вероятности при создании сигнала
-                    if self.task.get_param("history_num") == 0:
-                        direction = Signaler.check(self.task, pattern)
-                        if direction:
-                            Signaler.make_and_save(self.task, direction, pattern, prediction)
+                        # Проверка условий вероятности при создании сигнала
+                        if self.task.get_param("history_num") == 0:
+                            direction = Signaler.check(self.task, pattern)
+                            if direction:
+                                Signaler.make_and_save(self.task, direction, pattern, prediction)
 
-        if len(patterns_models) > 0:
-            patterns_ids = Pattern.save_many(patterns_models)
-            i = 0
-            for pat_rec_id in patterns_ids:
-                predictions_models[i].pattern_id = pat_rec_id.id
-                i += 1
-            Prediction.save_many(predictions_models)
+            if len(patterns_models) > 0:
+                patterns_ids = Pattern.save_many(patterns_models)
+                i = 0
+                for pat_rec_id in patterns_ids:
+                    predictions_models[i].pattern_id = pat_rec_id.id
+                    i += 1
+                Prediction.save_many(predictions_models)
 
     def save_candles(self):
         candles_durations = self.task.setting.candles_durations

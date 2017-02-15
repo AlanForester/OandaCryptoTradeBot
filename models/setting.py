@@ -23,8 +23,8 @@ class Setting:
     signaler_min_chance = None
     signaler_min_repeats = None
     signaler_delay_on_trend = None
-    signaler_min_change_cost = None
-    signaler_max_change_cost = None
+    signaler_put_max_change_cost = None
+    signaler_call_max_change_cost = None
     analyzer_expiry_time_bid_divider = None
     signaler_min_ticks_count = None
 
@@ -40,8 +40,8 @@ class Setting:
                 "candles_durations, analyzer_working_interval_sec, analyzer_collect_interval_sec, " \
                 "analyzer_bid_times, analyzer_deep, analyzer_min_deep, analyzer_prediction_expire, " \
                 "analyzer_candles_parent_relation," \
-                "signaler_min_chance, signaler_min_repeats, signaler_delay_on_trend,signaler_min_change_cost, " \
-                "signaler_max_change_cost,analyzer_expiry_time_bid_divider, signaler_min_ticks_count) " \
+                "signaler_min_chance, signaler_min_repeats, signaler_delay_on_trend,signaler_put_max_change_cost, " \
+                "signaler_call_max_change_cost,analyzer_expiry_time_bid_divider, signaler_min_ticks_count) " \
                 "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
         cursor.execute(query,
                        (self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
@@ -49,7 +49,8 @@ class Setting:
                         self.analyzer_bid_times, self.analyzer_deep, self.analyzer_min_deep,
                         self.analyzer_prediction_expire,
                         self.analyzer_candles_parent_relation, self.signaler_min_chance, self.signaler_min_repeats,
-                        self.signaler_delay_on_trend, self.signaler_min_change_cost, self.signaler_max_change_cost,
+                        self.signaler_delay_on_trend, self.signaler_put_max_change_cost,
+                        self.signaler_call_max_change_cost,
                         self.analyzer_expiry_time_bid_divider, self.signaler_min_ticks_count))
         Providers.db().commit()
         row = cursor.fetchone()
@@ -69,7 +70,7 @@ class Setting:
                     self.analyzer_bid_times, self.analyzer_deep, self.analyzer_min_deep,
                     self.analyzer_prediction_expire, self.analyzer_candles_parent_relation,
                     self.signaler_min_chance, self.signaler_min_repeats, self.signaler_delay_on_trend,
-                    self.signaler_min_change_cost, self.signaler_max_change_cost,
+                    self.signaler_put_max_change_cost, self.signaler_call_max_change_cost,
                     self.analyzer_expiry_time_bid_divider, self.signaler_min_ticks_count))
 
     @staticmethod

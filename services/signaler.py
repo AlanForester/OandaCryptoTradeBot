@@ -18,14 +18,14 @@ class Signaler:
                         if pattern.calls_count / all_condition > task.setting.signaler_min_chance:
                             result = 'call'
 
-            max_change = task.setting.signaler_max_change_cost
-            min_change = task.setting.signaler_min_change_cost
+            call_change = task.setting.signaler_call_max_change_cost
+            put_change = task.setting.signaler_put_max_change_cost
 
-            if max_change > 0:
-                if max_change <= pattern.call_max_change_cost:
+            if call_change > 0:
+                if call_change <= pattern.call_max_change_cost:
                     result = None
-            if min_change > 0:
-                if min_change >= pattern.put_max_change_cost:
+            if put_change > 0:
+                if put_change >= pattern.put_max_change_cost:
                     result = None
 
             # Проверка на количество тиков
@@ -72,6 +72,6 @@ class Signaler:
 
         signal.max_cost = prediction.created_cost + pattern.call_max_change_cost
         signal.min_cost = prediction.created_cost - pattern.put_max_change_cost
-        signal.max_change_cost = pattern.call_max_change_cost
-        signal.min_change_cost = pattern.put_max_change_cost
+        signal.call_max_change_cost = pattern.call_max_change_cost
+        signal.put_max_change_cost = pattern.put_max_change_cost
         return signal.save()

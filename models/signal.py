@@ -16,8 +16,8 @@ class Signal:
     expiration_cost = 0
     max_cost = 0
     min_cost = 0
-    max_change_cost = 0
-    min_change_cost = 0
+    call_max_change_cost = 0
+    put_max_change_cost = 0
     time_bid = 0
     history_num = 0
 
@@ -29,12 +29,12 @@ class Signal:
         cursor = Providers.db().get_cursor()
         row = cursor.execute("INSERT INTO signals (instrument_id,sequence_id,setting_id,task_id,prediction_id,"
                              "pattern_id,created_at,expiration_at,direction,created_cost,expiration_cost,max_cost,"
-                             "min_cost,max_change_cost,min_change_cost,time_bid,history_num) "
+                             "min_cost,call_max_change_cost,put_max_change_cost,time_bid,history_num) "
                              "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
                              (self.instrument_id, self.sequence_id, self.setting_id, self.task_id, self.prediction_id,
                               self.pattern_id, self.created_at, self.expiration_at, self.direction, self.created_cost,
-                              self.expiration_cost, self.max_cost, self.min_cost, self.max_change_cost,
-                              self.min_change_cost, self.time_bid, self.history_num))
+                              self.expiration_cost, self.max_cost, self.min_cost, self.call_max_change_cost,
+                              self.put_max_change_cost, self.time_bid, self.history_num))
 
         Providers.db().commit()
         if row:
@@ -44,8 +44,8 @@ class Signal:
     def __tuple_str(self):
         return str((self.instrument_id, self.sequence_id, self.setting_id, self.task_id, self.prediction_id,
                     self.pattern_id, self.created_at, self.expiration_at, self.direction, self.created_cost,
-                    self.expiration_cost, self.max_cost, self.min_cost, self.max_change_cost, self.min_change_cost,
-                    self.time_bid, self.history_num))
+                    self.expiration_cost, self.max_cost, self.min_cost, self.call_max_change_cost,
+                    self.put_max_change_cost, self.time_bid, self.history_num))
 
     @staticmethod
     def model(raw=None):

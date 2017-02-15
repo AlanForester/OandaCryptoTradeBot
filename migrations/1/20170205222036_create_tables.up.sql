@@ -228,8 +228,8 @@ CREATE TABLE "public"."signals" (
 	"expiration_cost" float4,
 	"max_cost" float4,
 	"min_cost" float4,
-	"max_change_cost" float4,
-	"min_change_cost" float4,
+	"call_max_change_cost" float4,
+	"put_max_change_cost" float4,
 	"time_bid" int4,
 	"history_num" int4
 )
@@ -326,8 +326,8 @@ CREATE TABLE "public"."settings" (
 	"signaler_min_chance" float4,
 	"signaler_min_repeats" int4,
 	"signaler_delay_on_trend" int4,
-	"signaler_min_change_cost" float4,
-	"signaler_max_change_cost" float4,
+	"signaler_call_max_change_cost" float4,
+	"signaler_put_max_change_cost" float4,
 	"signaler_min_ticks_count" int4
 )
 WITH (OIDS=FALSE);
