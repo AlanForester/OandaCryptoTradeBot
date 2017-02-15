@@ -21,11 +21,6 @@ from datetime import datetime
 __all__ = ['Migrate', 'MigrateException']
 __version__ = '0.3.8'
 
-try:
-    from ConfigParser import ConfigParser
-except:
-    from configparser import ConfigParser
-
 COMMANDS = {
     'postgres': "psql -w --host {host} --port {port} --username {user} -d {database}",
     'mysql': "mysql --host {host} --port {port} --user {user} -D {database}",
@@ -190,22 +185,6 @@ def print_debug(msg):
     print("[debug] %s" % msg)
 
 
-def exec_mysql(cmd, filename, password=None, debug=False):
-    if password:
-        cmd = cmd + ' -p' + password
-    if debug:
-        print_debug("%s < %s" % (cmd, filename))
-    with open(filename) as f:
-        try:
-            return subprocess.check_call(cmd.split(), stdin=f)
-        except subprocess.CalledProcessError as e:
-            raise MigrateException(str(e))
-
-# reuse :)
-def exec_sqlite3(cmd, filename, password=None, debug=False):
-    exec_mysql(cmd, filename, password, debug)
-
-
 def exec_postgres(cmd, filename, password=None, debug=False):
     if debug:
         if password:
@@ -258,7 +237,7 @@ commands:
 """)
 
     parser.add_argument(dest='command', choices=('create', 'up', 'down', 'reset'))
-    parser.add_argument("-e", dest="engine", default='sqlite3', choices=('postgres', 'mysql', 'sqlite3'),
+    parser.add_argument("-e", dest="engine", default='postgres', choices=('postgres', 'mysql', 'sqlite3'),
                         help="database engine (default: \"sqlite3\")")
     parser.add_argument("-r", dest="rev",
                         help="revision to use. specify \"0\" for the next revision if using the "
@@ -310,7 +289,7 @@ commands:
                 config['port'] = config_data['postgres']['port']
                 config['database'] = config_data['postgres']['database']
                 config['verbose'] = True
-        elif config['file'] != 'migrations':
+        else:
             raise Exception("Couldn't find configuration file: %s" % config['file'])
         Migrate(**config).run()
     except MigrateException as e:

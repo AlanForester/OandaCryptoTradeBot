@@ -5,3 +5,6 @@ https://github.com/oanda/oandapy
 live
 5634109
 19b678b9251c5f098c5b933234bb8f94-3c9e98a8e7a5b0875b27f53a42a46465
+
+**Migrations**
+python3 migrate.py up (reset)
