@@ -12,7 +12,7 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 02/15/2017 17:16:29 PM
+ Date: 02/15/2017 17:19:13 PM
 */
 
 -- ----------------------------
@@ -440,6 +440,41 @@ $BODY$
 ALTER FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) OWNER TO "postgres";
 
 -- ----------------------------
+--  Table structure for patterns
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."patterns";
+CREATE TABLE "public"."patterns" (
+	"id" int8 NOT NULL DEFAULT nextval('patterns_id_seq'::regclass),
+	"sequence_id" int8,
+	"setting_id" int4,
+	"task_id" int4,
+	"time_bid" int4,
+	"used_count" int4,
+	"calls_count" int4,
+	"puts_count" int4,
+	"same_count" int4,
+	"trend" int2,
+	"range_max_change_cost" float4,
+	"range_max_avg_change_cost" float4,
+	"call_max_change_cost" float4,
+	"put_max_change_cost" float4,
+	"call_max_avg_change_cost" float4,
+	"put_max_avg_change_cost" float4,
+	"range_sum_max_change_cost" float4,
+	"call_sum_max_change_cost" float4,
+	"put_sum_max_change_cost" float4,
+	"count_change_cost" int4,
+	"delay" int4,
+	"expires" int4,
+	"history_num" int4,
+	"created_at" int4,
+	"trend_max_call_count" int2,
+	"trend_max_put_count" int2
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."patterns" OWNER TO "postgres";
+
+-- ----------------------------
 --  Table structure for tasks
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."tasks";
@@ -610,39 +645,6 @@ WITH (OIDS=FALSE);
 ALTER TABLE "public"."signals" OWNER TO "postgres";
 
 -- ----------------------------
---  Table structure for patterns
--- ----------------------------
-DROP TABLE IF EXISTS "public"."patterns";
-CREATE TABLE "public"."patterns" (
-	"id" int8 NOT NULL DEFAULT nextval('patterns_id_seq'::regclass),
-	"sequence_id" int8,
-	"setting_id" int4,
-	"task_id" int4,
-	"time_bid" int4,
-	"used_count" int4,
-	"calls_count" int4,
-	"puts_count" int4,
-	"same_count" int4,
-	"trend" int2,
-	"range_max_change_cost" float4,
-	"range_max_avg_change_cost" float4,
-	"call_max_change_cost" float4,
-	"put_max_change_cost" float4,
-	"call_max_avg_change_cost" float4,
-	"put_max_avg_change_cost" float4,
-	"range_sum_max_change_cost" float4,
-	"call_sum_max_change_cost" float4,
-	"put_sum_max_change_cost" float4,
-	"count_change_cost" int4,
-	"delay" int4,
-	"expires" int4,
-	"history_num" int4,
-	"created_at" int4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."patterns" OWNER TO "postgres";
-
--- ----------------------------
 --  Table structure for predictions
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."predictions";
@@ -723,6 +725,21 @@ ALTER SEQUENCE "public"."signals_id_seq" RESTART 105324 OWNED BY "signals"."id";
 ALTER SEQUENCE "public"."tasks_id_seq" RESTART 675 OWNED BY "tasks"."id";
 ALTER SEQUENCE "public"."workers_id_seq" RESTART 788 OWNED BY "workers"."id";
 -- ----------------------------
+--  Primary key structure for table patterns
+-- ----------------------------
+ALTER TABLE "public"."patterns" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Uniques structure for table patterns
+-- ----------------------------
+ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Indexes structure for table patterns
+-- ----------------------------
+CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence_id "pg_catalog"."int8_ops" ASC NULLS LAST, setting_id "pg_catalog"."int4_ops" ASC NULLS LAST, time_bid "pg_catalog"."int4_ops" ASC NULLS LAST, history_num "pg_catalog"."int4_ops" ASC NULLS LAST);
+
+-- ----------------------------
 --  Primary key structure for table tasks
 -- ----------------------------
 ALTER TABLE "public"."tasks" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
@@ -777,21 +794,6 @@ ALTER TABLE "public"."orders" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IM
 --  Primary key structure for table signals
 -- ----------------------------
 ALTER TABLE "public"."signals" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Primary key structure for table patterns
--- ----------------------------
-ALTER TABLE "public"."patterns" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Uniques structure for table patterns
--- ----------------------------
-ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Indexes structure for table patterns
--- ----------------------------
-CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence_id "pg_catalog"."int8_ops" ASC NULLS LAST, setting_id "pg_catalog"."int4_ops" ASC NULLS LAST, time_bid "pg_catalog"."int4_ops" ASC NULLS LAST, history_num "pg_catalog"."int4_ops" ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table predictions

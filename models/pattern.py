@@ -28,6 +28,8 @@ class Pattern:
     expires = 0
     history_num = 0
     created_at = 0
+    trend_max_call_count = 0
+    trend_max_put_count = 0
 
     def __init__(self, raw=None):
         if raw:
@@ -47,8 +49,8 @@ class Pattern:
                        "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
                        "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
                        "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,"
-                       "delay,expires,history_num,created_at) "
-                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                       "delay,expires,history_num,created_at,trend_max_call_count,trend_max_put_count) "
+                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
                        "ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)"
                        "DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
@@ -57,7 +59,8 @@ class Pattern:
                         self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                         self.range_sum_max_change_cost, self.call_sum_max_change_cost,
                         self.put_sum_max_change_cost, self.count_change_cost, self.delay,
-                        self.expires, self.history_num, self.created_at))
+                        self.expires, self.history_num, self.created_at, self.trend_max_call_count,
+                        self.trend_max_put_count))
         Providers.db().commit()
         row = cursor.fetchone()
         if row:
@@ -73,14 +76,15 @@ class Pattern:
                        "call_max_avg_change_cost=%s, put_max_avg_change_cost=%s, range_sum_max_change_cost=%s,"
                        "call_sum_max_change_cost=%s, put_sum_max_change_cost=%s, count_change_cost=%s,"
                        "delay=%s,expires=%s,history_num=%s,"
-                       "created_at=%s WHERE id=%s",
+                       "created_at=%s, trend_max_call_count=%s, trend_max_put_count=%s WHERE id=%s",
                        (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
                         self.calls_count, self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                         self.range_max_avg_change_cost, self.call_max_change_cost,
                         self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                         self.range_sum_max_change_cost, self.call_sum_max_change_cost,
                         self.put_sum_max_change_cost, self.count_change_cost, self.delay,
-                        self.expires, self.history_num, self.created_at, self.id))
+                        self.expires, self.history_num, self.created_at, self.trend_max_call_count,
+                        self.trend_max_put_count, self.id))
         Providers.db().commit()
 
     def calculation_cost_from_prediction(self, prediction):
@@ -108,7 +112,8 @@ class Pattern:
                     self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                     self.range_sum_max_change_cost, self.call_sum_max_change_cost,
                     self.put_sum_max_change_cost, self.count_change_cost,
-                    self.delay, self.expires, self.history_num, self.created_at))
+                    self.delay, self.expires, self.history_num, self.created_at, self.trend_max_call_count,
+                    self.trend_max_put_count))
 
     @staticmethod
     def model(raw=None):
@@ -122,7 +127,7 @@ class Pattern:
                 'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
                 'call_max_avg_change_cost, put_max_avg_change_cost,range_sum_max_change_cost,' + \
                 'call_sum_max_change_cost, put_sum_max_change_cost,count_change_cost,' + \
-                'delay,expires,history_num,created_at) VALUES ' + \
+                'delay,expires,history_num,created_at,trend_max_call_count,trend_max_put_count) VALUES ' + \
                 ','.join(v.__tuple_str() for v in patterns) + \
                 'ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)' + \
                 'DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id'

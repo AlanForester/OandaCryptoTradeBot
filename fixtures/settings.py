@@ -32,7 +32,7 @@ class Settings:
             model.signaler_min_chance = 60,
             model.signaler_min_repeats = 2,
             model.signaler_delay_on_trend = 0,
-            model.signaler_min_change_cost = 0
-            model.signaler_max_change_cost = 0
+            model.signaler_put_max_change_cost = 0
+            model.signaler_call_max_change_cost = 0
             model.signaler_min_ticks_count = 2
             model.save()

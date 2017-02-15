@@ -263,7 +263,9 @@ CREATE TABLE "public"."patterns" (
 	"delay" int4,
 	"expires" int4,
 	"history_num" int4,
-	"created_at" int4
+	"created_at" int4,
+	"trend_max_call_count" int2,
+	"trend_max_put_count" int2
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."patterns" OWNER TO "postgres";

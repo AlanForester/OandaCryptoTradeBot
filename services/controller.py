@@ -49,11 +49,15 @@ class Controller:
                             pattern.trend -= 1
                         else:
                             pattern.trend = -1
+                            if pattern.trend < pattern.trend_max_put_count:
+                                pattern.trend_max_put_count = pattern.trend
 
                     if quotation.value > prediction.created_cost:
                         pattern.calls_count += 1
                         if pattern.trend > 0:
                             pattern.trend += 1
+                            if pattern.trend < pattern.trend_max_call_count:
+                                pattern.trend_max_call_count = pattern.trend
                         else:
                             pattern.trend = 1
 
