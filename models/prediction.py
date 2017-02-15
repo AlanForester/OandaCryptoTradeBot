@@ -12,7 +12,11 @@ class Prediction(object):
     time_bid = 0
     pattern_id = 0
     created_cost = 0
+    created_ask = 0
+    created_bid = 0
     expiration_cost = 0
+    expiration_ask = 0
+    expiration_bid = 0
     last_cost = 0
     range_max_change_cost = 0
     range_max_avg_change_cost = 0
@@ -38,17 +42,20 @@ class Prediction(object):
     def save(self):
         cursor = Providers.db().get_cursor()
         row = cursor.execute("INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, "
-                             "created_cost, expiration_cost, last_cost, range_max_change_cost, "
+                             "created_cost, created_ask, created_bid, expiration_cost,  expiration_ask, "
+                             "expiration_bid, last_cost, range_max_change_cost, "
                              "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
                              "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
                              "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, "
                              "expiration_at, history_num, time_to_expiration) "
-                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT "
+                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                             "ON CONFLICT "
                              "(sequence_id,setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)"
                              "DO UPDATE SET expiration_cost=EXCLUDED.expiration_cost RETURNING id"
                              ,
                              (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
-                              self.created_cost, self.expiration_cost, self.last_cost,
+                              self.created_cost, self.created_ask, self.created_bid, self.expiration_cost,
+                              self.expiration_ask, self.expiration_bid, self.last_cost,
                               self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
                               self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                               self.range_sum_max_change_cost, self.call_sum_max_change_cost,
@@ -60,9 +67,10 @@ class Prediction(object):
             self.id = row.id
             return self
 
-    def update_expiration_cost(self, cost):
+    def update_expiration_cost(self, value, ask, bid):
         cursor = Providers.db().get_cursor()
-        cursor.execute("UPDATE predictions SET expiration_cost=%s WHERE id=%s", (cost, self.id))
+        cursor.execute("UPDATE predictions SET expiration_cost=%s, expiration_ask=%s, expiration_bid=%s "
+                       "WHERE id=%s", (value, ask, bid, self.id))
         Providers.db().commit()
 
     @property
@@ -73,7 +81,8 @@ class Prediction(object):
 
     def __tuple_str(self):
         return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
-                    self.created_cost, self.expiration_cost, self.last_cost,
+                    self.created_cost, self.created_ask, self.created_bid, self.expiration_cost,
+                    self.expiration_ask, self.expiration_bid, self.last_cost,
                     self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
                     self.range_sum_max_change_cost, self.call_sum_max_change_cost,
@@ -88,7 +97,8 @@ class Prediction(object):
     def save_many(predictions: list):
         cursor = Providers.db().get_cursor()
         query = 'INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, ' + \
-                'created_cost, expiration_cost, last_cost, range_max_change_cost, ' + \
+                'created_cost, created_ask, created_bid, expiration_cost, expiration_ask, expiration_bid, ' \
+                'last_cost, range_max_change_cost, ' + \
                 'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
                 'call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,' + \
                 'call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, ' + \
@@ -111,6 +121,8 @@ class Prediction(object):
         prediction.task_id = task.id
         prediction.sequence_id = seq.id
         prediction.created_cost = quotation.value
+        prediction.created_ask = quotation.ask
+        prediction.created_bid = quotation.bid
         prediction.created_at = quotation.ts
         expiration_at = quotation.ts + time_bid['time']
         time_to_expiration = time_bid['time'] - (expiration_at % time_bid['time'])

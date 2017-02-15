@@ -33,7 +33,7 @@ class Controller:
 
                 if quotation:
                     # Закрываем стоимость прогноза
-                    prediction.update_expiration_cost(quotation.value)
+                    prediction.update_expiration_cost(quotation.value, quotation.ask, quotation.bid)
 
                     # Получаем паттерн с массива полученных патернов
                     if prediction.pattern_id not in taken_patterns:
