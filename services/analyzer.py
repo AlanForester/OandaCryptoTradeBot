@@ -116,10 +116,19 @@ class Analyzer:
                 save_surplus_time = time_now % analyzer.task.setting.analyzer_collect_interval_sec
                 if save_surplus_time == 0:
                     save_handle = True
+
                 # Проверка возможности начать работу анализатору
                 surplus_time = time_now % analyzer.task.setting.analyzer_working_interval_sec
                 if surplus_time == 0:
                     analysis_handle = True
+
+                # Перезагружаем настройки
+                task.flush_setting()
+
+                # Проверка на рабочее время инструмента
+                if not task.setting.instrument.is_works(analyzer.quotation.ts):
+                    save_handle = False
+                    analysis_handle = False
 
                 # Защита от повторного срабатывания секунды
                 if last_fixed_ts < time_now and not wait:
@@ -144,8 +153,6 @@ class Analyzer:
                         save_handle = False
 
                     if analysis_handle:
-                        # Перезагружаем настройки
-                        task.flush_setting()
 
                         # Запускаем поток на анализ
                         analysis_thread = ExThread(target=analyzer.do_analysis)

@@ -12,77 +12,77 @@
  Target Server Version : 90504
  File Encoding         : utf-8
 
- Date: 02/05/2017 21:08:26 PM
+ Date: 02/15/2017 13:26:55 PM
 */
 
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."actives_id_seq";
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 4015 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 4140 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."orders_id_seq";
-CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 903 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 904 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."patterns_id_seq";
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 800725 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 810877 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."predictions_id_seq";
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 995794 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 1005946 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sequences_id_seq";
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 517537 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 545761 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."settings_id_seq";
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 21 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 22 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."signals_id_seq";
-CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 105322 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 106285 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."signals_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 671 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 673 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."workers_id_seq";
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 784 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 786 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
 
 -- ----------------------------
 --  Function structure for public.make_candles(int4, _int4, int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."make_candles"(int4, _int4, int4);
-CREATE FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) RETURNS "void"
+CREATE FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) RETURNS "void" 
 	AS $BODY$
 DECLARE
   duration_key     INT;
@@ -162,7 +162,7 @@ ALTER FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int
 --  Function structure for public.get_till_ts_from_last_candle_on_ts(int4, int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."get_till_ts_from_last_candle_on_ts"(int4, int4);
-CREATE FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) RETURNS "int4"
+CREATE FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) RETURNS "int4" 
 	AS $BODY$
 DECLARE
   ret INT;
@@ -187,7 +187,7 @@ ALTER FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument
 --  Function structure for public.get_last_candles_on_till_ts(int4, int4, _int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."get_last_candles_on_till_ts"(int4, int4, _int4);
-CREATE FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) RETURNS SETOF "public"."candles"
+CREATE FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) RETURNS SETOF "public"."candles" 
 	AS $BODY$
 DECLARE
 BEGIN
@@ -210,7 +210,7 @@ ALTER FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int
 --  Function structure for public.get_last_candles_with_nesting(int4, int4, int4, varchar, _int4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."get_last_candles_with_nesting"(int4, int4, int4, varchar, _int4);
-CREATE FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) RETURNS SETOF "public"."candles"
+CREATE FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) RETURNS SETOF "public"."candles" 
 	AS $BODY$
 DECLARE
   deep_var INT = input_deep;
@@ -249,7 +249,7 @@ ALTER FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id i
 --  Function structure for public.update_predictions(int4, int4, float4)
 -- ----------------------------
 DROP FUNCTION IF EXISTS "public"."update_predictions"(int4, int4, float4);
-CREATE FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) RETURNS "void"
+CREATE FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) RETURNS "void" 
 	AS $BODY$
 DECLARE
 
@@ -440,6 +440,22 @@ $BODY$
 ALTER FUNCTION "public"."update_predictions"(IN input_ts int4, IN input_setting_id int4, IN input_created_cost float4) OWNER TO "postgres";
 
 -- ----------------------------
+--  Table structure for instruments
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."instruments";
+CREATE TABLE "public"."instruments" (
+	"id" int4 NOT NULL DEFAULT nextval('actives_id_seq'::regclass),
+	"instrument" varchar NOT NULL COLLATE "default",
+	"pip" float4,
+	"name" varchar COLLATE "default",
+	"not_working_time" json
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "public"."instruments" OWNER TO "postgres";
+
+COMMENT ON COLUMN "public"."instruments"."instrument" IS 'Название актива';
+
+-- ----------------------------
 --  Table structure for tasks
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."tasks";
@@ -545,21 +561,6 @@ ALTER TABLE "public"."quotations" OWNER TO "postgres";
 
 COMMENT ON COLUMN "public"."quotations"."ts" IS 'Временная метка';
 COMMENT ON COLUMN "public"."quotations"."instrument_id" IS 'ИД актива';
-
--- ----------------------------
---  Table structure for instruments
--- ----------------------------
-DROP TABLE IF EXISTS "public"."instruments";
-CREATE TABLE "public"."instruments" (
-	"id" int4 NOT NULL DEFAULT nextval('actives_id_seq'::regclass),
-	"instrument" varchar NOT NULL COLLATE "default",
-	"pip" float4,
-	"name" varchar COLLATE "default"
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."instruments" OWNER TO "postgres";
-
-COMMENT ON COLUMN "public"."instruments"."instrument" IS 'Название актива';
 
 -- ----------------------------
 --  Table structure for orders
@@ -708,15 +709,25 @@ ALTER TABLE "public"."settings" OWNER TO "postgres";
 -- ----------------------------
 --  Alter sequences owned by
 -- ----------------------------
-ALTER SEQUENCE "public"."actives_id_seq" RESTART 4016 OWNED BY "instruments"."id";
-ALTER SEQUENCE "public"."orders_id_seq" RESTART 904 OWNED BY "orders"."id";
-ALTER SEQUENCE "public"."patterns_id_seq" RESTART 800726 OWNED BY "patterns"."id";
-ALTER SEQUENCE "public"."predictions_id_seq" RESTART 995795 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 517538 OWNED BY "sequences"."id";
-ALTER SEQUENCE "public"."settings_id_seq" RESTART 22 OWNED BY "settings"."id";
-ALTER SEQUENCE "public"."signals_id_seq" RESTART 105323 OWNED BY "signals"."id";
-ALTER SEQUENCE "public"."tasks_id_seq" RESTART 672 OWNED BY "tasks"."id";
-ALTER SEQUENCE "public"."workers_id_seq" RESTART 785 OWNED BY "workers"."id";
+ALTER SEQUENCE "public"."actives_id_seq" RESTART 4141 OWNED BY "instruments"."id";
+ALTER SEQUENCE "public"."orders_id_seq" RESTART 905 OWNED BY "orders"."id";
+ALTER SEQUENCE "public"."patterns_id_seq" RESTART 810878 OWNED BY "patterns"."id";
+ALTER SEQUENCE "public"."predictions_id_seq" RESTART 1005947 OWNED BY "predictions"."id";
+ALTER SEQUENCE "public"."sequences_id_seq" RESTART 545762 OWNED BY "sequences"."id";
+ALTER SEQUENCE "public"."settings_id_seq" RESTART 23 OWNED BY "settings"."id";
+ALTER SEQUENCE "public"."signals_id_seq" RESTART 106286 OWNED BY "signals"."id";
+ALTER SEQUENCE "public"."tasks_id_seq" RESTART 674 OWNED BY "tasks"."id";
+ALTER SEQUENCE "public"."workers_id_seq" RESTART 787 OWNED BY "workers"."id";
+-- ----------------------------
+--  Primary key structure for table instruments
+-- ----------------------------
+ALTER TABLE "public"."instruments" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ----------------------------
+--  Uniques structure for table instruments
+-- ----------------------------
+ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("instrument") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
 -- ----------------------------
 --  Primary key structure for table tasks
 -- ----------------------------
@@ -745,23 +756,13 @@ ALTER TABLE "public"."candles" ADD PRIMARY KEY ("instrument_id", "from_ts", "til
 -- ----------------------------
 --  Indexes structure for table candles
 -- ----------------------------
-CREATE INDEX  "instr_dur_till" ON "public"."candles" USING btree(instrument_id ASC NULLS LAST, duration ASC NULLS LAST, till_ts ASC NULLS LAST);
-CREATE INDEX  "till_instr" ON "public"."candles" USING btree(till_ts ASC NULLS LAST, instrument_id ASC NULLS LAST);
+CREATE INDEX  "instr_dur_till" ON "public"."candles" USING btree(instrument_id "pg_catalog"."int2_ops" ASC NULLS LAST, duration "pg_catalog"."int4_ops" ASC NULLS LAST, till_ts "pg_catalog"."int4_ops" ASC NULLS LAST);
+CREATE INDEX  "till_instr" ON "public"."candles" USING btree(till_ts "pg_catalog"."int4_ops" ASC NULLS LAST, instrument_id "pg_catalog"."int2_ops" ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table quotations
 -- ----------------------------
 ALTER TABLE "public"."quotations" ADD PRIMARY KEY ("ts", "instrument_id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Primary key structure for table instruments
--- ----------------------------
-ALTER TABLE "public"."instruments" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Uniques structure for table instruments
--- ----------------------------
-ALTER TABLE "public"."instruments" ADD CONSTRAINT "instrument_uniq" UNIQUE ("instrument") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table orders
@@ -786,7 +787,7 @@ ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id",
 -- ----------------------------
 --  Indexes structure for table patterns
 -- ----------------------------
-CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence_id ASC NULLS LAST, setting_id ASC NULLS LAST, time_bid ASC NULLS LAST, history_num ASC NULLS LAST);
+CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence_id "pg_catalog"."int8_ops" ASC NULLS LAST, setting_id "pg_catalog"."int4_ops" ASC NULLS LAST, time_bid "pg_catalog"."int4_ops" ASC NULLS LAST, history_num "pg_catalog"."int4_ops" ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table predictions
@@ -801,8 +802,8 @@ ALTER TABLE "public"."predictions" ADD CONSTRAINT "uniq" UNIQUE ("sequence_id","
 -- ----------------------------
 --  Indexes structure for table predictions
 -- ----------------------------
-CREATE INDEX  "created_cost" ON "public"."predictions" USING btree(expiration_cost ASC NULLS LAST, setting_id ASC NULLS LAST, expiration_at ASC NULLS LAST);
-CREATE INDEX  "ex_set_his" ON "public"."predictions" USING btree(setting_id ASC NULLS LAST, expiration_cost ASC NULLS LAST, history_num ASC NULLS LAST);
+CREATE INDEX  "created_cost" ON "public"."predictions" USING btree(expiration_cost "pg_catalog"."float4_ops" ASC NULLS LAST, setting_id "pg_catalog"."int4_ops" ASC NULLS LAST, expiration_at "pg_catalog"."int4_ops" ASC NULLS LAST);
+CREATE INDEX  "ex_set_his" ON "public"."predictions" USING btree(setting_id "pg_catalog"."int4_ops" ASC NULLS LAST, expiration_cost "pg_catalog"."float4_ops" ASC NULLS LAST, history_num "pg_catalog"."int4_ops" ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table settings

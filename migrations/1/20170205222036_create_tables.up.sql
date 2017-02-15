@@ -183,7 +183,8 @@ CREATE TABLE "public"."instruments" (
 	"id" int4 NOT NULL DEFAULT nextval('actives_id_seq'::regclass),
 	"instrument" varchar NOT NULL COLLATE "default",
 	"pip" float4,
-	"name" varchar COLLATE "default"
+	"name" varchar COLLATE "default",
+	"not_working_time" json
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."instruments" OWNER TO "postgres";
