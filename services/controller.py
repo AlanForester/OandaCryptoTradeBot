@@ -2,6 +2,7 @@ import time
 
 from models.prediction import Prediction
 from models.quotation import Quotation
+from models.signal import Signal
 from services.signaler import Signaler
 
 
@@ -10,9 +11,9 @@ class Controller:
     def check_on_save_pattern():
         return True
 
-    # @staticmethod
-    # def update_expired_signals(task, quotation):
-
+    @staticmethod
+    def update_expired_signals(task, quotation):
+        Signal.update_close_cost(task, quotation)
 
     @staticmethod
     def check_expired_predictions(task, quotation):

@@ -140,6 +140,11 @@ class Analyzer:
                     check_expired_predictions_thread.task = task
                     check_expired_predictions_thread.start()
 
+                    check_expired_signals = ExThread(target=Controller.update_expired_signals,
+                                                     args=(task, analyzer.quotation))
+                    check_expired_signals.task = task
+                    check_expired_signals.start()
+
                     if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем
                         analyzer.quotation.ts = time_now
@@ -154,7 +159,6 @@ class Analyzer:
                         save_handle = False
 
                     if analysis_handle:
-
                         # Запускаем поток на анализ
                         analysis_thread = ExThread(target=analyzer.do_analysis)
                         analysis_thread.daemon = True
