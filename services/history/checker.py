@@ -15,6 +15,7 @@ class Checker:
         end = self.task.get_param("end")
         quotations = Quotation.get_from_interval(start, end, self.instrument.id)
         self.task.update_status("checker_total_quotations", len(quotations))
+        last_quotation = None
         if len(quotations) > 0:
             checked_quotations = self.task.get_param("checker_checked_quotations")
             if not checked_quotations:
@@ -23,23 +24,24 @@ class Checker:
             i = 0
             thread_limit = 10
             total_threads = []
-
             for row in quotations:
                 i += 5  # Так как сбор истории идет мин за 5 сек
                 if i >= task.setting.analyzer_collect_interval_sec:
-                    print(time.time())
+                    print(row.ts)
                     # Проверка на количество работающих тредов и блокировка
                     ExThread.wait_threads(total_threads, thread_limit)
 
                     analyzer = Analyzer(task)
                     analyzer.quotation = row
-                    analysis_thread = ExThread(target=analyzer.do_analysis)
-                    analysis_thread.task = task
-                    analysis_thread.start()
+                    # analysis_thread = ExThread(target=analyzer.do_analysis)
+                    # analysis_thread.task = task
+                    # analysis_thread.start()
+                    analyzer.do_analysis()
                     # print "Run analysis thread. Total:", len(total_threads)
                     i = 0
+                    last_quotation = analyzer.quotation
 
-                    Prediction.calculation_cost_for_topical(task, analyzer.quotation)
+                    Prediction.calculation_cost_for_topical(task, last_quotation)
 
                     checked_quotations += 1
                     if checked_quotations % 10 == 0:
@@ -48,19 +50,19 @@ class Checker:
 
                     # Запускаем демона для проверки кеша и получения результата торгов
                     if checked_quotations % 100 == 0:
-                        self.checker_predictions()
+                        self.checker_predictions(last_quotation)
 
             # Ждем все потоки
             ExThread.wait_threads(total_threads, 0)
             # Обновляем параметры стоимости прогнозов
+            if last_quotation:
+                self.checker_predictions(last_quotation)
 
-        self.checker_predictions()
-
-    def checker_predictions(self):
+    def checker_predictions(self, last_quotation):
         signals_count = self.task.get_status("checker_signals_count", 0)
         if not signals_count:
             signals_count = 0
-        check_result = Controller.check_expired_predictions(self.task)
+        check_result = Controller.check_expired_predictions(self.task, last_quotation)
 
         if check_result and len(check_result) > 0:
             for check in check_result:
