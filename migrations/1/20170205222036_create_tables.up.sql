@@ -226,6 +226,7 @@ CREATE TABLE "public"."signals" (
 	"created_cost" float4,
 	"expiration_cost" float4,
 	"closed_cost" float4,
+	"discrepancy_cost" float4,
 	"max_cost" float4,
 	"min_cost" float4,
 	"call_max_change_cost" float4,

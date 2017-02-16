@@ -60,7 +60,6 @@ class Checker:
                 self.checker_predictions(last_quotation)
 
     def checker_predictions(self, last_quotation):
-
         signals_count = self.task.get_status("checker_signals_count", 0)
         if not signals_count:
             signals_count = 0

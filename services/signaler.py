@@ -73,4 +73,7 @@ class Signaler:
         signal.min_cost = prediction.created_cost - pattern.put_max_change_cost
         signal.call_max_change_cost = pattern.call_max_change_cost
         signal.put_max_change_cost = pattern.put_max_change_cost
+
+        task.storage.signals.append(signal)
+
         return signal.save()

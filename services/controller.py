@@ -13,7 +13,14 @@ class Controller:
 
     @staticmethod
     def update_expired_signals(task, quotation):
-        Signal.update_close_cost(task, quotation)
+        exist = False
+        for signal in task.storage.signals:
+            if signal.expiration_at <= quotation.ts:
+                task.storage.signals.remove(signal)
+                exist = True
+
+        if exist:
+            Signal.update_close_cost(task, quotation)
 
     @staticmethod
     def check_expired_predictions(task, quotation):

@@ -180,4 +180,3 @@ class Prediction(object):
                     prediction.range_max_avg_change_cost = range_max_avg_change_cost
 
                 prediction.last_cost = quotation.value
-

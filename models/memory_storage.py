@@ -2,6 +2,7 @@ from models.prediction import Prediction
 
 
 class MemoryStorage:
+    signals = []
     predictions = []
 
     def insert_prediction(self, prediction: Prediction):
@@ -15,4 +16,5 @@ class MemoryStorage:
             self.predictions.append(prediction)
 
         return exists
+
 
