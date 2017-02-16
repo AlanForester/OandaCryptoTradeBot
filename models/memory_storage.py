@@ -14,5 +14,5 @@ class MemoryStorage:
         if not exists:
             self.predictions.append(prediction)
 
-    def yield_expired_predictions(self, ts):
-        pass
+        return exists
+
