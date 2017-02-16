@@ -44,47 +44,47 @@ class Instrument:
 
         is_work = True
         for interval_obj in self.not_working_time:
-            if interval_obj["start"]["second"] and interval_obj["end"]["second"]:
-                if interval_obj["start"]["second"] <= second <= interval_obj["end"]["second"]:
+            if interval_obj["start"]["year"]:
+                if interval_obj["start"]["year"] <= year:
                     is_work = False
-                else:
-                    is_work = True
-
-            if interval_obj["start"]["minute"] and interval_obj["end"]["minute"]:
-                if interval_obj["start"]["minute"] <= minute <= interval_obj["end"]["minute"]:
-                    is_work = False
-                else:
-                    is_work = True
-
-            if interval_obj["start"]["hour"] and interval_obj["end"]["hour"]:
-                if interval_obj["start"]["hour"] <= hour <= interval_obj["end"]["hour"]:
-                    is_work = False
-                else:
-                    is_work = True
-
-            if interval_obj["start"]["day"] and interval_obj["end"]["day"]:
-                if interval_obj["start"]["day"] <= day <= interval_obj["end"]["day"]:
-                    is_work = False
-                else:
-                    is_work = True
-            else:
-                if interval_obj["start"]["day_of_week"] and interval_obj["end"]["day_of_week"]:
-                    if interval_obj["start"]["day_of_week"] <= day_of_week <= interval_obj["end"]["day_of_week"]:
-                        is_work = False
-                    else:
+                    if interval_obj["end"]["year"] > year:
                         is_work = True
 
-            if interval_obj["start"]["month"] and interval_obj["end"]["month"]:
-                if interval_obj["start"]["month"] <= month <= interval_obj["end"]["month"]:
+            if interval_obj["start"]["month"]:
+                if interval_obj["start"]["month"] <= month:
                     is_work = False
-                else:
-                    is_work = True
+                    if interval_obj["end"]["month"] > month:
+                        is_work = True
 
-            if interval_obj["start"]["year"] and interval_obj["end"]["year"]:
-                if interval_obj["start"]["year"] <= year <= interval_obj["end"]["year"]:
+            if interval_obj["start"]["day"]:
+                if interval_obj["start"]["day"] <= day:
                     is_work = False
-                else:
-                    is_work = True
+                    if interval_obj["end"]["day"] > day:
+                        is_work = True
+            else:
+                if interval_obj["start"]["day_of_week"]:
+                    if interval_obj["start"]["day_of_week"] <= day_of_week:
+                        is_work = False
+                        if interval_obj["end"]["day_of_week"] > day_of_week:
+                            is_work = True
+
+            if interval_obj["start"]["hour"]:
+                if interval_obj["start"]["hour"] <= hour:
+                    is_work = False
+                    if interval_obj["end"]["hour"] > hour:
+                        is_work = True
+
+            if interval_obj["start"]["minute"]:
+                if interval_obj["start"]["minute"] <= minute:
+                    is_work = False
+                    if interval_obj["end"]["minute"] > minute:
+                        is_work = True
+
+            if interval_obj["start"]["second"]:
+                if interval_obj["start"]["second"] <= second:
+                    is_work = False
+                    if interval_obj["end"]["second"] > second:
+                        is_work = True
 
             if not is_work:
                 break
