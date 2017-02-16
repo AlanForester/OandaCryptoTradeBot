@@ -219,7 +219,6 @@ CREATE TABLE "public"."signals" (
 	"sequence_id" int8,
 	"setting_id" int4,
 	"task_id" int4,
-	"prediction_id" int8,
 	"pattern_id" int8,
 	"created_at" int4,
 	"expiration_at" int4,

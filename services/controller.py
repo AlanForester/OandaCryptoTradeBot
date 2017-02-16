@@ -14,13 +14,12 @@ class Controller:
     def check_expired_predictions(task, quotation=None):
         test_trading = []
         timestamp = int(time.time())
-        history_num = task.get_param("history_num")
 
         # Если это тестирование истории то время не нужно
         if task.service_name == "checker" or task.service_name == "collector_and_checker":
             timestamp = None
 
-        ended_predictions = Prediction.get_expired(task.setting_id, history_num, timestamp)
+        ended_predictions = Prediction.get_expired(task, timestamp)
         if ended_predictions:
             # Формируем массив патернов для исключения повторения
             taken_patterns = {}
@@ -76,6 +75,8 @@ class Controller:
                                                  "pattern": pattern.id,
                                                  "signal": trade_direction
                                                  })
+
+            Prediction.save_many(ended_predictions)
 
             # Обновляем паттерн и устанавливаем счетчики
             if len(taken_patterns) > 0:

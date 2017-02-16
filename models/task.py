@@ -3,6 +3,7 @@ import time
 
 from providers.providers import Providers
 from models.setting import Setting
+from models.memory_storage import MemoryStorage
 
 
 class Task:
@@ -23,7 +24,10 @@ class Task:
 
     _setting = None
 
+    storage = None
+
     def __init__(self, raw=None):
+        self.storage = MemoryStorage()
         if raw:
             self.__dict__.update(raw._asdict())
 
@@ -85,8 +89,8 @@ class Task:
         if row:
             return self
 
-    def get_param(self, param):
-        res = None
+    def get_param(self, param, def_val=None):
+        res = def_val
         if param == "history_num":
             res = 0
         if param in self.params:

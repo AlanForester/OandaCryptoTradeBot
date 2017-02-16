@@ -1,4 +1,4 @@
-import time
+import hashlib
 
 from providers.providers import Providers
 from models.pattern import Pattern
@@ -33,6 +33,8 @@ class Prediction(object):
     history_num = 0
     time_to_expiration = 0
 
+    hash = None
+
     _pattern = None
 
     def __init__(self, raw=None):
@@ -66,6 +68,11 @@ class Prediction(object):
         if row:
             self.id = row.id
             return self
+
+    def get_hash(self):
+        return (str(self.sequence_id) + str(self.setting_id) + str(self.time_bid) +
+                str(self.pattern_id) + str(self.expiration_at) + str(self.time_to_expiration) +
+                str(self.history_num))
 
     def update_expiration_cost(self, value, ask, bid):
         cursor = Providers.db().get_cursor()
@@ -104,7 +111,7 @@ class Prediction(object):
                 'call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, ' + \
                 'expiration_at, history_num, time_to_expiration) VALUES ' + \
                 ','.join(v.__tuple_str() for v in predictions) + 'ON CONFLICT ' \
-                '(sequence_id,setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)' + \
+                                                                 '(sequence_id,setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)' + \
                 'DO UPDATE SET expiration_cost=EXCLUDED.expiration_cost RETURNING id'
         cursor.execute(query)
         Providers.db().commit()
@@ -129,27 +136,47 @@ class Prediction(object):
         time_divider = task.setting.analyzer_expiry_time_bid_divider
         prediction.time_to_expiration = int(time_to_expiration / time_divider) * time_divider
         prediction.expiration_at = int(expiration_at / time_bid['time']) * time_bid['time']
-        prediction.history_num = task.get_param("history_num")
+        prediction.history_num = task.get_param("history_num", 0)
+        prediction.hash = prediction.get_hash()
         return prediction
 
     @staticmethod
-    def get_expired(setting_id, history_num, time=None):
-        cursor = Providers.db().get_cursor()
-        query = "SELECT * FROM predictions WHERE expiration_cost=0 AND setting_id=%s AND history_num=%s" % \
-                (setting_id, history_num)
-        if time:
-            query += " AND expiration_at<=%s" % time
+    def get_expired(task, time=None):
+        returned = []
+        predictions = task.storage.predictions
+        for prediction in predictions:
+            if not time or prediction.expiration_at < time:
+                returned.append(prediction)
+                task.storage.predictions.remove(prediction)
 
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        if rows:
-            res = []
-            for row in rows:
-                res.append(Prediction.model(row))
-            return res
+        return returned
 
     @staticmethod
-    def calculation_cost_for_topical(quotation, setting_id):
-        cursor = Providers.db().get_cursor()
-        cursor.execute("SELECT update_predictions(%s,%s,%s)", [quotation.ts, setting_id, quotation.value])
-        Providers.db().commit()
+    def calculation_cost_for_topical(task, quotation):
+        predictions = task.storage.predictions
+        for prediction in predictions:
+            if prediction.expiration_at >= quotation.ts:
+                prediction.count_change_cost += 1
+
+                put_change_cost = prediction.created_cost - quotation.value
+                if prediction.put_max_change_cost < put_change_cost:
+                    prediction.put_max_change_cost = put_change_cost
+                    prediction.put_sum_max_change_cost += put_change_cost
+                    put_max_avg_change_cost = prediction.put_sum_max_change_cost / prediction.count_change_cost
+                    prediction.put_max_avg_change_cost = put_max_avg_change_cost
+
+                call_change_cost = quotation.value - prediction.created_cost
+                if prediction.call_max_change_cost < call_change_cost:
+                    prediction.call_max_change_cost = call_change_cost
+                    prediction.call_sum_max_change_cost += call_change_cost
+                    call_max_avg_change_cost = prediction.call_sum_max_change_cost / prediction.count_change_cost
+                    prediction.call_max_avg_change_cost = call_max_avg_change_cost
+
+                range_change_cost = prediction.put_max_change_cost + prediction.call_max_change_cost
+                if range_change_cost > prediction.range_max_change_cost:
+                    prediction.range_max_change_cost = range_change_cost
+                    prediction.range_sum_max_change_cost += range_change_cost
+                    range_max_avg_change_cost = prediction.range_sum_max_change_cost / prediction.count_change_cost
+                    prediction.range_max_avg_change_cost = range_max_avg_change_cost
+
+                prediction.last_cost = quotation.value

@@ -39,7 +39,7 @@ class Checker:
                     # print "Run analysis thread. Total:", len(total_threads)
                     i = 0
 
-                    Prediction.calculation_cost_for_topical(analyzer.quotation, analyzer.task.setting.id)
+                    Prediction.calculation_cost_for_topical(task, analyzer.quotation)
 
                     checked_quotations += 1
                     if checked_quotations % 10 == 0:

@@ -75,8 +75,8 @@ class Analyzer:
                 i = 0
                 for pat_rec_id in patterns_ids:
                     predictions_models[i].pattern_id = pat_rec_id.id
+                    self.task.storage.insert_prediction(predictions_models[i])
                     i += 1
-                Prediction.save_many(predictions_models)
 
     def save_candles(self):
         candles_durations = self.task.setting.candles_durations
@@ -149,7 +149,7 @@ class Analyzer:
                         analyzer.save_candles()
 
                         # Обновляем параметры стоимости прогнозов
-                        Prediction.calculation_cost_for_topical(analyzer.quotation, analyzer.task.setting.id)
+                        Prediction.calculation_cost_for_topical(task, analyzer.quotation)
 
                         save_handle = False
 

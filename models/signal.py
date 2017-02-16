@@ -7,7 +7,6 @@ class Signal:
     sequence_id = None
     setting_id = None
     task_id = None
-    prediction_id = None
     pattern_id = None
     created_at = 0
     expiration_at = 0
@@ -27,11 +26,11 @@ class Signal:
 
     def save(self):
         cursor = Providers.db().get_cursor()
-        row = cursor.execute("INSERT INTO signals (instrument_id,sequence_id,setting_id,task_id,prediction_id,"
+        row = cursor.execute("INSERT INTO signals (instrument_id,sequence_id,setting_id,task_id,"
                              "pattern_id,created_at,expiration_at,direction,created_cost,expiration_cost,max_cost,"
                              "min_cost,call_max_change_cost,put_max_change_cost,time_bid,history_num) "
-                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
-                             (self.instrument_id, self.sequence_id, self.setting_id, self.task_id, self.prediction_id,
+                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
+                             (self.instrument_id, self.sequence_id, self.setting_id, self.task_id,
                               self.pattern_id, self.created_at, self.expiration_at, self.direction, self.created_cost,
                               self.expiration_cost, self.max_cost, self.min_cost, self.call_max_change_cost,
                               self.put_max_change_cost, self.time_bid, self.history_num))
@@ -42,7 +41,7 @@ class Signal:
             return self
 
     def __tuple_str(self):
-        return str((self.instrument_id, self.sequence_id, self.setting_id, self.task_id, self.prediction_id,
+        return str((self.instrument_id, self.sequence_id, self.setting_id, self.task_id,
                     self.pattern_id, self.created_at, self.expiration_at, self.direction, self.created_cost,
                     self.expiration_cost, self.max_cost, self.min_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.time_bid, self.history_num))

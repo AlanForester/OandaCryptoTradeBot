@@ -48,7 +48,6 @@ class Signaler:
         signal = Signal()
         signal.sequence_id = prediction.sequence_id
         signal.expiration_at = prediction.created_at + prediction.time_bid
-        signal.prediction_id = prediction.id
         signal.setting_id = prediction.setting_id
         signal.time_bid = prediction.time_bid
         signal.task_id = task.id
