@@ -10,6 +10,7 @@ from services.controller import Controller
 from services.signaler import Signaler
 from helpers.fibonacci import FibonacciHelper
 from helpers.exthread import ExThread
+from providers.providers import Providers
 
 
 class Analyzer:
@@ -93,7 +94,7 @@ class Analyzer:
         last_quotation_value = 0
         # Последнее зафиксированое время обработки
         last_fixed_ts = 0
-
+        telebot = Providers.telebot()
         while True:
             # Фиксируем настоящее время обработчика итерации
             time_now = int(time.time())
@@ -147,6 +148,7 @@ class Analyzer:
 
                     if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем
+                        telebot.new_quotation(task.setting.instrument.instrument + ": " + str(analyzer.quotation.value))
                         analyzer.quotation.ts = time_now
                         analyzer.quotation.save()
 
