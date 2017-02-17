@@ -33,14 +33,26 @@ class Signaler:
             if result:
                 change = 0
                 if result == 'call':
-                    change = pattern.call_max_change_cost
+                    change = pattern.call_max_avg_change_cost
                 if result == 'put':
-                    change = pattern.put_max_change_cost
+                    change = pattern.put_max_avg_change_cost
 
                 one_tick = task.setting.instrument.pip
                 ticks_count = int(change / one_tick)
                 if ticks_count < task.setting.signaler_min_ticks_count:
                     result = None
+
+            if result:
+                if result == 'call':
+                    trend_chance = (pattern.trend_max_call_count + pattern.trend_max_put_count) \
+                                   / 100 * pattern.trend_max_call_count
+                    if trend_chance < task.setting.signaler_trend_chance:
+                        result = None
+                if result == 'put':
+                    trend_chance = (pattern.trend_max_call_count + pattern.trend_max_put_count) \
+                                   / 100 * pattern.trend_max_put_count
+                    if trend_chance < task.setting.signaler_trend_chance:
+                        result = None
 
         return result
 

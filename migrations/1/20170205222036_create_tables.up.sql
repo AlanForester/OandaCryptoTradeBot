@@ -332,7 +332,8 @@ CREATE TABLE "public"."settings" (
 	"signaler_delay_on_trend" int4,
 	"signaler_call_max_change_cost" float4,
 	"signaler_put_max_change_cost" float4,
-	"signaler_min_ticks_count" int4
+	"signaler_min_ticks_count" int4,
+	"signaler_trend_chance" int4
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."settings" OWNER TO "postgres";
