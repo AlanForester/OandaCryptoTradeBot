@@ -69,16 +69,18 @@ class Analyzer:
                 patterns_ids = Pattern.save_many(patterns_models)
                 i = 0
                 for pat_rec_id in patterns_ids:
-                    # Проверка условий вероятности при создании сигнала
-                    direction = Signaler.check(self.task, pat_rec_id)
-                    if direction:
-                        Signaler.make_and_save(self.task, direction, pat_rec_id, predictions_models[i])
-                        print(direction)
-                        if self.task.get_param("history_num") == 0:
-                            signals_count = self.task.get_status("checker_signals_count", 0)
-                            self.task.update_status("checker_signals_count", signals_count + 1)
-
                     predictions_models[i].pattern_id = pat_rec_id.id
+
+                    if Controller.check_on_make_signal(self.task, pat_rec_id.id):
+                        # Проверка условий вероятности при создании сигнала
+                        direction = Signaler.check(self.task, pat_rec_id)
+                        if direction:
+                            Signaler.make_and_save(self.task, direction, pat_rec_id, predictions_models[i])
+                            print(direction)
+                            if self.task.get_param("history_num") == 0:
+                                signals_count = self.task.get_status("checker_signals_count", 0)
+                                self.task.update_status("checker_signals_count", signals_count + 1)
+
                     self.task.storage.insert_prediction(predictions_models[i])
                     i += 1
 
@@ -149,8 +151,6 @@ class Analyzer:
                                                      args=(task, analyzer.quotation))
                     check_expired_signals.task = task
                     check_expired_signals.start()
-
-                    Controller.update_expired_signals(task, analyzer.quotation)
 
                     if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем

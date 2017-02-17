@@ -27,7 +27,7 @@ class Settings:
                 {"time": 300, "admission": 60}
             ]),
             model.analyzer_deep = 3,
-            model.analyzer_min_deep = 2,
+            model.analyzer_min_deep = 3,
             model.analyzer_prediction_expire = json.dumps([{"expire": 0, "history_duration": 0}]),
             model.analyzer_candles_parent_relation = "parent"
             model.analyzer_expiry_time_bid_divider = 60

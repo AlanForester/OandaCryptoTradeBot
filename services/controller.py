@@ -7,8 +7,12 @@ from services.signaler import Signaler
 
 
 class Controller:
+
     @staticmethod
-    def check_on_save_pattern():
+    def check_on_make_signal(task, pat_id):
+        # for signal_item in task.storage.signals:
+        #     if pat_id == signal_item.pattern_id:
+        #         return False
         return True
 
     @staticmethod

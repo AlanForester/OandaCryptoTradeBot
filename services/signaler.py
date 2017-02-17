@@ -63,7 +63,7 @@ class Signaler:
         signal.time_bid = prediction.time_bid
         signal.task_id = task.id
         signal.history_num = task.get_param("history_num")
-        signal.pattern_id = prediction.pattern_id
+        signal.pattern_id = pattern.id
         signal.created_cost = prediction.created_cost
         direction_status = 0
         if direction == 'call':
