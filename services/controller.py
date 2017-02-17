@@ -77,10 +77,10 @@ class Controller:
                 if abs(pattern.trend) >= task.setting.signaler_min_repeats and pattern.delay == 0:
                     pattern.delay = task.setting.signaler_delay_on_trend
 
+            print("Save " + str(len(ended_predictions)) + " predictions")
             Prediction.save_many(ended_predictions)
 
             # Обновляем паттерн и устанавливаем счетчики
             if len(taken_patterns) > 0:
                 for item in taken_patterns:
                     taken_patterns[item].update()
-

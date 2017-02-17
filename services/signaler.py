@@ -30,7 +30,7 @@ class Signaler:
                     result = None
 
             # Проверка на количество тиков
-            if result:
+            if result and task.setting.signaler_min_ticks_count > 0:
                 change = 0
                 if result == 'call':
                     change = pattern.call_max_avg_change_cost
@@ -39,19 +39,17 @@ class Signaler:
 
                 one_tick = task.setting.instrument.pip
                 ticks_count = int(change / one_tick)
-                if ticks_count < task.setting.signaler_min_ticks_count:
+                if int(ticks_count) < task.setting.signaler_min_ticks_count:
                     result = None
 
-            if result:
+            if result and task.setting.signaler_trend_chance > 0:
+                all_trends = pattern.trend_max_call_count + pattern.trend_max_put_count
+                trend_condition = all_trends / 100
                 if result == 'call':
-                    trend_chance = (pattern.trend_max_call_count + pattern.trend_max_put_count) \
-                                   / 100 * pattern.trend_max_call_count
-                    if trend_chance < task.setting.signaler_trend_chance:
+                    if pattern.trend_max_call_count / trend_condition <= task.setting.signaler_trend_chance:
                         result = None
                 if result == 'put':
-                    trend_chance = (pattern.trend_max_call_count + pattern.trend_max_put_count) \
-                                   / 100 * pattern.trend_max_put_count
-                    if trend_chance < task.setting.signaler_trend_chance:
+                    if pattern.trend_max_put_count / trend_condition <= task.setting.signaler_trend_chance:
                         result = None
 
         return result
