@@ -72,11 +72,11 @@ class Analyzer:
                     # Проверка условий вероятности при создании сигнала
                     direction = Signaler.check(self.task, pat_rec_id)
                     if direction:
+                        Signaler.make_and_save(self.task, direction, pat_rec_id, predictions_models[i])
                         print(direction)
                         if self.task.get_param("history_num") == 0:
                             signals_count = self.task.get_status("checker_signals_count", 0)
                             self.task.update_status("checker_signals_count", signals_count + 1)
-                        Signaler.make_and_save(self.task, direction, pat_rec_id, predictions_models[i])
 
                     predictions_models[i].pattern_id = pat_rec_id.id
                     self.task.storage.insert_prediction(predictions_models[i])
@@ -150,6 +150,8 @@ class Analyzer:
                     check_expired_signals.task = task
                     check_expired_signals.start()
 
+                    Controller.update_expired_signals(task, analyzer.quotation)
+
                     if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем
                         telebot.send_quotation(task.setting.instrument.instrument + ": " + str(analyzer.quotation.value))
@@ -162,7 +164,6 @@ class Analyzer:
 
                         # Обновляем параметры стоимости прогнозов
                         Prediction.calculation_cost_for_topical(task, analyzer.quotation)
-                        Controller.update_expired_signals(task, analyzer.quotation)
 
                         save_handle = False
 
