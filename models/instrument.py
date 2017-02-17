@@ -47,43 +47,104 @@ class Instrument:
             if interval_obj["start"]["year"]:
                 if interval_obj["start"]["year"] <= year:
                     is_work = False
-                    if interval_obj["end"]["year"] > year:
-                        is_work = True
-
-            if interval_obj["start"]["month"]:
-                if interval_obj["start"]["month"] <= month:
-                    is_work = False
-                    if interval_obj["end"]["month"] > month:
-                        is_work = True
-
-            if interval_obj["start"]["day"]:
-                if interval_obj["start"]["day"] <= day:
-                    is_work = False
-                    if interval_obj["end"]["day"] > day:
-                        is_work = True
-            else:
-                if interval_obj["start"]["day_of_week"]:
-                    if interval_obj["start"]["day_of_week"] <= day_of_week:
-                        is_work = False
-                        if interval_obj["end"]["day_of_week"] > day_of_week:
+                    if interval_obj["start"]["month"]:
+                        if interval_obj["start"]["month"] <= month:
+                            is_work = False
+                            if interval_obj["start"]["day"]:
+                                if interval_obj["start"]["day"] <= day:
+                                    is_work = False
+                                    if interval_obj["start"]["hour"]:
+                                        if interval_obj["start"]["hour"] <= hour:
+                                            is_work = False
+                                            if interval_obj["start"]["minute"]:
+                                                if interval_obj["start"]["minute"] <= minute:
+                                                    is_work = False
+                                                    if interval_obj["start"]["second"]:
+                                                        if interval_obj["start"]["second"] <= second:
+                                                            is_work = False
+                                                        else:
+                                                            is_work = True
+                                                else:
+                                                    is_work = True
+                                        else:
+                                            is_work = True
+                                else:
+                                    is_work = True
+                            elif interval_obj["start"]["day_of_week"]:
+                                if interval_obj["start"]["day_of_week"] <= day_of_week:
+                                    is_work = False
+                                    if interval_obj["start"]["hour"]:
+                                        if interval_obj["start"]["hour"] <= hour:
+                                            is_work = False
+                                            if interval_obj["start"]["minute"]:
+                                                if interval_obj["start"]["minute"] <= minute:
+                                                    is_work = False
+                                                    if interval_obj["start"]["second"]:
+                                                        if interval_obj["start"]["second"] <= second:
+                                                            is_work = False
+                                                        else:
+                                                            is_work = True
+                                                else:
+                                                    is_work = True
+                                        else:
+                                            is_work = True
+                                else:
+                                    is_work = True
+                        else:
                             is_work = True
+                else:
+                    is_work = True
 
-            if interval_obj["start"]["hour"]:
-                if interval_obj["start"]["hour"] <= hour:
-                    is_work = False
-                    if interval_obj["end"]["hour"] > hour:
-                        is_work = True
-
-            if interval_obj["start"]["minute"]:
-                if interval_obj["start"]["minute"] <= minute:
-                    is_work = False
-                    if interval_obj["end"]["minute"] > minute:
-                        is_work = True
-
-            if interval_obj["start"]["second"]:
-                if interval_obj["start"]["second"] <= second:
-                    is_work = False
-                    if interval_obj["end"]["second"] > second:
+            if not is_work:
+                if interval_obj["end"]["year"]:
+                    if interval_obj["end"]["year"] >= year:
+                        is_work = False
+                        if interval_obj["end"]["month"]:
+                            if interval_obj["end"]["month"] >= month:
+                                is_work = False
+                                if interval_obj["end"]["day"]:
+                                    if interval_obj["end"]["day"] >= day:
+                                        is_work = False
+                                        if interval_obj["end"]["hour"]:
+                                            if interval_obj["end"]["hour"] >= hour:
+                                                is_work = False
+                                                if interval_obj["end"]["minute"]:
+                                                    if interval_obj["end"]["minute"] >= minute:
+                                                        is_work = False
+                                                        if interval_obj["end"]["second"]:
+                                                            if interval_obj["end"]["second"] >= second:
+                                                                is_work = False
+                                                            else:
+                                                                is_work = True
+                                                    else:
+                                                        is_work = True
+                                            else:
+                                                is_work = True
+                                    else:
+                                        is_work = True
+                                elif interval_obj["end"]["day_of_week"]:
+                                    if interval_obj["end"]["day_of_week"] >= day_of_week:
+                                        is_work = False
+                                        if interval_obj["end"]["hour"]:
+                                            if interval_obj["end"]["hour"] >= hour:
+                                                is_work = False
+                                                if interval_obj["end"]["minute"]:
+                                                    if interval_obj["end"]["minute"] >= minute:
+                                                        is_work = False
+                                                        if interval_obj["end"]["second"]:
+                                                            if interval_obj["end"]["second"] >= second:
+                                                                is_work = False
+                                                            else:
+                                                                is_work = True
+                                                    else:
+                                                        is_work = True
+                                            else:
+                                                is_work = True
+                                    else:
+                                        is_work = True
+                            else:
+                                is_work = True
+                    else:
                         is_work = True
 
             if not is_work:
