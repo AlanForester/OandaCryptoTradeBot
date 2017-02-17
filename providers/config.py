@@ -59,6 +59,13 @@ class Params(object):
         return self.__config_data["debug"]
 
     @property
+    def _telegram_settings(self):
+        return self.__config_data.setdefault("telegram", {})
+
+    def get_telegram_token(self):
+        return self._broker_settings["token"]
+
+    @property
     def _broker_settings(self):
         return self.__config_data.setdefault("broker", {})
 

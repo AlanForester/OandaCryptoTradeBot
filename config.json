@@ -16,5 +16,8 @@
     "access_token": "19b678b9251c5f098c5b933234bb8f94-3c9e98a8e7a5b0875b27f53a42a46465",
     "environment": "live"
   },
+  "telegram": {
+    "token": "261424747:AAEucR-g8Ws4DP3HHzmcfjQVH6ocRAlZN0A"
+  },
   "debug": true
 }

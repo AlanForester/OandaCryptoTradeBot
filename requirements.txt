@@ -2,4 +2,5 @@ pylint
 requests
 psycopg2
 redis
+pytelegrambotapi
 git+https://github.com/oanda/oandapy.git#egg=oandapy
