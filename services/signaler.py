@@ -11,12 +11,12 @@ class Signaler:
             all_condition = all_amounts / 100
             if pattern.calls_count < pattern.puts_count:
                 if pattern.trend <= -task.setting.signaler_min_repeats:
-                    if pattern.puts_count / all_condition > task.setting.signaler_min_chance:
+                    if pattern.puts_count / all_condition >= task.setting.signaler_min_chance:
                         result = 'put'
             else:
                 if pattern.calls_count > pattern.puts_count:
                     if pattern.trend >= task.setting.signaler_min_repeats:
-                        if pattern.calls_count / all_condition > task.setting.signaler_min_chance:
+                        if pattern.calls_count / all_condition >= task.setting.signaler_min_chance:
                             result = 'call'
 
             call_change = task.setting.signaler_call_max_change_cost
