@@ -60,12 +60,4 @@ class Checker:
                 self.checker_predictions(last_quotation)
 
     def checker_predictions(self, last_quotation):
-        signals_count = self.task.get_status("checker_signals_count", 0)
-        if not signals_count:
-            signals_count = 0
-        check_result = Controller.check_expired_predictions(self.task, last_quotation)
-        if check_result and len(check_result) > 0:
-            for check in check_result:
-                print(check)
-                signals_count += 1
-                self.task.update_status("checker_signals_count", signals_count)
+        Controller.check_expired_predictions(self.task, last_quotation)

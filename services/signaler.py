@@ -1,4 +1,5 @@
 from models.signal import Signal
+from providers.providers import Providers
 
 
 class Signaler:
@@ -75,5 +76,11 @@ class Signaler:
         signal.put_max_change_cost = pattern.put_max_change_cost
 
         task.storage.signals.append(signal)
+        if task.get_param("history_num") == 0:
+            Providers.telebot().send_signal(task.setting.instrument.instrument + ": "
+                                            + "Новый сигнал: " + str(direction) + ". Время:" + str(prediction.time_bid)
+                                            + ". Цена " + str(round(prediction.created_cost, 4)) + " изменится на "
+                                            + str(round(expiration_cost - prediction.created_cost, 4))
+                                            + " и станет " + str(round(expiration_cost, 4)))
 
         return signal.save()

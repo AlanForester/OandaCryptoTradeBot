@@ -65,16 +65,19 @@ class Analyzer:
                         pattern = Pattern.make(self.task, seq, time_bid)
                         patterns_models.append(pattern)
 
-                        # Проверка условий вероятности при создании сигнала
-                        if self.task.get_param("history_num") == 0:
-                            direction = Signaler.check(self.task, pattern)
-                            if direction:
-                                Signaler.make_and_save(self.task, direction, pattern, prediction)
-
             if len(patterns_models) > 0:
                 patterns_ids = Pattern.save_many(patterns_models)
                 i = 0
                 for pat_rec_id in patterns_ids:
+                    # Проверка условий вероятности при создании сигнала
+                    direction = Signaler.check(self.task, pat_rec_id)
+                    if direction:
+                        print(direction)
+                        if self.task.get_param("history_num") == 0:
+                            signals_count = self.task.get_status("checker_signals_count", 0)
+                            self.task.update_status("checker_signals_count", signals_count + 1)
+                        Signaler.make_and_save(self.task, direction, pat_rec_id, predictions_models[i])
+
                     predictions_models[i].pattern_id = pat_rec_id.id
                     self.task.storage.insert_prediction(predictions_models[i])
                     i += 1
@@ -129,6 +132,7 @@ class Analyzer:
 
                 # Проверка на рабочее время инструмента
                 if not task.setting.instrument.is_works(analyzer.quotation.ts):
+                    print("Рынок не работает")
                     save_handle = False
                     analysis_handle = False
 
@@ -148,15 +152,17 @@ class Analyzer:
 
                     if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем
-                        telebot.new_quotation(task.setting.instrument.instrument + ": " + str(analyzer.quotation.value))
+                        telebot.send_quotation(task.setting.instrument.instrument + ": " + str(analyzer.quotation.value))
                         analyzer.quotation.ts = time_now
                         analyzer.quotation.save()
+                        print(analyzer.quotation.value)
 
                         # Сохраняем свечи
                         analyzer.save_candles()
 
                         # Обновляем параметры стоимости прогнозов
                         Prediction.calculation_cost_for_topical(task, analyzer.quotation)
+                        Controller.update_expired_signals(task, analyzer.quotation)
 
                         save_handle = False
 

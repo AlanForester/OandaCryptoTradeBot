@@ -61,6 +61,16 @@ class Signal:
         cursor = Providers.db().get_cursor()
         cursor.execute("UPDATE signals SET closed_cost=%s, closed_discrepancy_cost=%s-expiration_cost, "
                        "closed_change_cost=%s-created_cost WHERE expiration_at<=%s "
-                       "AND closed_cost=0 AND task_id=%s", (quotation.value, quotation.value, quotation.value,
-                                                            quotation.ts, task.id))
+                       "AND closed_cost=0 AND task_id=%s RETURNING *",
+                       (quotation.value, quotation.value, quotation.value,
+                        quotation.ts, task.id))
         Providers.db().commit()
+        signals_updated = cursor.fetchall()
+        if task.get_param("history_num") == 0:
+            for signal in signals_updated:
+                Providers.telebot().send_signal(task.setting.instrument.instrument + ": "
+                                                + "Закрыт сигнал: " + ("put" if signal.direction == -1 else "call")
+                                                + ". Цена " + str(round(signal.created_cost, 4))
+                                                + " изменилась на " + str(round(signal.closed_change_cost, 4))
+                                                + " с прогнозом " + str(round(signal.expiration_cost, 4))
+                                                + " и стала " + str(round(signal.closed_cost, 4)))

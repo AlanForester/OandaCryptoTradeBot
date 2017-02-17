@@ -33,7 +33,7 @@ class Instrument:
         :param int ts: Таймштамп который требуется проверить
         :return bool:
         """
-        dt = datetime.fromtimestamp(ts)
+        dt = datetime.utcfromtimestamp(ts)
         year = dt.year
         month = dt.month
         day = dt.day

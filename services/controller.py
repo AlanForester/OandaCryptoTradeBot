@@ -78,17 +78,6 @@ class Controller:
                 if abs(pattern.trend) >= task.setting.signaler_min_repeats and pattern.delay == 0:
                     pattern.delay = task.setting.signaler_delay_on_trend
 
-                if task.service_name == "checker" or task.service_name == "collector_and_checker":
-                    # Формируем сигнал для тестовой проверки
-                    trade_direction = Signaler.check(task, pattern)
-                    if trade_direction == "put" or trade_direction == "call":
-                        Signaler.make_and_save(task, trade_direction, pattern, prediction)
-                        test_trading.append({"direction": trade_direction,
-                                             "prediction": prediction.id,
-                                             "pattern": pattern.id,
-                                             "signal": trade_direction
-                                             })
-
             Prediction.save_many(ended_predictions)
 
             # Обновляем паттерн и устанавливаем счетчики
@@ -96,5 +85,3 @@ class Controller:
                 for item in taken_patterns:
                     taken_patterns[item].update()
 
-            if task.service_name == "checker" or task.service_name == "collector_and_checker":
-                return test_trading

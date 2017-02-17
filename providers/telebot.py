@@ -14,6 +14,7 @@ def get_telebot():
 class TeleBot(telebot.TeleBot):
     token = None
     quotation_chats = []
+    signal_chats = []
 
     def __init__(self):
         config = get_config()
@@ -31,13 +32,33 @@ class TeleBot(telebot.TeleBot):
     def listener(self, messages):
         for m in messages:
             if m.content_type == 'text':
-                if m.text == "Подключиться к котировкам":
-                    self.send_message(m.chat.id, "Я подключил вас к котировкам")
-                    self.quotation_chats.append(m.chat.id)
+                if m.text == "Кот":
+                    if not self.is_in_list(self.quotation_chats, m.chat.id):
+                        self.send_message(m.chat.id, "Я подключил вас к котировкам")
+                        self.quotation_chats.append(m.chat.id)
                 if m.text == "Отключиться от котировок":
-                    self.send_message(m.chat.id, "Я отключил вас от котировок")
-                    self.quotation_chats.remove(m.chat.id)
+                    if self.is_in_list(self.quotation_chats, m.chat.id):
+                        self.send_message(m.chat.id, "Я отключил вас от котировок")
+                        self.quotation_chats.remove(m.chat.id)
 
-    def new_quotation(self, text):
+                if m.text == "Сиг":
+                    if not self.is_in_list(self.signal_chats,m.chat.id):
+                        self.send_message(m.chat.id, "Я подключил вас к сигналам")
+                        self.signal_chats.append(m.chat.id)
+                if m.text == "Отключиться от сигналов":
+                    if not self.is_in_list(self.signal_chats, m.chat.id):
+                        self.send_message(m.chat.id, "Я отключил вас от сигналов")
+                        self.signal_chats.remove(m.chat.id)
+
+    def send_quotation(self, text):
         for chat in self.quotation_chats:
             self.send_message(chat, text)
+
+    def send_signal(self, text):
+        for chat in self.signal_chats:
+            self.send_message(chat, text)
+
+    def is_in_list(self, ilist, chat):
+        for i in ilist:
+            if i == chat:
+                return True

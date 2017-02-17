@@ -130,7 +130,7 @@ class Pattern:
                 'delay,expires,history_num,created_at,trend_max_call_count,trend_max_put_count) VALUES ' + \
                 ','.join(v.__tuple_str() for v in patterns) + \
                 'ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)' + \
-                'DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id'
+                'DO UPDATE SET used_count=patterns.used_count + 1 RETURNING *'
         cursor.execute(query)
         Providers.db().commit()
         res = cursor.fetchall()
