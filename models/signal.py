@@ -70,7 +70,7 @@ class Signal:
             for signal in signals_updated:
                 Providers.telebot().send_signal(task.setting.instrument.instrument + ": "
                                                 + "Закрыт сигнал: " + ("put" if signal.direction == -1 else "call")
-                                                + ". Цена " + str(round(signal.created_cost, 4))
-                                                + " изменилась на " + str(round(signal.closed_change_cost, 4))
-                                                + " с прогнозом " + str(round(signal.expiration_cost, 4))
-                                                + " и стала " + str(round(signal.closed_cost, 4)))
+                                                + ". Цена " + str(round(signal.created_cost, 5))
+                                                + " изменилась на " + str(round(signal.closed_change_cost, 5))
+                                                + " с прогнозом " + str(round(signal.expiration_cost, 5))
+                                                + " и стала " + str(round(signal.closed_cost, 5)))

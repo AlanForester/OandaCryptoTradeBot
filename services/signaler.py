@@ -79,8 +79,8 @@ class Signaler:
         if task.get_param("history_num") == 0:
             Providers.telebot().send_signal(task.setting.instrument.instrument + ": "
                                             + "Новый сигнал: " + str(direction) + ". Время:" + str(prediction.time_bid)
-                                            + ". Цена " + str(round(prediction.created_cost, 4)) + " изменится на "
-                                            + str(round(expiration_cost - prediction.created_cost, 4))
-                                            + " и станет " + str(round(expiration_cost, 4)))
+                                            + ". Цена " + str(round(prediction.created_cost, 5)) + " изменится на "
+                                            + str(round(expiration_cost - prediction.created_cost, 5))
+                                            + " и станет " + str(round(expiration_cost, 5)))
 
         return signal.save()
