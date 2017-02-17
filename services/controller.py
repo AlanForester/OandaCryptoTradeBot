@@ -24,7 +24,6 @@ class Controller:
 
     @staticmethod
     def check_expired_predictions(task, quotation):
-        test_trading = []
         timestamp = int(time.time())
 
         # Если это тестирование истории то время не нужно
