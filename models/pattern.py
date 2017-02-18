@@ -154,7 +154,6 @@ class Pattern:
                     max_duration = expire["history_duration"]
                     if expire["expire"] > 0:
                         model_for_expires = Pattern.get_last(sequence.id, time_bid['time'], task)
-                        print(model_for_expires)
                         if model_for_expires and model_for_expires.check_on_expire():
                             expires = model_for_expires.expires
                         else:
@@ -179,7 +178,7 @@ class Pattern:
         cursor = Providers.db().get_cursor()
         cursor.execute(
             "SELECT * FROM patterns WHERE sequence_id=%s AND setting_id=%s AND time_bid=%s AND history_num=%s "
-            "ORDER BY created_at DESC LIMIT 1", (sequence_id, task.setting.instrument_id, time_bid,
+            "ORDER BY created_at DESC LIMIT 1", (sequence_id, task.setting.id, time_bid,
                                                  task.get_param("history_num", 0)))
 
         model = cursor.fetchone()

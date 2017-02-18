@@ -80,3 +80,22 @@ class Signal:
         cursor = Providers.db().get_cursor()
         cursor.execute("DELETE FROM signals")
         Providers.db().commit()
+
+    @staticmethod
+    def get_success_percent(task):
+        cursor = Providers.db().get_cursor()
+        cursor.execute("SELECT * FROM signals WHERE history_num=%s AND closed_cost > 0 AND setting_id=%s", [
+            task.get_param("history_num", 0),
+            task.setting_id
+        ])
+        signals = cursor.fetchall()
+        success = []
+        for signal in signals:
+            if signal.direction == -1 and signal.closed_change_cost < 0:
+                success.append(signal)
+            if signal.direction == 1 and signal.closed_change_cost > 0:
+                success.append(signal)
+        chance = 0
+        if len(signals) > 0:
+            chance = round(len(success)/len(signals)*100, 4)
+        return chance

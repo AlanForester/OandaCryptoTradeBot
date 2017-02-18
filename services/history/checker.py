@@ -60,6 +60,7 @@ class Checker:
                     # Запускаем демона для проверки кеша и получения результата торгов
                     if checked_quotations % 100 == 0:
                         self.checker_predictions(last_quotation)
+                        print(Signal.get_success_percent(self.task))
 
             # Ждем все потоки
             ExThread.wait_threads(total_threads, 0)
