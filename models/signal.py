@@ -74,3 +74,9 @@ class Signal:
                                                 + " изменилась на " + str(round(signal.closed_change_cost, 5))
                                                 + " с прогнозом " + str(round(signal.expiration_cost, 5))
                                                 + " и стала " + str(round(signal.closed_cost, 5)))
+
+    @staticmethod
+    def empty_table():
+        cursor = Providers.db().get_cursor()
+        cursor.execute("DELETE FROM signals")
+        Providers.db().commit()

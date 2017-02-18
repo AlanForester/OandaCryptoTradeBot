@@ -46,11 +46,13 @@ class Signaler:
                 all_trends = pattern.trend_max_call_count + pattern.trend_max_put_count
                 trend_condition = all_trends / 100
                 if result == 'call':
-                    if pattern.trend_max_call_count / trend_condition <= task.setting.signaler_trend_chance:
-                        result = None
+                    if pattern.trend_max_put_count > 0:
+                        if pattern.trend_max_call_count / trend_condition <= task.setting.signaler_trend_chance:
+                            result = None
                 if result == 'put':
-                    if pattern.trend_max_put_count / trend_condition <= task.setting.signaler_trend_chance:
-                        result = None
+                    if pattern.trend_max_call_count > 0:
+                        if pattern.trend_max_put_count / trend_condition <= task.setting.signaler_trend_chance:
+                            result = None
 
         return result
 

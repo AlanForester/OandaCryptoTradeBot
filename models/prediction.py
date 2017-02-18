@@ -180,3 +180,9 @@ class Prediction(object):
                     prediction.range_max_avg_change_cost = range_max_avg_change_cost
 
                 prediction.last_cost = quotation.value
+
+    @staticmethod
+    def empty_table():
+        cursor = Providers.db().get_cursor()
+        cursor.execute("DELETE FROM predictions")
+        Providers.db().commit()

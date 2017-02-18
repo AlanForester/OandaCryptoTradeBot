@@ -193,3 +193,9 @@ class Pattern:
         row = cursor.fetchone()
         if row:
             return Pattern(row)
+
+    @staticmethod
+    def empty_table():
+        cursor = Providers.db().get_cursor()
+        cursor.execute("DELETE FROM patterns")
+        Providers.db().commit()

@@ -10,9 +10,9 @@ class Controller:
 
     @staticmethod
     def check_on_make_signal(task, pat_id):
-        # for signal_item in task.storage.signals:
-        #     if pat_id == signal_item.pattern_id:
-        #         return False
+        for signal_item in task.storage.signals:
+            if pat_id == signal_item.pattern_id:
+                return False
         return True
 
     @staticmethod
@@ -76,10 +76,10 @@ class Controller:
                     pattern.same_count += 1
                     pattern.trend = 0
 
-                if pattern.delay > 0:
-                    pattern.delay -= 1
                 if abs(pattern.trend) >= task.setting.signaler_min_repeats and pattern.delay == 0:
                     pattern.delay = task.setting.signaler_delay_on_trend
+                if pattern.delay > 0:
+                    pattern.delay -= 1
 
             print("Save " + str(len(ended_predictions)) + " predictions")
             Prediction.save_many(ended_predictions)

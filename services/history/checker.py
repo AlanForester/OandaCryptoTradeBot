@@ -5,6 +5,9 @@ from models.quotation import Quotation
 from services.controller import Controller
 from services.analyzer import Analyzer
 from models.prediction import Prediction
+from models.pattern import Pattern
+from models.signal import Signal
+from providers.providers import Providers
 
 
 class Checker:
@@ -16,6 +19,12 @@ class Checker:
         quotations = Quotation.get_from_interval(start, end, self.instrument.id)
         self.task.update_status("checker_total_quotations", len(quotations))
         last_quotation = None
+
+        if Providers.config().launch_service == "checker":
+            Prediction.empty_table()
+            Signal.empty_table()
+            Pattern.empty_table()
+
         if len(quotations) > 0:
             checked_quotations = self.task.get_param("checker_checked_quotations")
             if not checked_quotations:
@@ -27,7 +36,6 @@ class Checker:
             for row in quotations:
                 i += 5  # Так как сбор истории идет мин за 5 сек
                 if i >= task.setting.analyzer_collect_interval_sec:
-                    print(row.ts)
                     # Проверка на количество работающих тредов и блокировка
                     ExThread.wait_threads(total_threads, thread_limit)
 
