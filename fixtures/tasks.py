@@ -32,7 +32,7 @@ class Tasks:
             }
         if service == "checker":
             params = {
-                "start": int(time.time() - 86400*15),
+                "start": int(time.time() - 86400*30),
                 "end": int(time.time()),
                 "history_num": 1
             }

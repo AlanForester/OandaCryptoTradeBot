@@ -23,55 +23,55 @@
 --  Sequence structure for actives_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 4015 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."actives_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."actives_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 903 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."orders_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."orders_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 800725 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."patterns_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."patterns_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 995794 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."predictions_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."predictions_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for sequences_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 517537 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."sequences_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."sequences_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 21 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."settings_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."settings_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 105322 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."signals_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."signals_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 671 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."tasks_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."tasks_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
 CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 784 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."workers_id_seq" OWNER TO "postgres";
+ALTER TABLE "public"."workers_id_seq" OWNER TO "iqfx";
 
 
 -- ----------------------------
@@ -94,7 +94,7 @@ CREATE TABLE "public"."tasks" (
 	"handled_exceptions" json
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."tasks" OWNER TO "postgres";
+ALTER TABLE "public"."tasks" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for workers
@@ -110,7 +110,7 @@ CREATE TABLE "public"."workers" (
 	"terminated_description" text COLLATE "default"
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."workers" OWNER TO "postgres";
+ALTER TABLE "public"."workers" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for sequences
@@ -122,7 +122,7 @@ CREATE TABLE "public"."sequences" (
 	"duration" int4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."sequences" OWNER TO "postgres";
+ALTER TABLE "public"."sequences" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for candles
@@ -146,7 +146,7 @@ CREATE TABLE "public"."candles" (
 	"low_power" float4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."candles" OWNER TO "postgres";
+ALTER TABLE "public"."candles" OWNER TO "iqfx";
 
 COMMENT ON COLUMN "public"."candles"."instrument_id" IS 'ИД актива';
 COMMENT ON COLUMN "public"."candles"."from_ts" IS 'От';
@@ -171,7 +171,7 @@ CREATE TABLE "public"."quotations" (
 	"value" float4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."quotations" OWNER TO "postgres";
+ALTER TABLE "public"."quotations" OWNER TO "iqfx";
 
 COMMENT ON COLUMN "public"."quotations"."ts" IS 'Временная метка';
 COMMENT ON COLUMN "public"."quotations"."instrument_id" IS 'ИД актива';
@@ -187,7 +187,7 @@ CREATE TABLE "public"."instruments" (
 	"not_working_time" json
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."instruments" OWNER TO "postgres";
+ALTER TABLE "public"."instruments" OWNER TO "iqfx";
 
 COMMENT ON COLUMN "public"."instruments"."instrument" IS 'Название актива';
 
@@ -208,7 +208,7 @@ CREATE TABLE "public"."orders" (
 	"bid_cost" float4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."orders" OWNER TO "postgres";
+ALTER TABLE "public"."orders" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for signals
@@ -236,7 +236,7 @@ CREATE TABLE "public"."signals" (
 	"history_num" int4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."signals" OWNER TO "postgres";
+ALTER TABLE "public"."signals" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for patterns
@@ -270,7 +270,7 @@ CREATE TABLE "public"."patterns" (
 	"trend_max_put_count" int2
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."patterns" OWNER TO "postgres";
+ALTER TABLE "public"."patterns" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for predictions
@@ -305,7 +305,7 @@ CREATE TABLE "public"."predictions" (
 	"time_to_expiration" int4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."predictions" OWNER TO "postgres";
+ALTER TABLE "public"."predictions" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for settings
@@ -336,7 +336,7 @@ CREATE TABLE "public"."settings" (
 	"signaler_trend_chance" int4
 )
 WITH (OIDS=FALSE);
-ALTER TABLE "public"."settings" OWNER TO "postgres";
+ALTER TABLE "public"."settings" OWNER TO "iqfx";
 
 
 -- ----------------------------
