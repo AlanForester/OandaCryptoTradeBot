@@ -83,7 +83,7 @@ $BODY$
 	CALLED ON NULL INPUT
 	SECURITY INVOKER
 	VOLATILE;
-ALTER FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) OWNER TO "postgres";
+ALTER FUNCTION "public"."make_candles"(IN input_ts int4, IN input_durations _int4, IN input_instrument_id int4) OWNER TO "iqfx";
 
 -- ----------------------------
 --  Function structure for public.get_till_ts_from_last_candle_on_ts(int4, int4)
@@ -107,7 +107,7 @@ $BODY$
 	CALLED ON NULL INPUT
 	SECURITY INVOKER
 	VOLATILE;
-ALTER FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) OWNER TO "postgres";
+ALTER FUNCTION "public"."get_till_ts_from_last_candle_on_ts"(IN input_instrument_id int4, IN input_till_ts int4) OWNER TO "iqfx";
 
 -- ----------------------------
 --  Function structure for public.get_last_candles_on_till_ts(int4, int4, _int4)
@@ -129,7 +129,7 @@ $BODY$
 	CALLED ON NULL INPUT
 	SECURITY INVOKER
 	VOLATILE;
-ALTER FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) OWNER TO "postgres";
+ALTER FUNCTION "public"."get_last_candles_on_till_ts"(IN input_instrument_id int4, IN input_till_ts int4, IN input_durations _int4) OWNER TO "iqfx";
 
 -- ----------------------------
 --  Function structure for public.get_last_candles_with_nesting(int4, int4, int4, varchar, _int4)
@@ -167,4 +167,4 @@ $BODY$
 	CALLED ON NULL INPUT
 	SECURITY INVOKER
 	VOLATILE;
-ALTER FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) OWNER TO "postgres";
+ALTER FUNCTION "public"."get_last_candles_with_nesting"(IN input_instrument_id int4, IN input_till_ts int4, IN input_deep int4, IN input_relation varchar, IN input_durations _int4) OWNER TO "iqfx";
