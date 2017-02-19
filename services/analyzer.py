@@ -61,21 +61,21 @@ class Analyzer:
                     prediction = Prediction.make(self.task, time_bid, self.quotation, seq)
                     # Проверка оставшегося времени до ставки
                     if prediction.time_to_expiration >= (time_bid['time'] - time_bid['admission']):
+                        pattern = Pattern.make(self.task, seq, time_bid, self.quotation)
                         predictions_models.append(prediction)
-                        pattern = Pattern.make(self.task, seq, time_bid)
                         patterns_models.append(pattern)
 
             if len(patterns_models) > 0:
                 patterns_ids = Pattern.save_many(patterns_models)
                 i = 0
-                for pat_rec_id in patterns_ids:
-                    predictions_models[i].pattern_id = pat_rec_id.id
+                for pat_rec in patterns_ids:
+                    predictions_models[i].pattern_id = pat_rec.id
 
-                    if Controller.check_on_make_signal(self.task, pat_rec_id.id):
+                    if Controller.check_on_make_signal(self.task, pat_rec, predictions_models[i], self.quotation):
                         # Проверка условий вероятности при создании сигнала
-                        direction = Signaler.check(self.task, pat_rec_id)
+                        direction = Signaler.check(self.task, pat_rec)
                         if direction:
-                            Signaler.make_and_save(self.task, direction, pat_rec_id, predictions_models[i])
+                            Signaler.make_and_save(self.task, direction, pat_rec, predictions_models[i])
                             if self.task.get_param("history_num") == 0:
                                 signals_count = self.task.get_status("checker_signals_count", 0)
                                 self.task.update_status("checker_signals_count", signals_count + 1)

@@ -698,7 +698,7 @@ CREATE TABLE "public"."settings" (
 	"analyzer_bid_times" json,
 	"analyzer_deep" int4,
 	"analyzer_min_deep" int4,
-	"analyzer_prediction_expire" json,
+	"analyzer_patterns_control" json,
 	"analyzer_candles_parent_relation" varchar COLLATE "default",
 	"analyzer_expiry_time_bid_divider" int4,
 	"signaler_min_chance" float4,

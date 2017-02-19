@@ -37,6 +37,8 @@ class Prediction(object):
 
     _pattern = None
 
+    sequence_duration = 0
+
     def __init__(self, raw=None):
         if raw:
             self.__dict__.update(raw._asdict())
@@ -127,6 +129,7 @@ class Prediction(object):
         prediction.time_bid = time_bid['time']
         prediction.task_id = task.id
         prediction.sequence_id = seq.id
+        prediction.sequence_duration = seq.duration
         prediction.created_cost = quotation.value
         prediction.created_ask = quotation.ask
         prediction.created_bid = quotation.bid

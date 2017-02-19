@@ -7,4 +7,17 @@ live
 19b678b9251c5f098c5b933234bb8f94-3c9e98a8e7a5b0875b27f53a42a46465
 
 **Migrations**
-python3 migrate.py up (reset)
+
+Сбросить базу
+```
+python3 migrate.py reset
+```
+Запустить проверку со сбросом паттернов сигналов и прогнозов
+```
+python3 main.py -c config.json -l checher -f true
+```
+Запустить проверку без записи паттернов и прогнозов
+
+```
+python3 main.py -c config.json -l checher -nw true
+```

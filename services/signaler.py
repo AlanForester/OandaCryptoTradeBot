@@ -9,12 +9,12 @@ class Signaler:
         if pattern.delay == 0:
             all_amounts = pattern.calls_count + pattern.puts_count
             all_condition = all_amounts / 100
-            if pattern.calls_count < pattern.puts_count:
+            if pattern.puts_count > pattern.calls_count > 0:
                 if pattern.trend <= -task.setting.signaler_min_repeats:
                     if pattern.puts_count / all_condition >= task.setting.signaler_min_chance:
                         result = 'put'
             else:
-                if pattern.calls_count > pattern.puts_count:
+                if pattern.calls_count > pattern.puts_count > 0:
                     if pattern.trend >= task.setting.signaler_min_repeats:
                         if pattern.calls_count / all_condition >= task.setting.signaler_min_chance:
                             result = 'call'

@@ -31,6 +31,8 @@ class Pattern:
     trend_max_call_count = 0
     trend_max_put_count = 0
 
+    _is_work_for_signal = None
+
     def __init__(self, raw=None):
         if raw:
             self.__dict__.update(raw._asdict())
@@ -121,6 +123,9 @@ class Pattern:
 
     @staticmethod
     def save_many(patterns: list):
+        incr = 1
+        if Providers.config().no_write:
+            incr = 0
         cursor = Providers.db().get_cursor()
         query = 'INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,' + \
                 'puts_count,same_count,trend,range_max_change_cost,' + \
@@ -130,7 +135,7 @@ class Pattern:
                 'delay,expires,history_num,created_at,trend_max_call_count,trend_max_put_count) VALUES ' + \
                 ','.join(v.__tuple_str() for v in patterns) + \
                 'ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)' + \
-                'DO UPDATE SET used_count=patterns.used_count + 1 RETURNING *'
+                'DO UPDATE SET used_count=patterns.used_count + ' + str(incr) + ' RETURNING *'
         cursor.execute(query)
         Providers.db().commit()
         res = cursor.fetchall()
@@ -145,21 +150,7 @@ class Pattern:
         return model
 
     @staticmethod
-    def make(task, sequence, time_bid):
-        expires = 0
-        max_duration = 0
-        for expire in task.setting.analyzer_prediction_expire:
-            if expire["history_duration"] <= sequence.duration:
-                if expire["history_duration"] > max_duration:
-                    max_duration = expire["history_duration"]
-                    if expire["expire"] > 0:
-                        model_for_expires = Pattern.get_last(sequence.id, time_bid['time'], task)
-                        if model_for_expires and model_for_expires.check_on_expire():
-                            expires = model_for_expires.expires
-                        else:
-                            expires = int(time.time()) + expire["expire"]
-                    else:
-                        expires = 0
+    def make(task, sequence, time_bid, quotation):
 
         model = Pattern()
         model.sequence_id = sequence.id
@@ -167,11 +158,40 @@ class Pattern:
         model.task_id = task.id
         model.time_bid = time_bid['time']
         model.used_count = 1
-        model.expires = expires
         model.task_id = task.id
         model.history_num = task.get_param("history_num")
-        model.created_at = time.time()
+        model.created_at = quotation.ts
+
+        max_duration = 0
+        for control in task.setting.analyzer_patterns_control:
+            if control["sequence_min_duration"] <= sequence.duration:
+                if control["sequence_min_duration"] > max_duration:
+                    max_duration = control["sequence_min_duration"]
+                    if control["expire"] > 0:
+                        model_for_expires = Pattern.get_last(sequence.id, time_bid['time'], task)
+                        if model_for_expires and model_for_expires.check_on_expire():
+                            model.expires = model_for_expires.expires
+                        else:
+                            model.expires = int(time.time()) + control["expire"]
+                    else:
+                        model.expires = 0
+
         return model
+
+    @staticmethod
+    def check_on_min_work_time(task, pattern, sequence_duration, quotation):
+        result = True
+        max_duration = 0
+        for control in task.setting.analyzer_patterns_control:
+            if control["sequence_min_duration"] <= sequence_duration:
+                if control["sequence_min_duration"] > max_duration:
+                    max_duration = control["sequence_min_duration"]
+                    if control["min_work_time"] > 0:
+                        if quotation.ts - control["min_work_time"] >= pattern.created_at:
+                            result = True
+                        else:
+                            result = False
+        return result
 
     @staticmethod
     def get_last(sequence_id, time_bid, task):

@@ -29,9 +29,25 @@ class Config:
             help="Launch task on startup", choices=["analyzer", "collector", "checker", "collector_and_checker"]
         )
 
+        parser.add_argument(
+            "-f", "--flush", dest="flush", type=str, required=False,
+            help="Flush data pps"
+        )
+
+        parser.add_argument(
+            "-nw", "--no_write", dest="no_write", type=str, required=False,
+            help="No write patterns and predictions"
+        )
+
         args = parser.parse_args()
         if args.launch:
             gvars.APP_START_SERVICE = args.launch
+
+        if args.flush:
+            gvars.APP_FLUSH_HISTORY = args.flush
+
+        if args.no_write:
+            gvars.APP_NO_WRITE = args.no_write
 
         self._config_path = args.config_path
 
@@ -45,6 +61,14 @@ class Params(object):
 
     def __init__(self):
         self.__config_data = {}
+
+    @property
+    def no_write(self):
+        return gvars.APP_NO_WRITE
+
+    @property
+    def flush_history(self):
+        return gvars.APP_FLUSH_HISTORY
 
     @property
     def launch_service(self):

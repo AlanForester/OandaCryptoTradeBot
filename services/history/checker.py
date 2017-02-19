@@ -20,7 +20,7 @@ class Checker:
         self.task.update_status("checker_total_quotations", len(quotations))
         last_quotation = None
 
-        if Providers.config().launch_service == "checker":
+        if Providers.config().flush_history:
             Prediction.empty_table()
             Signal.empty_table()
             Pattern.empty_table()
