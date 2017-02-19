@@ -76,7 +76,7 @@ class Analyzer:
                         direction = Signaler.check(self.task, pat_rec)
                         if direction:
                             Signaler.make_and_save(self.task, direction, pat_rec, predictions_models[i])
-                            if self.task.get_param("history_num") == 0:
+                            if self.task.get_param("history_num", 0) > 0:
                                 signals_count = self.task.get_status("checker_signals_count", 0)
                                 self.task.update_status("checker_signals_count", signals_count + 1)
 

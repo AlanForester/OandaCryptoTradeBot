@@ -41,11 +41,8 @@ class Checker:
 
                     analyzer = Analyzer(task)
                     analyzer.quotation = row
-                    # analysis_thread = ExThread(target=analyzer.do_analysis)
-                    # analysis_thread.task = task
-                    # analysis_thread.start()
                     analyzer.do_analysis()
-                    # print "Run analysis thread. Total:", len(total_threads)
+
                     i = 0
                     last_quotation = analyzer.quotation
 
@@ -60,7 +57,8 @@ class Checker:
                     # Запускаем демона для проверки кеша и получения результата торгов
                     if checked_quotations % 100 == 0:
                         self.checker_predictions(last_quotation)
-                        print(Signal.get_success_percent(self.task))
+                        success_percent = Signal.get_success_percent(self.task)
+                        print(success_percent)
 
             # Ждем все потоки
             ExThread.wait_threads(total_threads, 0)
