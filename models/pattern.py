@@ -214,7 +214,10 @@ class Pattern:
             return Pattern(row)
 
     @staticmethod
-    def empty_table():
+    def empty_table(task):
         cursor = Providers.db().get_cursor()
-        cursor.execute("DELETE FROM patterns")
+        cursor.execute("DELETE FROM patterns WHERE history_num=%s AND setting_id=%s", [
+            task.get_param("history_num", 0),
+            task.setting_id
+        ])
         Providers.db().commit()

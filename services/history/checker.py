@@ -21,9 +21,10 @@ class Checker:
         last_quotation = None
 
         if Providers.config().flush_history:
-            Prediction.empty_table()
-            Signal.empty_table()
-            Pattern.empty_table()
+            Prediction.empty_table(task)
+            Pattern.empty_table(task)
+
+        Signal.empty_table(task)
 
         if len(quotations) > 0:
             checked_quotations = self.task.get_param("checker_checked_quotations")

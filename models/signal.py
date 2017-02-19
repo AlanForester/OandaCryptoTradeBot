@@ -76,9 +76,12 @@ class Signal:
                                                 + " и стала " + str(round(signal.closed_cost, 5)))
 
     @staticmethod
-    def empty_table():
+    def empty_table(task):
         cursor = Providers.db().get_cursor()
-        cursor.execute("DELETE FROM signals")
+        cursor.execute("DELETE FROM signals WHERE history_num=%s AND setting_id=%s",[
+            task.get_param("history_num", 0),
+            task.setting_id
+        ])
         Providers.db().commit()
 
     @staticmethod
