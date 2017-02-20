@@ -19,6 +19,7 @@ class Setting:
     analyzer_patterns_control = None
     analyzer_candles_parent_relation = None
     analyzer_capacity_granularity = None
+    analyzer_capacity_type = None
     prediction_expire = None
     save_prediction_if_exists = None
     signaler_min_chance = None
@@ -41,17 +42,18 @@ class Setting:
         query = "INSERT INTO settings (user_id, name, is_default, created_at, updated_at, instrument_id, " \
                 "candles_durations, analyzer_working_interval_sec, analyzer_collect_interval_sec, " \
                 "analyzer_bid_times, analyzer_deep, analyzer_min_deep, analyzer_patterns_control, " \
-                "analyzer_candles_parent_relation, analyzer_capacity_granularity, " \
+                "analyzer_candles_parent_relation, analyzer_capacity_granularity, analyzer_capacity_type, " \
                 "signaler_min_chance, signaler_min_repeats, signaler_delay_on_trend,signaler_put_max_change_cost, " \
                 "signaler_call_max_change_cost,analyzer_expiry_time_bid_divider, signaler_min_ticks_count, " \
                 "signaler_trend_chance) " \
-                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
+                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id"
         cursor.execute(query,
                        (self.user_id, self.name, self.is_default, self.created_at, self.updated_at, self.instrument_id,
                         self.candles_durations, self.analyzer_working_interval_sec, self.analyzer_collect_interval_sec,
                         self.analyzer_bid_times, self.analyzer_deep, self.analyzer_min_deep,
                         self.analyzer_patterns_control,
                         self.analyzer_candles_parent_relation, self.analyzer_capacity_granularity,
+                        self.analyzer_capacity_type,
                         self.signaler_min_chance, self.signaler_min_repeats,
                         self.signaler_delay_on_trend, self.signaler_put_max_change_cost,
                         self.signaler_call_max_change_cost,
@@ -74,7 +76,7 @@ class Setting:
                     self.candles_durations, self.analyzer_working_interval_sec, self.analyzer_collect_interval_sec,
                     self.analyzer_bid_times, self.analyzer_deep, self.analyzer_min_deep,
                     self.analyzer_patterns_control, self.analyzer_candles_parent_relation,
-                    self.analyzer_capacity_granularity,
+                    self.analyzer_capacity_granularity, self.analyzer_capacity_type,
                     self.signaler_min_chance, self.signaler_min_repeats, self.signaler_delay_on_trend,
                     self.signaler_put_max_change_cost, self.signaler_call_max_change_cost,
                     self.analyzer_expiry_time_bid_divider, self.signaler_min_ticks_count, self.signaler_trend_chance))

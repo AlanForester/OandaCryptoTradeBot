@@ -104,7 +104,7 @@ class Candle(object):
     @staticmethod
     def get_last_with_nesting(till_ts, deep, instrument_id, durations, relation="parent"):
         cursor = Providers.db().get_cursor()
-        query = "SELECT change_power,duration,till_ts,from_ts FROM " \
+        query = "SELECT change,change_power,duration,till_ts,from_ts FROM " \
                 "get_last_candles_with_nesting({0},{1},{2},'{3}',{4}) " \
                 "ORDER BY till_ts DESC".format(instrument_id, till_ts, deep, relation, "ARRAY" + str(durations))
         cursor.execute(query)
@@ -124,6 +124,7 @@ class Candle(object):
                         uniq_durations.append(row.duration)
                         model = dict()
                         model["change_power"] = row.change_power
+                        model["change"] = row.change
                         model["duration"] = row.duration
                         model["till_ts"] = row.till_ts
                         model["from_ts"] = row.from_ts
@@ -138,41 +139,4 @@ class Candle(object):
                             model["parents"] = Candle.get_candles_with_parents(ts_rel, rows, deep, relation)
                         out.append(model)
 
-        return out
-
-    @staticmethod
-    def get_last(till_ts, deep, instrument_id, relation="parent"):
-        """Достаем похожие по длительности свечи в рекурсивной функции
-        Вложенность обеспечивается свойством parent
-        За уровень вложенности отвечает параметр deep(Глубина)"""
-        out = []
-        cursor = Providers.db().get_cursor()
-        if deep > 0:
-            deep -= 1
-            """Получаем последний доступный ts свечи"""
-            last_candle_till = Candle.get_last_till_ts(till_ts, instrument_id)
-
-            if last_candle_till:
-                """Достаем свечи любой длины за время"""
-                cursor.execute(
-                    "SELECT change_power,duration,till_ts,from_ts FROM "
-                    "candles WHERE till_ts=%s AND instrument_id=%s",
-                    [last_candle_till, instrument_id])
-                rows = cursor.fetchall()
-                for row in rows:
-                    model = dict()
-                    model["change_power"] = row.change_power
-                    model["duration"] = row.duration
-                    model["till_ts"] = row.till_ts
-                    model["from_ts"] = row.from_ts
-                    if deep > 0:
-                        ts = row.from_ts
-                        if relation == "parent":
-                            # Ищем родителей за прошлые промежутки по from_ts
-                            ts = row.from_ts
-                        if relation == "related":
-                            # Ищем смежные за этот же промежуток по till_ts
-                            ts = row.till_ts
-                        model["parents"] = Candle.get_last(ts, deep, instrument_id, relation)
-                    out.append(model)
         return out

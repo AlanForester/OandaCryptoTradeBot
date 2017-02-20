@@ -69,10 +69,10 @@ class Sequence:
         return sequence
 
     @staticmethod
-    def get_sequences_json(candles_with_parents, admissions):
+    def get_sequences_json(task, candles_with_parents, admissions):
         """
         Преобразует массив свечей с родителями в массив последовательностей
-        :returns sequences: [{'duration': 5, 'admission': 144}, {'duration': 5, 'admission': 144}]
+        :returns sequences: [{'duration': 5, 'potential': 144}, {'duration': 5, 'potential': 144}]
         """
         out = list()
         for candle in candles_with_parents:
@@ -83,12 +83,17 @@ class Sequence:
             # obj["from_ts"] = candle["from_ts"]
             # obj["change_power"] = candle["change_power"]
             for admission in admissions:
-                if candle["change_power"] <= admission:
-                    obj["admission"] = admission
-                    break
+                if task.setting.analyzer_capacity_type == "potential":
+                    if candle["change_power"] <= admission:
+                        obj["potential"] = admission
+                        break
+                elif task.setting.analyzer_capacity_type == "change":
+                    if candle["change"] <= admission:
+                        obj["change"] = admission
+                        break
 
-            if not "admission" in obj:
-                obj["admission"] = int(candle["change_power"] / 100) * 100
+            # if not "potential" in obj:
+            #     obj["potential"] = int(candle["change_power"])
 
             sequence.append(obj)
             out.append(sequence)

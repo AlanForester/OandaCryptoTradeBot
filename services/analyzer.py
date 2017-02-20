@@ -24,7 +24,7 @@ class Analyzer:
         self.task = task
         self.api = Api()
         self.quotation.instrument_id = self.task.setting.instrument_id
-        self.admissions = [i*self.task.setting.analyzer_capacity_granularity for i in range(-100, 101)]
+        self.admissions = [i*self.task.setting.analyzer_capacity_granularity for i in range(-1000, 1001)]
 
     def start_stream(self):
         self.thread_stream = ExThread(target=self.api.quotations_stream, args=(self.quotation,
@@ -45,7 +45,7 @@ class Analyzer:
                                                self.task.setting.instrument_id, self.task.setting.candles_durations,
                                                "parent")
         # Получаем разные вариации последовательностей c глубиной вхождения
-        sequences = Sequence.get_sequences_json(candles, self.admissions)
+        sequences = Sequence.get_sequences_json(self.task, candles, self.admissions)
 
         sequences_models = []
         for sequence in sequences:
