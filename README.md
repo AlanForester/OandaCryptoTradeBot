@@ -12,12 +12,16 @@ live
 ```
 python3 migrate.py reset
 ```
+Запустить сборку котировок с проверкой истории
+```
+python3 main.py -c config.json -l collector_and_checker
+```
 Запустить проверку со сбросом паттернов сигналов и прогнозов
 ```
-python3 main.py -c config.json -l checher -f true
+python3 main.py -c config.json -l checker -f true
 ```
 Запустить проверку без записи паттернов и прогнозов
 
 ```
-python3 main.py -c config.json -l checher -nw true
+python3 main.py -c config.json -l checker -nw true
 ```
