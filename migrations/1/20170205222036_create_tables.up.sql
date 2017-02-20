@@ -233,7 +233,8 @@ CREATE TABLE "public"."signals" (
 	"call_max_change_cost" float4,
 	"put_max_change_cost" float4,
 	"time_bid" int4,
-	"history_num" int4
+	"history_num" int4,
+	"is_read" bool
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."signals" OWNER TO "iqfx";

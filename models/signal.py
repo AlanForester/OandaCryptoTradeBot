@@ -22,6 +22,7 @@ class Signal:
     history_num = 0
     closed_discrepancy_cost = 0
     closed_change_cost = 0
+    is_read = False
 
     def __init__(self, raw=None):
         if raw:
@@ -32,13 +33,13 @@ class Signal:
         row = cursor.execute("INSERT INTO signals (instrument_id,sequence_id,setting_id,task_id,"
                              "pattern_id,created_at,expiration_at,direction,created_cost,expiration_cost,"
                              "closed_cost,max_cost,min_cost,call_max_change_cost,put_max_change_cost,time_bid,"
-                             "history_num, closed_discrepancy_cost, closed_change_cost) "
-                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
+                             "history_num, closed_discrepancy_cost, closed_change_cost, is_read) "
+                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
                              (self.instrument_id, self.sequence_id, self.setting_id, self.task_id,
                               self.pattern_id, self.created_at, self.expiration_at, self.direction, self.created_cost,
                               self.expiration_cost, self.closed_cost, self.max_cost, self.min_cost,
                               self.call_max_change_cost, self.put_max_change_cost, self.time_bid, self.history_num,
-                              self.closed_discrepancy_cost, self.closed_change_cost))
+                              self.closed_discrepancy_cost, self.closed_change_cost, self.is_read))
 
         Providers.db().commit()
         if row:
@@ -50,7 +51,7 @@ class Signal:
                     self.pattern_id, self.created_at, self.expiration_at, self.direction, self.created_cost,
                     self.expiration_cost, self.closed_cost, self.max_cost, self.min_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.time_bid, self.history_num, self.closed_discrepancy_cost,
-                    self.closed_change_cost))
+                    self.closed_change_cost, self.is_read))
 
     @staticmethod
     def model(raw=None):
