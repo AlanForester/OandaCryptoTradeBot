@@ -42,12 +42,6 @@ class Sequence:
         return Sequence(raw)
 
     @staticmethod
-    def save_and_get(sequence_json):
-        sequence = Sequence.make(sequence_json)
-        sequence.save()
-        return sequence
-
-    @staticmethod
     def save_many(sequences: list):
         cursor = Providers.db().get_cursor()
         query = 'INSERT INTO sequences (json, hash, duration) VALUES ' + \
@@ -69,7 +63,7 @@ class Sequence:
         return sequence
 
     @staticmethod
-    def get_sequences_json(task, candles_with_parents, admissions):
+    def get_sequences_json(task, candles_with_parents):
         """
         Преобразует массив свечей с родителями в массив последовательностей
         :returns sequences: [{'duration': 5, 'potential': 144}, {'duration': 5, 'potential': 144}]
@@ -82,27 +76,20 @@ class Sequence:
             # obj["till_ts"] = candle["till_ts"]
             # obj["from_ts"] = candle["from_ts"]
             # obj["change_power"] = candle["change_power"]
-            for admission in admissions:
-                if task.setting.analyzer_capacity_type == "potential":
-                    if candle["change_power"] <= admission:
-                        obj["potential"] = admission
-                        break
-                elif task.setting.analyzer_capacity_type == "change":
-                    if candle["change"]/task.setting.instrument.pip <= admission:
-                        obj["change"] = admission
-                        break
+            if task.setting.analyzer_capacity_type == "potential":
+                obj["potential"] = int(candle["change_power"]
+                                       / task.setting.analyzer_capacity_granularity)
+            elif task.setting.analyzer_capacity_type == "change":
+                obj["change"] = int((candle["change"] / task.setting.instrument.pip)
+                                    / task.setting.analyzer_capacity_granularity)
 
-            # if not "potential" in obj:
-            #     obj["potential"] = int(candle["change_power"])
-
+            obj["granularity"] = task.setting.analyzer_capacity_granularity
             sequence.append(obj)
             out.append(sequence)
             if "parents" in candle:
-                parents = Sequence.get_sequences_json(task, candle["parents"], admissions)
+                parents = Sequence.get_sequences_json(task, candle["parents"])
                 if len(parents) > 0:
                     for p in parents:
                         with_parents = sequence + p
                         out.append(with_parents)
         return out
-
-
