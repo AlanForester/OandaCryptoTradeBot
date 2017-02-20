@@ -26,8 +26,8 @@ class Settings:
             model.analyzer_bid_times = json.dumps([
                 {"time": 300, "admission": 60},
             ]),
-            model.analyzer_deep = 3,
-            model.analyzer_min_deep = 3,
+            model.analyzer_deep = 5,
+            model.analyzer_min_deep = 5,
             model.analyzer_patterns_control = json.dumps([
                 {"expire": 0,
                  "sequence_min_duration": 1,

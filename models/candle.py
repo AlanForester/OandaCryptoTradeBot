@@ -90,18 +90,6 @@ class Candle(object):
         Providers.db().commit()
 
     @staticmethod
-    def get_last_till_ts(till_ts, instrument_id):
-        """Достает время последней свечи"""
-        cursor = Providers.db().get_cursor()
-        cursor.execute(
-            "SELECT till_ts FROM candles WHERE till_ts<=%s AND instrument_id=%s ORDER BY till_ts DESC LIMIT 1",
-            [till_ts, instrument_id])
-        row = cursor.fetchone()
-        if row:
-            return row.till_ts
-        return False
-
-    @staticmethod
     def get_last_with_nesting(till_ts, deep, instrument_id, durations, relation="parent"):
         cursor = Providers.db().get_cursor()
         query = "SELECT change,change_power,duration,till_ts,from_ts FROM " \
