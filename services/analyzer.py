@@ -24,7 +24,7 @@ class Analyzer:
         self.task = task
         self.api = Api()
         self.quotation.instrument_id = self.task.setting.instrument_id
-        self.admissions = [i*self.task.setting.analyzer_capacity_granularity for i in range(-1000, 1001)]
+        self.admissions = [round(i*self.task.setting.analyzer_capacity_granularity, 6) for i in range(-1000, 1001)]
 
     def start_stream(self):
         self.thread_stream = ExThread(target=self.api.quotations_stream, args=(self.quotation,

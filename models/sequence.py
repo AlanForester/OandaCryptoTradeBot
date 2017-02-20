@@ -88,7 +88,7 @@ class Sequence:
                         obj["potential"] = admission
                         break
                 elif task.setting.analyzer_capacity_type == "change":
-                    if candle["change"] <= admission:
+                    if candle["change"]/task.setting.instrument.pip <= admission:
                         obj["change"] = admission
                         break
 
