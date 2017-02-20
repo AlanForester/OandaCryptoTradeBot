@@ -328,6 +328,7 @@ CREATE TABLE "public"."settings" (
 	"analyzer_patterns_control" json,
 	"analyzer_candles_parent_relation" varchar COLLATE "default",
 	"analyzer_expiry_time_bid_divider" int4,
+	"analyzer_capacity_granularity" int4,
 	"signaler_min_chance" float4,
 	"signaler_min_repeats" int4,
 	"signaler_delay_on_trend" int4,
