@@ -1,4 +1,5 @@
 import time
+import datetime
 
 from helpers.exthread import ExThread
 from models.quotation import Quotation
@@ -56,10 +57,10 @@ class Checker:
                         self.task.update_status("checker_checked_quotations", checked_quotations)
 
                     # Запускаем демона для проверки кеша и получения результата торгов
+                    self.checker_predictions(last_quotation)
                     if checked_quotations % 100 == 0:
-                        self.checker_predictions(last_quotation)
                         success_percent = Signal.get_success_percent(self.task)
-                        print(success_percent)
+                        print(datetime.datetime.fromtimestamp(last_quotation.ts), success_percent)
 
             # Ждем все потоки
             ExThread.wait_threads(total_threads, 0)

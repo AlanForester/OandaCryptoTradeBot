@@ -36,15 +36,11 @@ class Controller:
 
     @staticmethod
     def check_expired_predictions(task, quotation):
-        timestamp = int(time.time())
+        timestamp = quotation.ts
 
         if Providers.config().no_write:
             Prediction.get_expired(task, timestamp)
         else:
-            # Если это тестирование истории то время не нужно
-            if task.service_name == "checker" or task.service_name == "collector_and_checker":
-                timestamp = None
-
             ended_predictions = Prediction.get_expired(task, timestamp)
             if ended_predictions:
                 # Формируем массив патернов для исключения повторения
@@ -92,7 +88,6 @@ class Controller:
                     if pattern.delay > 0:
                         pattern.delay -= 1
 
-                print("Save " + str(len(ended_predictions)) + " predictions")
                 Prediction.save_many(ended_predictions)
 
                 # Обновляем паттерн и устанавливаем счетчики
