@@ -62,7 +62,7 @@ BEGIN
     ORDER BY till_ts DESC
     LIMIT 1;
 
-    IF last_change_var IS NOT NULL AND last_change_var > 0
+    IF last_change_var IS NOT NULL AND last_change_var != 0
     THEN
       change_power_var = change_var / (last_change_var / 100);
     END IF;

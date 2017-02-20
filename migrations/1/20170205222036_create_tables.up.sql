@@ -181,7 +181,7 @@ COMMENT ON COLUMN "public"."quotations"."instrument_id" IS 'ИД актива';
 -- ----------------------------
 CREATE TABLE "public"."instruments" (
 	"id" int4 NOT NULL DEFAULT nextval('actives_id_seq'::regclass),
-	"instrument" varchar NOT NULL COLLATE "default",
+	"instrument" varchar COLLATE "default" NOT NULL,
 	"pip" float4,
 	"name" varchar COLLATE "default",
 	"not_working_time" json
@@ -314,7 +314,7 @@ ALTER TABLE "public"."predictions" OWNER TO "iqfx";
 CREATE TABLE "public"."settings" (
 	"id" int4 NOT NULL DEFAULT nextval('settings_id_seq'::regclass),
 	"user_id" varchar COLLATE "default",
-	"name" varchar(255) NOT NULL COLLATE "default",
+	"name" varchar(255) COLLATE "default" NOT NULL,
 	"is_default" bool,
 	"created_at" int4,
 	"updated_at" int4,

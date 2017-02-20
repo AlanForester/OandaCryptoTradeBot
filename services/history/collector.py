@@ -49,31 +49,21 @@ class Collector:
         self.task.update_status("collector_total_quotations", delta_candles_count)
 
         quotations = {}
-        threads = []
         while delta_candles_count > 0:
-            ExThread.wait_threads(threads, 1)
-
             if delta_candles_count >= max_count:
                 count = max_count
             else:
                 count = delta_candles_count
             start = datetime.utcfromtimestamp(start_ts).strftime("%Y-%m-%dT%H-%M-%S")
 
-            thread = ExThread(target=self._fetch_candles, args=(
-                self.task.setting.instrument,
-                granularity,
-                count,
-                start,
-                quotations
-            ))
-            thread.task = self.task
-            thread.start()
-            threads.append(thread)
+            self._fetch_candles(self.task.setting.instrument,
+                                granularity,
+                                count,
+                                start,
+                                quotations)
 
             start_ts += count * 5
             delta_candles_count -= count
-
-        ExThread.wait_threads(threads, 0)
         result = []
 
         self.task.update_status("collector_total_quotations", len(quotations))

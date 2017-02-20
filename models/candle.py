@@ -109,6 +109,7 @@ class Candle(object):
                 "ORDER BY till_ts DESC".format(instrument_id, till_ts, deep, relation, "ARRAY" + str(durations))
         cursor.execute(query)
         rows = cursor.fetchall()
+        print(rows)
         if rows:
             return Candle.get_candles_with_parents(till_ts, rows, deep, relation)
 

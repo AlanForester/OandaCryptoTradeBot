@@ -44,6 +44,7 @@ class Analyzer:
         candles = Candle.get_last_with_nesting(self.quotation.ts, self.task.setting.analyzer_deep,
                                                self.task.setting.instrument_id, self.task.setting.candles_durations,
                                                "parent")
+        print(candles)
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(candles, self.admissions)
 
@@ -152,8 +153,8 @@ class Analyzer:
 
                     if save_handle:
                         # Устанавливаем настоящее время для котировки и сохраняем
-                        Providers.telebot().send_quotation(task.setting.instrument.instrument + ": "
-                                                           + str(analyzer.quotation.value))
+                        # Providers.telebot().send_quotation(task.setting.instrument.instrument + ": "
+                        #                                   + str(analyzer.quotation.value))
                         analyzer.quotation.ts = time_now
                         analyzer.quotation.save()
                         print(analyzer.quotation.value)
@@ -168,10 +169,10 @@ class Analyzer:
 
                     if analysis_handle:
                         # Запускаем поток на анализ
-                        analysis_thread = ExThread(target=analyzer.do_analysis)
-                        analysis_thread.daemon = True
-                        analysis_thread.task = task
-                        analysis_thread.start()
+                        # analysis_thread = ExThread(target=analyzer.do_analysis)
+                        # analysis_thread.daemon = True
+                        # analysis_thread.task = task
+                        # analysis_thread.start()
                         # Запускаем поток на проверку прогнозов
 
                         analysis_handle = False
