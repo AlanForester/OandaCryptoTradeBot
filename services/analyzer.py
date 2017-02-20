@@ -44,7 +44,6 @@ class Analyzer:
         candles = Candle.get_last_with_nesting(self.quotation.ts, self.task.setting.analyzer_deep,
                                                self.task.setting.instrument_id, self.task.setting.candles_durations,
                                                "parent")
-        print(candles)
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(candles, self.admissions)
 
