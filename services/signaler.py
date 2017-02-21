@@ -5,8 +5,6 @@ from providers.providers import Providers
 class Signaler:
     @staticmethod
     def check(task, pattern):
-        if pattern.calls_count >= 2 or pattern.puts_count >= 2:
-            print("Check")
         result = None
         if pattern.delay == 0:
             all_amounts = pattern.calls_count + pattern.puts_count
