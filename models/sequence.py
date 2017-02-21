@@ -79,10 +79,11 @@ class Sequence:
             # obj["till_ts"] = candle["till_ts"]
             # obj["from_ts"] = candle["from_ts"]
             # obj["change_power"] = candle["change_power"]
+
             if task.setting.analyzer_capacity_type == "potential":
                 obj["change"] = int(candle["change_power"]
-                                       / task.setting.analyzer_capacity_granularity)
-            elif task.setting.analyzer_capacity_type == "change":
+                                    / task.setting.analyzer_capacity_granularity)
+            else:
                 obj["change"] = int((candle["change"] / task.setting.instrument.pip)
                                     / task.setting.analyzer_capacity_granularity)
 
