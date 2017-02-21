@@ -20,7 +20,7 @@ class Settings:
             model.created_at = time.time(),
             model.updated_at = time.time(),
             model.instrument_id = instrument.id,
-            model.candles_durations = json.dumps([300]),
+            model.candles_durations = json.dumps([180]),
             model.analyzer_working_interval_sec = 5,
             model.analyzer_collect_interval_sec = 1,
             model.analyzer_bid_times = json.dumps([
@@ -35,7 +35,7 @@ class Settings:
                  }]),
             model.analyzer_candles_parent_relation = "parent"
             model.analyzer_expiry_time_bid_divider = 5
-            model.analyzer_capacity_granularity = 1
+            model.analyzer_capacity_granularity = 0.1
             model.analyzer_capacity_type = "change"  # "change","potential"
             model.signaler_min_chance = 70,
             model.signaler_min_repeats = 2,

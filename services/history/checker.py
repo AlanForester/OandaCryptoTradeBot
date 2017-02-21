@@ -32,38 +32,30 @@ class Checker:
             if not checked_quotations:
                 checked_quotations = 0
 
-            i = 0
-            thread_limit = 10
-            total_threads = []
             for row in quotations:
-                i += 5  # Так как сбор истории идет мин за 5 сек
-                if i >= task.setting.analyzer_collect_interval_sec:
-                    # Проверка на количество работающих тредов и блокировка
-                    ExThread.wait_threads(total_threads, thread_limit)
 
-                    analyzer = Analyzer(task)
-                    analyzer.quotation = row
-                    analyzer.do_analysis()
+                # Проверка на количество работающих тредов и блокировка
 
-                    i = 0
-                    last_quotation = analyzer.quotation
+                analyzer = Analyzer(task)
+                analyzer.quotation = row
+                analyzer.do_analysis()
 
-                    Prediction.calculation_cost_for_topical(task, last_quotation)
-                    Controller.update_expired_signals(self.task, last_quotation)
+                last_quotation = analyzer.quotation
 
-                    checked_quotations += 1
-                    if checked_quotations % 10 == 0:
-                        # Обновляем параметры стоимости прогнозов
-                        self.task.update_status("checker_checked_quotations", checked_quotations)
+                Prediction.calculation_cost_for_topical(task, last_quotation)
+                Controller.update_expired_signals(self.task, last_quotation)
 
-                    # Запускаем демона для проверки кеша и получения результата торгов
-                    self.checker_predictions(last_quotation)
-                    if checked_quotations % 100 == 0:
-                        success_percent = Signal.get_success_percent(self.task)
-                        print(datetime.datetime.fromtimestamp(last_quotation.ts), success_percent)
+                checked_quotations += 1
+                if checked_quotations % 10 == 0:
+                    # Обновляем параметры стоимости прогнозов
+                    self.task.update_status("checker_checked_quotations", checked_quotations)
 
-            # Ждем все потоки
-            ExThread.wait_threads(total_threads, 0)
+                # Запускаем демона для проверки кеша и получения результата торгов
+                self.checker_predictions(last_quotation)
+                if checked_quotations % 100 == 0:
+                    success_percent = Signal.get_success_percent(self.task)
+                    print(datetime.datetime.fromtimestamp(last_quotation.ts), success_percent)
+
             # Обновляем параметры стоимости прогнозов
             if last_quotation:
                 self.checker_predictions(last_quotation)

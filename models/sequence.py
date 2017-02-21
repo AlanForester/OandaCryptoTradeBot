@@ -32,7 +32,10 @@ class Sequence:
         return total_duration
 
     def get_hash(self):
-        return hashlib.md5(json.dumps(self.json).encode('utf-8')).hexdigest()
+        string = ""
+        for item in self.json:
+            string += str(item["duration"]) + str(item["change"])
+        return hashlib.md5(string.encode('utf-8')).hexdigest()
 
     def __tuple_str(self):
         return str((json.dumps(self.json), self.get_hash(), self.get_duration()))
@@ -77,7 +80,7 @@ class Sequence:
             # obj["from_ts"] = candle["from_ts"]
             # obj["change_power"] = candle["change_power"]
             if task.setting.analyzer_capacity_type == "potential":
-                obj["potential"] = int(candle["change_power"]
+                obj["change"] = int(candle["change_power"]
                                        / task.setting.analyzer_capacity_granularity)
             elif task.setting.analyzer_capacity_type == "change":
                 obj["change"] = int((candle["change"] / task.setting.instrument.pip)

@@ -42,6 +42,7 @@ class Analyzer:
         candles = Candle.get_last_with_nesting(self.quotation.ts, self.task.setting.analyzer_deep,
                                                self.task.setting.instrument_id, self.task.setting.candles_durations,
                                                "parent")
+
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(self.task, candles)
 
@@ -64,11 +65,12 @@ class Analyzer:
                         patterns_models.append(pattern)
 
             if len(patterns_models) > 0:
-                patterns_ids = Pattern.save_many(patterns_models)
+                patterns = Pattern.save_many(patterns_models)
                 i = 0
-                for pat_rec in patterns_ids:
+                for pat_rec in patterns:
                     predictions_models[i].pattern_id = pat_rec.id
-
+                    if pat_rec.calls_count > 0 or pat_rec.puts_count > 0:
+                        print(pat_rec.calls_count, pat_rec.puts_count)
                     if Controller.check_on_make_signal(self.task, pat_rec, predictions_models[i], self.quotation):
                         # Проверка условий вероятности при создании сигнала
                         direction = Signaler.check(self.task, pat_rec)
