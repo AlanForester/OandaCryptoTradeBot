@@ -5,7 +5,7 @@ from models.task import Task
 from services.analyzer import Analyzer
 from services.history.collector import Collector
 from helpers.exthread import ExThread
-from multiprocessing import Process
+from multiprocessing.pool import ThreadPool
 
 
 class Dispatcher(object):
@@ -16,11 +16,11 @@ class Dispatcher(object):
         self.worker_id = worker_id
 
     def start_tracking(self):
+        pool = ThreadPool()
         while True:
             pending_tasks = Task.get_pending(self.worker_id)
             for task in pending_tasks:
-                thread = ExThread(target=self.start_service, args=(task,))
-                thread.start()
+                pool.apply_async(self.start_service, args=(task,))
             time.sleep(1)
 
     def start_service(self, task):
@@ -29,16 +29,17 @@ class Dispatcher(object):
         thread = None
         try:
             if task.service_name == "analyzer":
-                thread = Process(target=Analyzer.run, args=(task, ), name=len(self.threads))
+                thread = ExThread(target=Analyzer.run, args=(task, ), name=len(self.threads))
             if task.service_name == "collector":
-                thread = Process(target=Collector, args=(task,), name=len(self.threads))
+                thread = ExThread(target=Collector, args=(task,), name=len(self.threads))
             if task.service_name == "checker":
-                thread = Process(target=Checker, args=(task,), name=len(self.threads))
+                thread = ExThread(target=Checker, args=(task,), name=len(self.threads))
             if task.service_name == "collector_and_checker":
-                thread = Process(target=Dispatcher.collector_and_checker, args=(task,), name=len(self.threads))
+                thread = ExThread(target=Dispatcher.collector_and_checker, args=(task,), name=len(self.threads))
 
             if thread:
                 self.launch_task(task, len(self.threads))
+                thread.task = task
                 thread.run()
         finally:
             self.terminate_task(task)
