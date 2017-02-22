@@ -1,14 +1,16 @@
 import time
+import json
 
 from providers.providers import Providers
 
 
 class Pattern:
     id = None
-    sequence_id = None
     setting_id = None
     task_id = None
     time_bid = 0
+    sequence = []
+    sequence_duration = 0
     used_count = 0
     calls_count = 0
     puts_count = 0
@@ -46,16 +48,18 @@ class Pattern:
 
     def save(self):
         cursor = Providers.db().get_cursor()
-        cursor.execute("INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,"
+        cursor.execute("INSERT INTO patterns (setting_id,task_id,time_bid,sequence,sequence_duration,"
+                       "used_count,calls_count,"
                        "puts_count,same_count,trend,range_max_change_cost, "
                        "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
                        "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
                        "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,"
                        "delay,expires,history_num,created_at,trend_max_call_count,trend_max_put_count) "
-                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
-                       "ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)"
+                       "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                       "ON CONFLICT (sequence,setting_id,time_bid,expires,history_num)"
                        "DO UPDATE SET used_count=patterns.used_count + 1 RETURNING id",
-                       (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
+                       (self.setting_id, self.task_id, self.time_bid, self.sequence, self.sequence_duration,
+                        self.used_count,
                         self.calls_count, self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                         self.range_max_avg_change_cost, self.call_max_change_cost,
                         self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
@@ -72,14 +76,16 @@ class Pattern:
 
     def update(self):
         cursor = Providers.db().get_cursor()
-        cursor.execute("UPDATE patterns SET sequence_id=%s,setting_id=%s,task_id=%s,time_bid=%s,used_count=%s,"
+        cursor.execute("UPDATE patterns SET setting_id=%s,task_id=%s,time_bid=%s,sequence=%s,"
+                       "sequence_duration=%s,used_count=%s,"
                        "calls_count=%s,puts_count=%s,same_count=%s,trend=%s,range_max_change_cost=%s, "
                        "range_max_avg_change_cost=%s,call_max_change_cost=%s,put_max_change_cost=%s,"
                        "call_max_avg_change_cost=%s, put_max_avg_change_cost=%s, range_sum_max_change_cost=%s,"
                        "call_sum_max_change_cost=%s, put_sum_max_change_cost=%s, count_change_cost=%s,"
                        "delay=%s,expires=%s,history_num=%s,"
                        "created_at=%s, trend_max_call_count=%s, trend_max_put_count=%s WHERE id=%s",
-                       (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count,
+                       (self.setting_id, self.task_id, self.time_bid, self.sequence, self.sequence_duration,
+                        self.used_count,
                         self.calls_count, self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                         self.range_max_avg_change_cost, self.call_max_change_cost,
                         self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
@@ -108,7 +114,8 @@ class Pattern:
         self.put_max_avg_change_cost = self.put_max_change_cost / self.count_change_cost
 
     def __tuple_str(self):
-        return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.used_count, self.calls_count,
+        return str((self.setting_id, self.task_id, self.time_bid, self.sequence, self.sequence_duration,
+                    self.used_count, self.calls_count,
                     self.puts_count, self.same_count, self.trend, self.range_max_change_cost,
                     self.range_max_avg_change_cost, self.call_max_change_cost,
                     self.put_max_change_cost, self.call_max_avg_change_cost, self.put_max_avg_change_cost,
@@ -127,14 +134,15 @@ class Pattern:
         if Providers.config().no_write:
             incr = 0
         cursor = Providers.db().get_cursor()
-        query = 'INSERT INTO patterns (sequence_id,setting_id,task_id,time_bid,used_count,calls_count,' + \
+        query = 'INSERT INTO patterns (setting_id,task_id,time_bid,sequence,sequence_duration,' \
+                'used_count,calls_count,' + \
                 'puts_count,same_count,trend,range_max_change_cost,' + \
                 'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
                 'call_max_avg_change_cost, put_max_avg_change_cost,range_sum_max_change_cost,' + \
                 'call_sum_max_change_cost, put_sum_max_change_cost,count_change_cost,' + \
                 'delay,expires,history_num,created_at,trend_max_call_count,trend_max_put_count) VALUES ' + \
                 ','.join(v.__tuple_str() for v in patterns) + \
-                'ON CONFLICT (sequence_id,setting_id,time_bid,expires,history_num)' + \
+                'ON CONFLICT (sequence,setting_id,time_bid,expires,history_num)' + \
                 'DO UPDATE SET used_count=patterns.used_count + ' + str(incr) + ' RETURNING *'
         cursor.execute(query)
         Providers.db().commit()
@@ -144,16 +152,11 @@ class Pattern:
         return []
 
     @staticmethod
-    def upsert(task, sequence, time_bid):
-        model = Pattern.make(task, sequence, time_bid)
-        model.save()
-        return model
-
-    @staticmethod
     def make(task, sequence, time_bid, quotation):
 
         model = Pattern()
-        model.sequence_id = sequence.id
+        model.sequence = sequence.string
+        model.sequence_duration = sequence.duration
         model.setting_id = task.setting.id
         model.task_id = task.id
         model.time_bid = time_bid['time']
@@ -164,11 +167,11 @@ class Pattern:
 
         max_duration = 0
         for control in task.setting.analyzer_patterns_control:
-            if control["sequence_min_duration"] <= sequence.duration:
+            if control["sequence_min_duration"] <= model.sequence_duration:
                 if control["sequence_min_duration"] > max_duration:
                     max_duration = control["sequence_min_duration"]
                     if control["expire"] > 0:
-                        model_for_expires = Pattern.get_last(sequence.id, time_bid['time'], task)
+                        model_for_expires = Pattern.get_last_on_sequence(sequence, time_bid['time'], task)
                         if model_for_expires and model_for_expires.check_on_expire():
                             model.expires = model_for_expires.expires
                         else:
@@ -194,11 +197,11 @@ class Pattern:
         return result
 
     @staticmethod
-    def get_last(sequence_id, time_bid, task):
+    def get_last_on_sequence(sequence, time_bid, task):
         cursor = Providers.db().get_cursor()
         cursor.execute(
-            "SELECT * FROM patterns WHERE sequence_id=%s AND setting_id=%s AND time_bid=%s AND history_num=%s "
-            "ORDER BY created_at DESC LIMIT 1", (sequence_id, task.setting.id, time_bid,
+            "SELECT * FROM patterns WHERE sequence=%s AND setting_id=%s AND time_bid=%s AND history_num=%s "
+            "ORDER BY created_at DESC LIMIT 1", (sequence, task.setting.id, time_bid,
                                                  task.get_param("history_num", 0)))
 
         model = cursor.fetchone()

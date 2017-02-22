@@ -59,7 +59,6 @@ class Signaler:
     @staticmethod
     def make_and_save(task, direction, pattern, prediction):
         signal = Signal()
-        signal.sequence_id = prediction.sequence_id
         signal.expiration_at = prediction.created_at + prediction.time_bid
         signal.setting_id = prediction.setting_id
         signal.time_bid = prediction.time_bid

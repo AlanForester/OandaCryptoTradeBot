@@ -42,25 +42,22 @@ class Analyzer:
         candles = Candle.get_last_with_nesting(self.quotation.ts, self.task.setting.analyzer_deep,
                                                self.task.setting.instrument_id, self.task.setting.candles_durations,
                                                "parent")
-
         # Получаем разные вариации последовательностей c глубиной вхождения
         sequences = Sequence.get_sequences_json(self.task, candles)
-
         sequences_models = []
         for sequence in sequences:
             if len(sequence) >= self.task.setting.analyzer_min_deep:
                 sequences_models.append(Sequence.make(sequence))
 
         if len(sequences_models) > 0:
-            sequences_ret = Sequence.save_many(sequences_models)
             patterns_models = []
             predictions_models = []
             for time_bid in self.task.setting.analyzer_bid_times:
-                for seq in sequences_ret:
-                    prediction = Prediction.make(self.task, time_bid, self.quotation, seq)
+                for seq_raw in sequences_models:
+                    prediction = Prediction.make(self.task, time_bid, self.quotation)
                     # Проверка оставшегося времени до ставки
                     if prediction.time_to_expiration >= (time_bid['time'] - time_bid['admission']):
-                        pattern = Pattern.make(self.task, seq, time_bid, self.quotation)
+                        pattern = Pattern.make(self.task, seq_raw, time_bid, self.quotation)
                         predictions_models.append(prediction)
                         patterns_models.append(pattern)
 
@@ -70,8 +67,8 @@ class Analyzer:
                 for pat_rec in patterns:
                     predictions_models[i].pattern_id = pat_rec.id
 
-                    if Controller.check_on_make_prediction(self.task, predictions_models[i], pat_rec):
-                        self.task.storage.insert_prediction(predictions_models[i])
+                    if Controller.check_on_make_prediction(self.task, pat_rec):
+                        self.task.storage.predictions.append(predictions_models[i])
 
                     if Controller.check_on_make_signal(self.task, pat_rec, predictions_models[i], self.quotation):
                         # Проверка условий вероятности при создании сигнала
@@ -169,10 +166,10 @@ class Analyzer:
 
                     if analysis_handle:
                         # Запускаем поток на анализ
-                        # analysis_thread = ExThread(target=analyzer.do_analysis)
-                        # analysis_thread.daemon = True
-                        # analysis_thread.task = task
-                        # analysis_thread.start()
+                        analysis_thread = ExThread(target=analyzer.do_analysis)
+                        analysis_thread.daemon = True
+                        analysis_thread.task = task
+                        analysis_thread.start()
                         # Запускаем поток на проверку прогнозов
 
                         analysis_handle = False

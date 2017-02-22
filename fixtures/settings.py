@@ -35,10 +35,10 @@ class Settings:
                  }]),
             model.analyzer_candles_parent_relation = "parent"
             model.analyzer_expiry_time_bid_divider = 5
-            model.analyzer_capacity_granularity = 0.1
+            model.analyzer_capacity_granularity = 1
             model.analyzer_capacity_type = "change"  # "change","potential"
-            model.signaler_min_chance = 70
-            model.signaler_min_repeats = 2
+            model.signaler_min_chance = 80
+            model.signaler_min_repeats = 3
             model.signaler_delay_on_trend = 0
             model.signaler_put_max_change_cost = 0
             model.signaler_call_max_change_cost = 0

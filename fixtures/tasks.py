@@ -27,12 +27,13 @@ class Tasks:
         params = {}
         if service == "collector":
             params = {
-                "start": int(time.time() - 86400),
+                "start": int(time.time())-86400*30,
                 "end": int(time.time())
             }
         if service == "checker":
             params = {
-                "start": int(time.time() - 86400 * 30),
+                "start": int(time.time())-86400,
+                # "end": 1487233065+86400,
                 "end": int(time.time()),
                 "history_num": 1
             }

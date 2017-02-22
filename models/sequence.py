@@ -7,23 +7,22 @@ from providers.providers import Providers
 class Sequence:
     id = None
     json = []
-    hash = ""
     duration = 0
+    string = ""
 
     def __init__(self, raw=None):
         if raw:
             self.__dict__.update(raw._asdict())
 
-    def save(self):
-        cursor = Providers.db().get_cursor()
-        query = "INSERT INTO sequences (json, hash, duration) VALUES (%s,%s,%s) " \
-                "ON CONFLICT (hash) DO UPDATE SET hash=EXCLUDED.hash RETURNING id"
-        cursor.execute(query, (json.dumps(self.json), self.hash, self.duration))
-        row = cursor.fetchone()
-        Providers.db().commit()
-        if row:
-            self.id = row.id
-            return self
+    def get_string(self):
+        string = ""
+        i = 0
+        for item in self.json:
+            string += str(item["duration"]) + ":" + str(item["change"]) + ":" + str(item["granularity"])
+            i += 1
+            if len(self.json) > i:
+                string += ","
+        return string
 
     def get_duration(self):
         total_duration = 0
@@ -31,38 +30,19 @@ class Sequence:
             total_duration += item["duration"]
         return total_duration
 
-    def get_hash(self):
-        string = ""
-        for item in self.json:
-            string += str(item["duration"]) + str(item["change"])
-        return hashlib.md5(string.encode('utf-8')).hexdigest()
-
     def __tuple_str(self):
-        return str((json.dumps(self.json), self.get_hash(), self.get_duration()))
+        return str((json.dumps(self.json), self.get_duration()))
 
     @staticmethod
     def model(raw=None):
         return Sequence(raw)
 
     @staticmethod
-    def save_many(sequences: list):
-        cursor = Providers.db().get_cursor()
-        query = 'INSERT INTO sequences (json, hash, duration) VALUES ' + \
-                ','.join(v.__tuple_str() for v in sequences) + \
-                ' ON CONFLICT (hash) DO UPDATE SET hash=EXCLUDED.hash RETURNING id,duration'
-        cursor.execute(query)
-        Providers.db().commit()
-        res = cursor.fetchall()
-        if res:
-            return res
-        return []
-
-    @staticmethod
     def make(sequence_json):
         sequence = Sequence()
         sequence.json = sequence_json
-        sequence.hash = sequence.get_hash()
         sequence.duration = sequence.get_duration()
+        sequence.string = sequence.get_string()
         return sequence
 
     @staticmethod
@@ -76,9 +56,6 @@ class Sequence:
             sequence = list()
             obj = dict()
             obj["duration"] = candle["duration"]
-            # obj["till_ts"] = candle["till_ts"]
-            # obj["from_ts"] = candle["from_ts"]
-            # obj["change_power"] = candle["change_power"]
 
             if task.setting.analyzer_capacity_type == "potential":
                 obj["change"] = int(candle["change_power"]

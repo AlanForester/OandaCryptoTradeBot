@@ -22,55 +22,49 @@
 -- ----------------------------
 --  Sequence structure for actives_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 4015 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."actives_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."actives_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for orders_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 903 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."orders_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."orders_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for patterns_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 800725 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."patterns_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."patterns_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for predictions_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 995794 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."predictions_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."predictions_id_seq" OWNER TO "iqfx";
-
--- ----------------------------
---  Sequence structure for sequences_id_seq
--- ----------------------------
-CREATE SEQUENCE "public"."sequences_id_seq" INCREMENT 1 START 517537 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
-ALTER TABLE "public"."sequences_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for settings_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 21 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."settings_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."settings_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for signals_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 105322 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."signals_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."signals_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for tasks_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 671 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."tasks_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."tasks_id_seq" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Sequence structure for workers_id_seq
 -- ----------------------------
-CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 784 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+CREATE SEQUENCE "public"."workers_id_seq" INCREMENT 1 START 1 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
 ALTER TABLE "public"."workers_id_seq" OWNER TO "iqfx";
 
 
@@ -111,18 +105,6 @@ CREATE TABLE "public"."workers" (
 )
 WITH (OIDS=FALSE);
 ALTER TABLE "public"."workers" OWNER TO "iqfx";
-
--- ----------------------------
---  Table structure for sequences
--- ----------------------------
-CREATE TABLE "public"."sequences" (
-	"id" int8 NOT NULL DEFAULT nextval('sequences_id_seq'::regclass),
-	"json" json,
-	"hash" varchar COLLATE "default",
-	"duration" int4
-)
-WITH (OIDS=FALSE);
-ALTER TABLE "public"."sequences" OWNER TO "iqfx";
 
 -- ----------------------------
 --  Table structure for candles
@@ -216,7 +198,6 @@ ALTER TABLE "public"."orders" OWNER TO "iqfx";
 CREATE TABLE "public"."signals" (
 	"id" int8 NOT NULL DEFAULT nextval('signals_id_seq'::regclass),
 	"instrument_id" int4,
-	"sequence_id" int8,
 	"setting_id" int4,
 	"task_id" int4,
 	"pattern_id" int8,
@@ -244,10 +225,11 @@ ALTER TABLE "public"."signals" OWNER TO "iqfx";
 -- ----------------------------
 CREATE TABLE "public"."patterns" (
 	"id" int8 NOT NULL DEFAULT nextval('patterns_id_seq'::regclass),
-	"sequence_id" int8,
 	"setting_id" int4,
 	"task_id" int4,
 	"time_bid" int4,
+	"sequence" text,
+	"sequence_duration" int4,
 	"used_count" int4,
 	"calls_count" int4,
 	"puts_count" int4,
@@ -278,7 +260,6 @@ ALTER TABLE "public"."patterns" OWNER TO "iqfx";
 -- ----------------------------
 CREATE TABLE "public"."predictions" (
 	"id" int8 NOT NULL DEFAULT nextval('predictions_id_seq'::regclass),
-	"sequence_id" int8,
 	"setting_id" int4,
 	"task_id" int4,
 	"time_bid" int4,
@@ -349,7 +330,6 @@ ALTER SEQUENCE "public"."actives_id_seq" RESTART 4016 OWNED BY "instruments"."id
 ALTER SEQUENCE "public"."orders_id_seq" RESTART 904 OWNED BY "orders"."id";
 ALTER SEQUENCE "public"."patterns_id_seq" RESTART 800726 OWNED BY "patterns"."id";
 ALTER SEQUENCE "public"."predictions_id_seq" RESTART 995795 OWNED BY "predictions"."id";
-ALTER SEQUENCE "public"."sequences_id_seq" RESTART 517538 OWNED BY "sequences"."id";
 ALTER SEQUENCE "public"."settings_id_seq" RESTART 22 OWNED BY "settings"."id";
 ALTER SEQUENCE "public"."signals_id_seq" RESTART 105323 OWNED BY "signals"."id";
 ALTER SEQUENCE "public"."tasks_id_seq" RESTART 672 OWNED BY "tasks"."id";
@@ -364,15 +344,6 @@ ALTER TABLE "public"."tasks" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMM
 -- ----------------------------
 ALTER TABLE "public"."workers" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
--- ----------------------------
---  Primary key structure for table sequences
--- ----------------------------
-ALTER TABLE "public"."sequences" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
--- ----------------------------
---  Uniques structure for table sequences
--- ----------------------------
-ALTER TABLE "public"."sequences" ADD CONSTRAINT "hash_uniq" UNIQUE ("hash") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Primary key structure for table candles
@@ -418,12 +389,12 @@ ALTER TABLE "public"."patterns" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIALLY 
 -- ----------------------------
 --  Uniques structure for table patterns
 -- ----------------------------
-ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence_id","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "public"."patterns" ADD CONSTRAINT "uniq_key" UNIQUE ("sequence","setting_id","time_bid","expires","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Indexes structure for table patterns
 -- ----------------------------
-CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence_id ASC NULLS LAST, setting_id ASC NULLS LAST, time_bid ASC NULLS LAST, history_num ASC NULLS LAST);
+CREATE INDEX  "seq_set_tb_his" ON "public"."patterns" USING btree(sequence ASC NULLS LAST, setting_id ASC NULLS LAST, time_bid ASC NULLS LAST, history_num ASC NULLS LAST);
 
 -- ----------------------------
 --  Primary key structure for table predictions
@@ -433,7 +404,7 @@ ALTER TABLE "public"."predictions" ADD PRIMARY KEY ("id") NOT DEFERRABLE INITIAL
 -- ----------------------------
 --  Uniques structure for table predictions
 -- ----------------------------
-ALTER TABLE "public"."predictions" ADD CONSTRAINT "uniq" UNIQUE ("sequence_id","setting_id","time_bid","pattern_id","expiration_at","time_to_expiration","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "public"."predictions" ADD CONSTRAINT "uniq" UNIQUE ("setting_id","time_bid","pattern_id","expiration_at","time_to_expiration","history_num") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 -- ----------------------------
 --  Indexes structure for table predictions

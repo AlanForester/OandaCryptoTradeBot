@@ -1,12 +1,9 @@
-import hashlib
-
 from providers.providers import Providers
 from models.pattern import Pattern
 
 
 class Prediction(object):
     id = None
-    sequence_id = None
     setting_id = None
     task_id = None
     time_bid = 0
@@ -45,19 +42,19 @@ class Prediction(object):
 
     def save(self):
         cursor = Providers.db().get_cursor()
-        row = cursor.execute("INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, "
+        row = cursor.execute("INSERT INTO predictions (setting_id, task_id, time_bid, pattern_id, "
                              "created_cost, created_ask, created_bid, expiration_cost,  expiration_ask, "
                              "expiration_bid, last_cost, range_max_change_cost, "
                              "range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,"
                              "call_max_avg_change_cost, put_max_avg_change_cost, range_sum_max_change_cost,"
                              "call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, "
                              "expiration_at, history_num, time_to_expiration) "
-                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
                              "ON CONFLICT "
-                             "(sequence_id,setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)"
+                             "(setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)"
                              "DO UPDATE SET expiration_cost=EXCLUDED.expiration_cost RETURNING id"
                              ,
-                             (self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
+                             (self.setting_id, self.task_id, self.time_bid, self.pattern_id,
                               self.created_cost, self.created_ask, self.created_bid, self.expiration_cost,
                               self.expiration_ask, self.expiration_bid, self.last_cost,
                               self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
@@ -70,11 +67,6 @@ class Prediction(object):
         if row:
             self.id = row.id
             return self
-
-    def get_hash(self):
-        return (str(self.sequence_id) + str(self.setting_id) + str(self.time_bid) +
-                str(self.pattern_id) + str(self.expiration_at) + str(self.time_to_expiration) +
-                str(self.history_num))
 
     def update_expiration_cost(self, value, ask, bid):
         cursor = Providers.db().get_cursor()
@@ -89,7 +81,7 @@ class Prediction(object):
         return self._pattern
 
     def __tuple_str(self):
-        return str((self.sequence_id, self.setting_id, self.task_id, self.time_bid, self.pattern_id,
+        return str((self.setting_id, self.task_id, self.time_bid, self.pattern_id,
                     self.created_cost, self.created_ask, self.created_bid, self.expiration_cost,
                     self.expiration_ask, self.expiration_bid, self.last_cost,
                     self.range_max_change_cost, self.range_max_avg_change_cost, self.call_max_change_cost,
@@ -105,7 +97,7 @@ class Prediction(object):
     @staticmethod
     def save_many(predictions: list):
         cursor = Providers.db().get_cursor()
-        query = 'INSERT INTO predictions (sequence_id, setting_id, task_id, time_bid, pattern_id, ' + \
+        query = 'INSERT INTO predictions (setting_id, task_id, time_bid, pattern_id, ' + \
                 'created_cost, created_ask, created_bid, expiration_cost, expiration_ask, expiration_bid, ' \
                 'last_cost, range_max_change_cost, ' + \
                 'range_max_avg_change_cost,call_max_change_cost,put_max_change_cost,' + \
@@ -113,7 +105,7 @@ class Prediction(object):
                 'call_sum_max_change_cost, put_sum_max_change_cost, count_change_cost,created_at, ' + \
                 'expiration_at, history_num, time_to_expiration) VALUES ' + \
                 ','.join(v.__tuple_str() for v in predictions) + 'ON CONFLICT ' \
-                                                                 '(sequence_id,setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)' + \
+                                                                 '(setting_id,time_bid,pattern_id,expiration_at,time_to_expiration,history_num)' + \
                 'DO UPDATE SET expiration_cost=EXCLUDED.expiration_cost RETURNING id'
         cursor.execute(query)
         Providers.db().commit()
@@ -123,13 +115,11 @@ class Prediction(object):
         return []
 
     @staticmethod
-    def make(task, time_bid, quotation, seq):
+    def make(task, time_bid, quotation):
         prediction = Prediction()
         prediction.setting_id = task.setting.id
         prediction.time_bid = time_bid['time']
         prediction.task_id = task.id
-        prediction.sequence_id = seq.id
-        prediction.sequence_duration = seq.duration
         prediction.created_cost = quotation.value
         prediction.created_ask = quotation.ask
         prediction.created_bid = quotation.bid
@@ -140,7 +130,6 @@ class Prediction(object):
         prediction.time_to_expiration = int(time_to_expiration / time_divider) * time_divider
         prediction.expiration_at = int(expiration_at / time_bid['time']) * time_bid['time']
         prediction.history_num = task.get_param("history_num", 0)
-        prediction.hash = prediction.get_hash()
         return prediction
 
     @staticmethod
