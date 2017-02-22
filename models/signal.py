@@ -79,7 +79,7 @@ class Signal:
     @staticmethod
     def empty_table(task):
         cursor = Providers.db().get_cursor()
-        cursor.execute("DELETE FROM signals WHERE history_num=%s AND setting_id=%s",[
+        cursor.execute("DELETE FROM signals WHERE history_num=%s AND setting_id=%s", [
             task.get_param("history_num", 0),
             task.setting_id
         ])
@@ -88,10 +88,12 @@ class Signal:
     @staticmethod
     def get_success_percent(task):
         cursor = Providers.db().get_cursor()
-        cursor.execute("SELECT * FROM signals WHERE history_num=%s AND closed_cost > 0 AND setting_id=%s", [
-            task.get_param("history_num", 0),
-            task.setting_id
-        ])
+        cursor.execute("SELECT * FROM signals "
+                       "WHERE history_num=%s AND closed_cost > 0 AND setting_id=%s AND task_id=%s", [
+                           task.get_param("history_num", 0),
+                           task.setting_id,
+                           task.id
+                       ])
         signals = cursor.fetchall()
         success = []
         for signal in signals:
@@ -101,5 +103,5 @@ class Signal:
                 success.append(signal)
         chance = 0
         if len(signals) > 0:
-            chance = round(len(success)/len(signals)*100, 4)
+            chance = round(len(success) / len(signals) * 100, 4)
         return chance
