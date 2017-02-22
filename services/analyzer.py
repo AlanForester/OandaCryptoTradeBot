@@ -69,6 +69,10 @@ class Analyzer:
                 i = 0
                 for pat_rec in patterns:
                     predictions_models[i].pattern_id = pat_rec.id
+
+                    if Controller.check_on_make_prediction(self.task, predictions_models[i], pat_rec):
+                        self.task.storage.insert_prediction(predictions_models[i])
+
                     if Controller.check_on_make_signal(self.task, pat_rec, predictions_models[i], self.quotation):
                         # Проверка условий вероятности при создании сигнала
                         direction = Signaler.check(self.task, pat_rec)
@@ -78,7 +82,6 @@ class Analyzer:
                                 signals_count = self.task.get_status("checker_signals_count", 0)
                                 self.task.update_status("checker_signals_count", signals_count + 1)
 
-                    self.task.storage.insert_prediction(predictions_models[i])
                     i += 1
 
     def save_candles(self):

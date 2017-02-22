@@ -10,6 +10,13 @@ from models.prediction import Prediction
 
 
 class Controller:
+    @staticmethod
+    def check_on_make_prediction(task, prediction: Prediction, pat: Pattern):
+        # Проверка на существование сигнала по паттерну за время прогноза
+        for prediction_item in task.storage.predictions:
+            if prediction_item.pattern_id == pat.id:
+                return False
+        return True
 
     @staticmethod
     def check_on_make_signal(task, pat: Pattern, prediction: Prediction, q):

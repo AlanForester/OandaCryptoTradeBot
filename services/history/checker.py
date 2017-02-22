@@ -34,8 +34,6 @@ class Checker:
 
             for row in quotations:
 
-                # Проверка на количество работающих тредов и блокировка
-
                 analyzer = Analyzer(task)
                 analyzer.quotation = row
                 analyzer.do_analysis()
